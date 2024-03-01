@@ -1,0 +1,46 @@
+services:
+  frontend:
+    image: "node:21"
+    user: "node"
+    working_dir: "/home/node/app"
+    volumes:
+      - ./frontend:/home/node/app
+    ports: 
+      - "8080:8080"
+    networks:
+      - frontend_net
+    depends_on:
+      - backend
+    env_file:
+      - .env
+    entrypoint: ["./node_modules/.bin/http-server", "--proxy", "http://localhost:8080?"]
+
+  backend:
+    build: "./backend"
+    tty: true
+    depends_on:
+      - db
+    networks:
+      - frontend_net
+      - backend_net
+    ports:
+      - "8000:8000"
+    expose:
+      - "8000"
+    env_file:
+      - .env
+
+  db:
+    image: postgres
+    env_file:
+      - .env
+    networks:
+      - backend_net
+    volumes:
+      - ./data/database:/var/lib/postgresql/data
+    expose:
+      - "5432"
+
+networks:
+  frontend_net:
+  backend_net:
