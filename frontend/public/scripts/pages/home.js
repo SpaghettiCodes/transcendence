@@ -1,6 +1,7 @@
 
-export default function home(prop=undefined) {
+export default function home(prop={}) {
 	let prerender = () => {
+		return true
 	}
 
 	let render_code = () => {
@@ -21,5 +22,8 @@ export default function home(prop=undefined) {
 		play_button.addEventListener('click', play_game)
 	}
 
-	return [prerender, render_code, postrender]
+	let cleanup = () => {
+	}
+
+	return [prerender, render_code, postrender, cleanup]
 }

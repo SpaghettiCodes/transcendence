@@ -1,5 +1,6 @@
-export default function ftlogin(prop=undefined) {
+export default function ftlogin(prop={}) {
 	let prerender = () => {
+		return true
 	}
 
 	let render_code = () => {
@@ -13,7 +14,6 @@ export default function ftlogin(prop=undefined) {
 	let get_ft_code = async (code) => {
 		try
 		{
-			console.log(code)
 			let payload = {
 				"code" : code
 			}
@@ -69,5 +69,8 @@ export default function ftlogin(prop=undefined) {
 		get_ft_code(code)
 	}
 
-	return [prerender, render_code, postrender]
+	let cleanup = () => {
+	}
+
+	return [prerender, render_code, postrender, cleanup]
 }

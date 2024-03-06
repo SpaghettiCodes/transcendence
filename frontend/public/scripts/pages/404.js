@@ -1,4 +1,4 @@
-export default function fourofour(prop=undefined) {
+export default function fourofour(prop={}) {
 	let prerender = () => {
 	}
 
@@ -13,5 +13,8 @@ export default function fourofour(prop=undefined) {
 	let postrender = () => {
 	}
 
-	return [prerender, render_code, postrender]
+	let cleanup = () => {
+	}
+
+	return [prerender, render_code, postrender, cleanup]
 }

@@ -3,8 +3,9 @@ import { redirect } from "../router.js"
 // env var, remove when done
 // note to self: DO NOT, PUSH, TO GITHUB
 
-export default function landing(prop=undefined) {
+export default function landing(prop={}) {
 	let prerender = () => {
+		return true
 	}
 
 	let render_code = () => {
@@ -24,6 +25,11 @@ export default function landing(prop=undefined) {
 
 			<div>
 				<p id="42login">Log in via 42</p>
+			</div>
+
+			<h1>Testing</h1>
+			<div>
+				<a href="/match">Test Match</a>
 			</div>
 		</div>
 		`
@@ -81,5 +87,8 @@ export default function landing(prop=undefined) {
 		ftlogin.addEventListener('click', fortytwo_login)
 	}
 
-	return [prerender, render_code, postrender]
+	let cleanup = () => {
+	}
+
+	return [prerender, render_code, postrender, cleanup]
 }

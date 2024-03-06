@@ -8,10 +8,10 @@ import requests
 
 import os
 
-CLIENT_ID = os.environ("42API_UID")
-CLIENT_SECRET = os.environ("42API_SECRET")
-REDIRECT_URI = os.environ("42API_URI")
-STATE = os.environ("42API_STATE")
+CLIENT_ID = os.environ.get("42API_UID")
+CLIENT_SECRET = os.environ.get("42API_SECRET")
+REDIRECT_URI = os.environ.get("42API_URI")
+STATE = os.environ.get("42API_STATE")
 
 # its joever
 # Get cannot have body as data

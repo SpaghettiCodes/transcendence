@@ -9,30 +9,84 @@ import landing from "./pages/landing.js"
 import fourofour from "./pages/404.js"
 import ftlogin from "./pages/ft_login.js"
 import home from "./pages/home.js"
+import match from "./pages/match.js"
+import game from "./pages/game.js"
 
 const routes = {
 	'/': landing,
 	'/error': fourofour,
 	'/ftlogin': ftlogin,
 	'/home': home,
+	'/match': match,
+	'/match/<game_id>': match,
+	'/match/<test>/<test2>': match,
+	'/games': game
 }
 
-const render_html = (which, prop=undefined) => {
-	let to_render = (which in routes) ? routes[which] : routes["/error"]
-	let [ prerender, render_code, postrender ] = to_render(prop)
-	prerender()
-	mainDoc.innerHTML = render_code()
-	postrender()
+let clean_up_function = () => {}
+
+const get_renderer = (uri, prop) => {
+	// direct match
+	if (uri in routes)
+		return routes[uri]
+
+	// no direct match, time to crY
+	const	uri_chunks = uri.slice(1).split("/")
+	const	argument_count = uri_chunks.length - 1
+	console.log(uri_chunks)
+
+	// first one gotta match someone
+	const regex = new RegExp("^\/" + uri_chunks[0])
+	const key_list = Object.keys(routes)
+	const valid = key_list.filter((value) => value.match(regex))
+
+	// get those where the argument count is the same as the given one
+	const same_length = valid.filter((value) => (value.slice(1).split("/").length - 1) === argument_count)
+
+	// get the one with variable
+	// well i mean it WOULD be the one with the variable, or else it would match at <direct match>
+	const another_regex = /\<.*\>/
+	const with_arguments = same_length.filter((value) => value.match(another_regex))
+
+	// joy, not found
+	if (!with_arguments.length)
+		return routes["/error"]
+
+	// it should only have 1 that fits
+	// it would be really concerning if there is more
+	// oh wait there may be more eh i worry about that tmr morning
+	const found_uri = with_arguments[0]
+	const arg_names = found_uri.slice(1).split("/").slice(1).map((value) => value.slice(1, value.length - 1))
+
+	prop["arguments"] = {}
+	arg_names.forEach((value, index) => {
+		prop["arguments"][value] = uri_chunks[index + 1]
+	})
+
+	return routes[with_arguments[0]]
 }
 
-const navigate = (e, prop=undefined) => {
+const render_html = (which, prop={}) => {
+	let to_render = get_renderer(which, prop)
+	let [ prerender, render_code, postrender, cleanup] = to_render(prop)
+	clean_up_function()
+	clean_up_function = cleanup
+	if (prerender())
+	{
+		mainDoc.innerHTML = render_code()
+		postrender()
+	}
+}
+
+const navigate = (e, prop={}) => {
 	e.preventDefault()
 
 	const uri = window.location.pathname
 	render_html(uri, prop)
 }
 
-export const redirect = (uri, prop=undefined) => {
+export const redirect = (uri, prop={}) => {
+	clean_up_function()
 	render_html(uri, prop)
 	history.pushState("", "", uri)
 }
