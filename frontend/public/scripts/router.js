@@ -11,6 +11,7 @@ import ftlogin from "./pages/ft_login.js"
 import home from "./pages/home.js"
 import match from "./pages/match.js"
 import game from "./pages/game.js"
+import chat from "./pages/chat.js"
 
 const routes = {
 	'/': landing,
@@ -20,7 +21,8 @@ const routes = {
 	'/match': match,
 	'/match/<game_id>': match,
 	'/match/<test>/<test2>': match,
-	'/games': game
+	'/games': game,
+	'/chat': chat
 }
 
 let clean_up_function = () => {}

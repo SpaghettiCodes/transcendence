@@ -69,7 +69,7 @@ class PongGame:
         else:
             return False
 
-        self.channel_layer.group_send(self.gameid, {
+        await self.channel_layer.group_send(self.gameid, {
             "type": "message",
             "text": json.dumps({
                 "status": "end",

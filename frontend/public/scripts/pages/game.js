@@ -73,11 +73,11 @@ export default function game(prop={}) {
 			catch
 			{
 				new_game.innerHTML = "Server Is Down"
-				setTimeout(() => {}, 5000)
+				setTimeout(() => {
+					new_game.innerHTML = "New Game"
+					new_game.disabled = false
+				}, 5000)
 			}
-
-			new_game.innerHTML = "New Game"
-			new_game.disabled = false
 		}
 
 		const gen_html_tags = (data) => {
