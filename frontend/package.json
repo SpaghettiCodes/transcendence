@@ -2,8 +2,7 @@
   "dependencies": {
     "http-server": "^14.1.1"
   },
-
   "scripts": {
-	"start": "http-server --proxy http://localhost:8080?"
+    "start": "http-server --proxy http://localhost:8080? -c-1"
   }
 }
