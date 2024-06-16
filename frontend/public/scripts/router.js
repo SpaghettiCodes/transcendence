@@ -22,7 +22,7 @@ const routes = {
 	'/match/<game_id>': match,
 	'/match/<test>/<test2>': match,
 	'/games': game,
-	'/chat': chat
+	'/chat': chat,
 }
 
 let clean_up_function = () => {}
@@ -35,7 +35,6 @@ const get_renderer = (uri, prop) => {
 	// no direct match, time to crY
 	const	uri_chunks = uri.slice(1).split("/")
 	const	argument_count = uri_chunks.length - 1
-	console.log(uri_chunks)
 
 	// first one gotta match someone
 	const regex = new RegExp("^\/" + uri_chunks[0])
@@ -73,7 +72,8 @@ const render_html = (which, prop={}) => {
 	let [ prerender, render_code, postrender, cleanup] = to_render(prop)
 	clean_up_function()
 	clean_up_function = cleanup
-	if (prerender())
+
+	if (true)
 	{
 		mainDoc.innerHTML = render_code()
 		postrender()

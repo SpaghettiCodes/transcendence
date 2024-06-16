@@ -1,0 +1,98 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+  }
+
+
+.video-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+video {
+    min-width: 100%;
+    min-height: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.container-fluid {
+    position: relative;
+    z-index: 1;
+}
+
+h1.header-font {
+    font-size:      10rem;
+    font-weight:    bold;
+    font-family:    monospace, Arial, Helvetica, sans-serif;
+    text-shadow:    4px 4px 5px yellow, 4px 4px 5px yellow;
+}
+
+
+.btn-outline-light {
+    width: 100%;
+    height: 100px;
+    font-size: 1.5rem;
+    border: 2px solid #fff;
+}
+
+.row {
+    width: 80%;
+    margin: 0 auto;
+}
+
+button {
+    --purple: #9B7EDA;
+    font-size: 18px;
+    padding: 0.8em 3em;
+    letter-spacing: 0.08em;
+    position: relative;
+    font-family: inherit;
+    border-radius: 0.6em;
+    overflow: hidden;
+    transition: all 0.3s;
+    line-height: 1.4em;
+    border: 2px solid var(--purple);
+    background: linear-gradient(to right, rgba(155, 126, 218, 0.1) 1%, transparent 40%, transparent 60%, rgba(155, 126, 218, 0.1) 100%);
+    color: var(--purple);
+    box-shadow: inset 0 0 10px rgba(155, 126, 218, 0.4), 0 0 9px 3px rgba(155, 126, 218, 0.1);
+}
+
+button:hover {
+    color: #BFA3F3;
+    box-shadow: inset 0 0 10px rgba(155, 126, 218, 0.6), 0 0 9px 3px rgba(155, 126, 218, 0.2);
+}
+
+button:before {
+    content: "";
+    position: absolute;
+    left: -4em;
+    width: 4em;
+    height: 100%;
+    top: 0;
+    transition: transform .4s ease-in-out;
+    background: linear-gradient(to right, transparent 1%, rgba(155, 126, 218, 0.1) 40%, rgba(155, 126, 218, 0.1) 60%, transparent 100%);
+}
+
+button:hover:before {
+    transform: translateX(15em);
+}
