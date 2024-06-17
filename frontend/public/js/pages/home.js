@@ -6,35 +6,35 @@ export default function home(prop={}) {
 
 	let render_code = () => {
 		return `
-		<<div class="video-container">
+		<div class="video-container">
 			<video autoplay muted loop id="bg-video">
 				<source src="video/among_us.mp4" type="video/mp4">
 				Your browser does not support HTML5 video.
 			</video>
 		</div>
 		<div class="container-fluid d-flex flex-column min-vh-100 justify-content-center align-items-center text-white">
-			<header class="text-center mb-5">
+			<div class="text-center mb-5">
 				<h1 class="header-font">APONG US</h1>
-			</header>
+			</div>
 
 			<div id="content" class="row text-center">
 				<div class="col-md-4 mb-3" id="pongGame">
-					<button class="btn btn-outline-light btn-block">Pong</button>
+					<button class="ui-btn btn-block"><span>Pong</span></button>
 				</div>
 				<div class="col-md-4 mb-3" id="apongUsGame">
-					<button class="btn btn-outline-light btn-block">Apong Us</button>
+				<button class="ui-btn btn-block"><span>APong Us</span></button>
 				</div>
 				<div class="col-md-4 mb-3" id="tournament">
-					<button class="btn btn-outline-light btn-block">Tournament</button>
+				<button class="ui-btn btn-block"><span>Tournament</span></button>
 				</div>
 				<div class="col-md-4 mb-3">
-					<button class="btn btn-outline-light btn-block">Language</button>
+				<button class="ui-btn btn-block"><span>Language</span></button>
 				</div>
 				<div class="col-md-4 mb-3">
-					<button class="btn btn-outline-light btn-block">Profile</button>
+				<button class="ui-btn btn-block"><span>Profile</span></button>
 				</div>
 				<div class="col-md-4 mb-3">
-					<button class="btn btn-outline-light btn-block">Friends...?</button>
+				<button class="ui-btn btn-block"><span>Friends....?</span></button>
 				</div>
 			</div> 
 		</div>

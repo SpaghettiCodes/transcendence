@@ -5,6 +5,8 @@
 
 let mainDoc = document.getElementById("main")
 
+import sidebar from './partials/sidebar.js';
+
 import landing from "./pages/landing.js"
 import fourofour from "./pages/404.js"
 import ftlogin from "./pages/ft_login.js"
@@ -14,7 +16,7 @@ import game from "./pages/game.js"
 import chat from "./pages/chat.js"
 
 const routes = {
-	'/': landing,
+	'/': { render: landing, hasSidebar: false },
 	'/error': fourofour,
 	'/ftlogin': ftlogin,
 	'/home': home,
@@ -60,7 +62,7 @@ const get_renderer = (uri, prop) => {
 	const arg_names = found_uri.slice(1).split("/").slice(1).map((value) => value.slice(1, value.length - 1))
 
 	prop["arguments"] = {}
-	arg_names.forEach((value, index) => {
+	arg_names.forEach((value, index) => {	
 		prop["arguments"][value] = uri_chunks[index + 1]
 	})
 
