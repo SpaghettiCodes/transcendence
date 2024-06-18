@@ -3,7 +3,8 @@
 // routing thingys
 // https://dev.to/rohanbagchi/how-to-write-a-vanillajs-router-hk3
 
-let mainDoc = document.getElementById("main")
+const mainDoc = document.getElementById("main")
+const sidebarContainer = document.getElementById('sidebar');
 
 import sidebar from './partials/sidebar.js';
 
@@ -17,14 +18,14 @@ import chat from "./pages/chat.js"
 
 const routes = {
 	'/': { render: landing, hasSidebar: false },
-	'/error': fourofour,
-	'/ftlogin': ftlogin,
-	'/home': home,
-	'/match': match,
-	'/match/<game_id>': match,
-	'/match/<test>/<test2>': match,
-	'/games': game,
-	'/chat': chat,
+	'/error': { render: fourofour, hasSidebar: false },
+	'/ftlogin': { render: ftlogin, hasSidebar: false }	,
+	'/home': { render: home, hasSidebar: true },
+	'/match': { render: match, hasSidebar: false },
+	'/match/<game_id>':{ render: match, hasSidebar: false},
+	'/match/<test>/<test2>': { render: match, hasSidebar: false },
+	'/games': { render: game, hasSidebar: false },
+	'/chat': { render: chat, hasSidebar: true },
 }
 
 let clean_up_function = () => {}
@@ -66,12 +67,21 @@ const get_renderer = (uri, prop) => {
 		prop["arguments"][value] = uri_chunks[index + 1]
 	})
 
+	console.log(with_arguments[0])
 	return routes[with_arguments[0]]
 }
 
 const render_html = (which, prop={}) => {
 	let to_render = get_renderer(which, prop)
-	let [ prerender, render_code, postrender, cleanup] = to_render(prop)
+	if (to_render.hasSidebar === true) {
+		let [ prerender, render_code, postrender, cleanup] = sidebar()
+		sidebarContainer.hidden = false
+		sidebarContainer.innerHTML = render_code()
+		postrender()
+	}
+	else 
+		sidebarContainer.hidden = true
+	let [ prerender, render_code, postrender, cleanup] = to_render.render(prop)
 	clean_up_function()
 	clean_up_function = cleanup
 
