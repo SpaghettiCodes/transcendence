@@ -98,6 +98,7 @@ test:
 "password":"eee",
 "email":"e@e.com"
 }
+
 {
 "username":"e",
 "password":"eee"
