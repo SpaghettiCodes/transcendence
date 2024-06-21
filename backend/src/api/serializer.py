@@ -5,7 +5,7 @@ from database.models import Match
 class PublicPlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = ("username", )
+        fields = '__all__'
 
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,3 +19,6 @@ class MatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Match
         fields = '__all__'
+        
+class ImageSerializer(serializers.Serializer):
+    image = serializers.ImageField()
