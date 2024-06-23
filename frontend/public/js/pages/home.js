@@ -27,15 +27,6 @@ export default function home(prop={}) {
 				<div class="col-md-4 mb-3" id="tournament">
 				<button class="ui-btn btn-block"><span>Tournament</span></button>
 				</div>
-				<div class="col-md-4 mb-3">
-				<button class="ui-btn btn-block"><span>Language</span></button>
-				</div>
-				<div class="col-md-4 mb-3">
-				<button class="ui-btn btn-block"><span>Profile</span></button>
-				</div>
-				<div class="col-md-4 mb-3">
-				<button class="ui-btn btn-block"><span>Friends....?</span></button>
-				</div>
 			</div> 
 		</div>
 		`
