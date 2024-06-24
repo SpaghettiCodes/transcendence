@@ -24,16 +24,19 @@ export default function sidebar(prop={}) {
 			<div class="menu">
 				<ul>
 					<li>
-						<i class="bi bi-house"></i>
-						<a href="/home">Home</a>
+						<a href="/home">
+							<i class="bi bi-house"></i> Home
+						</a>
 					</li>
 					<li>
-			 			<i class="bi bi-person"></i>
-						<a href="/userprofile">Profile</a>
+						<a href="/userprofile">
+							<i class="bi bi-person"></i>Profile
+						</a>
 					</li>
 					<li>
-						<i class="bi bi-chat"></i>
-						<a href="/chat">Chat</a>
+						<a href="/chat">
+							<i class="bi bi-chat"></i>Chat
+						</a>
 					</li>
 				</ul>
 			</div>
