@@ -50,12 +50,13 @@ def createPlayer(request):
     if 'password' in data.keys():
         raw_password = data.get('password')
         data['password'] = Player.encrypt_password(raw_password)
-    serializer = PlayerSerializer(data=data)
 
     if 'profile_pic' in request.FILES:
         profile_pic = ImageFile(request.FILES['profile_pic'])
         profile_pic.name = request.FILES['profile_pic'].name
         request.data['profile_pic'] = profile_pic
+
+    serializer = PlayerSerializer(data=data)
 
     if serializer.is_valid():
         serializer.save()

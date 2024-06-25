@@ -4,8 +4,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from database.models import Player
-from ..serializer import PlayerSerializer, MatchSerializer
+from database.models import Player, Friend_Request
+from ..serializer import PlayerSerializer, MatchSerializer, FriendRequestSerializer
 
 from django.core.exceptions import FieldDoesNotExist
 from django.core.files.images import ImageFile
@@ -76,7 +76,60 @@ def SpecificPlayerMatches(request, player_username):
     serialized = MatchSerializer(m, many=True)
     return Response(serialized.data)
 
-# @api_view(['GET'])
-# def DisplayFriends(request, player_username):
-#     p = get_object_or_404(Player.objects, username=player_username)
-#     id_set = p.objects.get()
+@api_view(['GET'])
+def DisplayFriends(request, player_username):
+    p = get_object_or_404(Player.objects, username=player_username)
+    friends_obj = p.friends.all()
+    serialized = PlayerSerializer(friends_obj, many=True)
+    return Response(serialized.data)
+
+@api_view(['GET'])
+def DisplayFriendRequests(request, player_username):
+    p = get_object_or_404(Player.objects, username=player_username)
+    fr_list = FriendRequestSerializer(
+        Friend_Request.objects.filter(receiver=p.id), many=True)
+    return Response(fr_list.data)
+
+@api_view(['POST'])
+def AcceptFriendRequest(request, player_username):
+    try:
+        sender_username = request.data.get('sender') # man i think i should put sender username in the url
+    except FieldDoesNotExist:
+        return Response(
+            {"Error": "sender username not given"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        p_me = get_object_or_404(Player.objects, username=player_username)
+        p_sender = get_object_or_404(Player.objects, username=sender_username)
+        fr = Friend_Request.objects.get(sender=p_sender.id, receiver=p_me.id)
+        fr.accept()
+        return Response(status=status.HTTP_200_OK)
+    except:
+        return Response(
+            {"Error": "failed to accept friend request"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+@api_view(['POST'])
+def DeclineFriendRequest(request, player_username):
+    try:
+        sender_username = request.data.get('sender') # man i think i should put sender username in the url
+    except FieldDoesNotExist:
+        return Response(
+            {"Error": "sender username not given"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    try:
+        p_me = get_object_or_404(Player.objects, username=player_username)
+        p_sender = get_object_or_404(Player.objects, username=sender_username)
+        fr = Friend_Request.objects.get(sender=p_sender.id, receiver=p_me.id)
+        fr.decline()
+        return Response(status=status.HTTP_200_OK)
+    except:
+        return Response(
+            {"Error": "failed to decline friend request"},
+            status=status.HTTP_400_BAD_REQUEST
+        )

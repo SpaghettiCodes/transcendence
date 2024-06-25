@@ -38,12 +38,12 @@ class Friend_Request(models.Model):
     is_active = models.BooleanField(blank=True, null=False, default=True)
 
     def accept(self):
-        receiver_friend_list = Player.objects.get(user=self.receiver)
-        if receiver_friend_list:
-            receiver_friend_list.add_friend(self.sender)
-            sender_friend_list = Player.objects.get(user=self.sender)
-            if sender_friend_list:
-                sender_friend_list.add_friend(self.receiver)
+        receiver_player = Player.objects.get(username=self.receiver.username)
+        if receiver_player:
+            receiver_player.add_friend(self.sender)
+            sender_player = Player.objects.get(username=self.sender.username)
+            if sender_player:
+                sender_player.add_friend(self.receiver)
                 self.is_active = False
                 self.save()
 
