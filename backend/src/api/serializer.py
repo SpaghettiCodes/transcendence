@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from database.models import Player
-from database.models import Match
+from database.models import Player, Match, ChatRoom
 
 class PublicPlayerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,4 +17,13 @@ class MatchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Match
+        fields = '__all__'
+
+class ChatRoomSerializer(serializers.ModelSerializer):
+    owner = PublicPlayerSerializer()
+    members = PublicPlayerSerializer(many=True)
+    # members = serializers.PrimaryKeyRelatedField(queryset=Player.objects.all(), many=True)
+
+    class Meta:
+        model = ChatRoom
         fields = '__all__'

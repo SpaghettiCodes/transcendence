@@ -25,3 +25,27 @@ class Match(models.Model):
     def __str__(self) -> str:
         return f"{self.attacker.username} vs {self.defender.username}"
 
+class ChatRoom(models.Model):
+    roomid = models.BigAutoField(primary_key=True)
+    owner = models.ForeignKey(
+        Player,
+        on_delete=models.PROTECT,
+        related_name="owner"
+    )
+    title = models.CharField(max_length=50)
+    members = models.ManyToManyField(
+        Player,
+        related_name="members"
+    )
+
+class ChatMessages(models.Model):
+    room = models.ForeignKey(
+        ChatRoom,
+        on_delete=models.CASCADE
+    )
+    sender = models.ForeignKey(
+        Player,
+        on_delete=models.PROTECT
+    )
+    posted = models.DateTimeField()
+    content = models.CharField(max_length=200)

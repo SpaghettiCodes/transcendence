@@ -8,15 +8,18 @@ from pong_server.server import PongServer
 class PongConsumer(AsyncJsonWebsocketConsumer):
     # called when client connects to websocket
     async def connect(self):
-        self.gameid = None
+        self.gameid = self.scope['url_route']['kwargs']['pongid']
         await self.accept()
+        await self.channel_layer.group_add(
+            f"game-{self.gameid}", self.channel_name
+        )
 
     # called when websocket connection closed
     async def disconnect(self, code):
         if self.gameid:
             await PongServer.player_left(self.player_name, self.gameid)
             await self.channel_layer.group_discard(
-                self.gameid, self.channel_name
+                f"game-{self.gameid}", self.channel_name
             )
         pass
 
@@ -25,77 +28,41 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
         if content.get('command'):
             command = content['command']
         else:
-            return PongServer.pass_info(content)
+            return PongServer.pass_info(content, self.gameid)
 
         match command:
-            case 'play':
-                player_name = content['username']
-                gameid = PongServer.new_player(player_name)
-
-                self.gameid = gameid
-                self.player_name = player_name
-
-                await self.channel_layer.group_add(
-                    self.gameid, self.channel_name
-                )
-
-                await self.send_json({
-                    'status': "joined",
-                    'gameid': gameid
-                })
-
             case 'join':
                 player_name = content['username']
-                gameid = content['gameid']
 
                 self.player_name = player_name
 
-                await self.channel_layer.group_add(
-                    gameid, self.channel_name
-                )
-                result = await PongServer.join_player(player_name, gameid)
+                result = await PongServer.join_player(player_name, self.gameid)
                 if not result[0]:
                     await self.send_json({
                         'status': 'error',
                         'message': result[1]
                     })
 
-                    await self.channel_layer.group_discard(
-                        gameid, self.channel_name
-                    )
-
                     return
-
-                self.gameid = gameid
 
             case 'watch':
                 player_name = content['username']
-                gameid = content['gameid']
 
                 self.player_name = player_name
 
-                await self.channel_layer.group_add(
-                    gameid, self.channel_name
-                )
-
-                result = await PongServer.new_spectator(player_name, gameid)
+                result = await PongServer.new_spectator(player_name, self.gameid)
                 if not result[0]:
                     await self.send_json({
                         'status': 'error',
                         'message': result[1]
                     })
 
-                    await self.channel_layer.group_discard(
-                        gameid, self.channel_name
-                    )
-
                     return
-
-                self.gameid = gameid
 
             case _:
                 await self.send_json({
-                    "message": "invalid command"
+                    'status': 'error',
+                    'message': "Invalid Command"
                 })
 
     async def message(self, event):

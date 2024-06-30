@@ -11,6 +11,12 @@ class Component:
         self.x = new_x
         self.y = new_y
 
+    def set_x(self, new_x):
+        self.x = new_x
+
+    def set_y(self, new_y):
+        self.y = new_y
+
     def get_coord(self):
         return (self.x, self.y)
 

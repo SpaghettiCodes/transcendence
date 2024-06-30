@@ -15,6 +15,7 @@ export default function game(prop={}) {
 		return `
 			<div>
 				<button id="newgame">New Game</button>
+				<button id="matchmake">Find a Match</button>
 				<button id="refresh">Refresh List</button>
 				<input id="player_id" type="text" placeholder="this test, expect removal" value="">
 				<button id="save">Save (temp)</button>
@@ -35,6 +36,7 @@ export default function game(prop={}) {
 		const refresh_button = document.getElementById("refresh")
 		const new_game = document.getElementById("newgame")
 		const save_button = document.getElementById("save")
+		const matchmake_button = document.getElementById("matchmake")
 		const matchSocket = new WebSocket("ws://localhost:8000/match")
 
 		sendMatchSocket = (message) => {
@@ -60,9 +62,9 @@ export default function game(prop={}) {
 			try
 			{
 				response = await fetch(
-					"http://localhost:8000/api/match",
+					"http://localhost:8000/api/matchmaking/create",
 					{
-						method: "POST",
+						method: "GET",
 					}
 				)
 
@@ -119,9 +121,38 @@ export default function game(prop={}) {
 			localStorage.setItem("username", username_field.value)
 		}
 
+		const random_matchmaking = async () => {
+			matchmake_button.innerHTML = "Matchmaking..."
+			matchmake_button.disabled = true
+
+			let response
+			try
+			{
+				response = await fetch(
+					"http://localhost:8000/api/matchmaking/match",
+					{
+						method: "GET",
+					}
+				)
+
+				let data = await response.json()
+				let game_code = data["game_id"]
+				redirect(`/match/${game_code}`)
+			}
+			catch
+			{
+				matchmake_button.innerHTML = "Server Is Down"
+				setTimeout(() => {
+					matchmake_button.innerHTML = "Find a Match"
+					matchmake_button.disabled = false
+				}, 5000)
+			}
+		}
+
 		refresh_button.addEventListener("click", refresh_room_list)
 		new_game.addEventListener("click", create_new_game)
 		save_button.addEventListener("click", set_username)
+		matchmake_button.addEventListener("click", random_matchmaking)
 	}
 
 	let cleanup = () => {

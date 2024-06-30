@@ -1,4 +1,7 @@
-.*
-./data
-./data/*
-*/node_modules/*
+data
+data/*
+node_modules/
+__pycache__/
+.env
+*.pyc
+*.pyo

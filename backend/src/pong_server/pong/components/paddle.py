@@ -1,4 +1,4 @@
-from .component import Component
+from ...base.component import Component
 
 class Paddle(Component):
     def __init__(self, initial_x=0, initial_y=0, width=10, height=50) -> None:

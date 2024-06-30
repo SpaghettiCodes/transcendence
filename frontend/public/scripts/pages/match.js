@@ -106,11 +106,22 @@ export default function match(prop={}) {
 			ctx.closePath()
 		}
 
+		const drawGamePaused = () => {
+			ctx.fillStyle = "#000000"
+			ctx.font = '20px sans-serif'
+			ctx.textBaseline = "middle"
+			ctx.textAlign = "center"
+
+			let text = "Game Paused"
+			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+			ctx.fillText(text , 115, 25, ctx.canvas.width)
+		}
+
 		const processFrame = (data) => {
 			drawStage(data)
 		}
 
-		pongSocket = new WebSocket("ws://localhost:8000/pong")
+		pongSocket = new WebSocket(`ws://localhost:8000/pong/${game_id}`)
 		const sendMessage = (data) => {
 			pongSocket.send(JSON.stringify(data))
 		}
@@ -119,7 +130,6 @@ export default function match(prop={}) {
 			sendMessage({
 				'command': 'join',
 				'username': player_id, // fuck gotta figure out how to do this now wohoo
-				'gameid': game_id
 			})
 			server_up = true
 		}
@@ -139,7 +149,7 @@ export default function match(prop={}) {
 					processFrame(data)
 					break
 				case "joined":
-					game_id = data["gameid"]
+					// do something here
 					break
 				case "start":
 					console.log("starting...")
@@ -152,6 +162,10 @@ export default function match(prop={}) {
 				case "error":
 					let message = data["message"]
 					showError(message)
+					break
+				case "pause":
+					drawGamePaused()
+					break
 				default:
 					console.log("unrecognizable message")
 					break
@@ -172,7 +186,6 @@ export default function match(prop={}) {
 				case (87):
 					e.preventDefault()
 					sendMessage({
-						"gameid": game_id,
 						"username": player_id,
 						"action": "go_up"
 					})
@@ -180,7 +193,6 @@ export default function match(prop={}) {
 				case (83):
 					e.preventDefault()
 					sendMessage({
-						"gameid": game_id,
 						"username": player_id,
 						"action": "go_down"
 					})
@@ -197,7 +209,6 @@ export default function match(prop={}) {
 				case (83):
 					e.preventDefault()
 					sendMessage({
-						"gameid": game_id,
 						"username": player_id,
 						"action": "stop"
 					})
