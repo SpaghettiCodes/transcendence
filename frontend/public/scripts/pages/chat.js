@@ -14,38 +14,49 @@ export default function chat(prop={}) {
 			<div>
 				<h1>Test ChatRoom</h1>
 
-				<h2 id="nameBig"></h2>
+				<div class="settings">
+					<div class="usernameDiv">
+						<h2 id="nameBig" class="hide"></h2>
 
-				<div class="name_selection">
-					<input id="name" placeholder="Username">
-					<button id="save">Save</button>
-				</div>
+						<div class="name_selection">
+							<input id="name" placeholder="Username">
+							<button id="save">Save</button>
+						</div>
+					</div>
 
-				<h2 id="serverid"></h2>
+					<div class="existingServerDiv">
+						<h2>Connect to servers you are in: </h2>
+						<div class="serverSelection" id="serverSelection">
+						</div>
+					</div>
 
-				<div class="server_selection">
-					<input id="servername" placeholder="Create A New Server">
-					<button id="sendapi">Connect</button>
-				</div>
+					<div class="newServerDiv">
+						<div class="left">
+							<h3>New Server</h3>
+							<input id="servername" placeholder="Server Title">
+							<button id="sendapi">Create</button>
+						</div>
+						<div class="right">
+							<h3>Members List</h3>
+							<div id="newMemberList" class="memberList">
+							</div>
+							<div>
+								<input id="memberName" placeholder="Member's Username">
+								<button id="addToGroup">Add</button>
+							</div>
+						</div>
+					</div>
 
-				<div class="serverid_connection">
-					<input id="serveridfield" placeholder="Connect to an existing Server ID">
-					<button id="attemptConnection">Connect</button>
+					<h2 id="serverid" class="hide"></h2>
 				</div>
 
 				<div class="chat">
 					<div class="left">
 						<h3 class="memberlabel">Member List:</h3>
 						<div class="memberbox" id="memberList"></div>
-						</br>
-						<div class="add_members">
-						<input id="membername" placeholder="Add Members">
-						<button id="addmembers">Add and Update Members</button>
-						</div>
 					</div>
 					<div class="right">
 						<div class="chatbox" id="chatbox"></div>
-						</br>
 						<div class="inputbox">
 							<input id="inputfield" placeholder="Some text..">
 							<button id="sendbtn">Send</button>
@@ -59,21 +70,147 @@ export default function chat(prop={}) {
 	// attach all event listeners here (or do anything that needs to be done AFTER attaching the html code)
 	let postrender = () => {
 		let name = ""
+
 		let websocket = undefined
 		let roomid = undefined
+		let lastmsgid = undefined
+
+		let fucking_wait_lah = false
 
 		let messageScreen = document.getElementById("chatbox")
 
-		let memberListDiv = document.getElementById("memberList")
-		let memberField = document.getElementById("membername")
-		let memberBtn = document.getElementById("addmembers")
+		const generateListOfServersIn = (listOfServers) => {
+			let serverSelectionField = document.getElementById("serverSelection")
+			serverSelectionField.innerHTML = ''
 
-		const setDetails = (data) => {
+			listOfServers.forEach((servers) => {
+				let newDiv = document.createElement("div")
+				newDiv.setAttribute("class", "serverDetailBlock")
+
+				let roomIdDiv = document.createElement("div")
+				roomIdDiv.innerText = `Chat ID: ${servers["roomid"]}`
+
+				let titleDiv = document.createElement("div")
+				titleDiv.innerText = `Chat Title: ${servers["title"]}`
+				
+				let newButton = document.createElement("button")
+				newButton.innerText = "Connect"
+
+				newButton.onclick = () => {
+					let newRoomId = servers["roomid"]
+					console.log(`connecting you to ${newRoomId}`)
+					
+					roomid = newRoomId
+					connectToNewSocket(`ws://localhost:8000/chat/${roomid}`)
+				}
+
+				newDiv.appendChild(titleDiv)
+				newDiv.appendChild(roomIdDiv)
+				newDiv.appendChild(newButton)
+				serverSelectionField.appendChild(newDiv)
+			})
+		}
+
+		const getInServerList = () => {
+			fetch(
+				`http://localhost:8000/api/player/${name}/chat`, {
+					method: "GET"
+				}
+			).then((value) => {
+				return value.json()
+			}).then((value) => {
+				generateListOfServersIn(value)
+			}).catch((reason) => {
+				console.log(reason)
+				console.log("cry")
+			})
+		}
+
+		messageScreen.addEventListener("scroll", async (event) => {
+			if (!fucking_wait_lah) {
+				fucking_wait_lah = true
+				let threshold = 10
+				let scrollMax = messageScreen.scrollHeight - messageScreen.clientHeight // magic
+				let scrollValue = messageScreen.scrollTop * -1 // negative since upside down
+	
+				if ((scrollMax - scrollValue) < threshold) {
+					let newMsg = await getPreviousMessages()
+
+					if (newMsg) {
+						let totalMsg = messageScreen.childElementCount
+						messageScreen.children[totalMsg - newMsg].scrollTo()
+					}
+				}
+				fucking_wait_lah = false
+			}
+		})
+
+		let memberListDiv = document.getElementById("memberList")
+
+		const makeErrorBox = (data) => {
+			let newDiv = document.createElement("div")
+			newDiv.setAttribute("class", "errorbox")
+			newDiv.innerHTML = `
+				<h4>Error</h4>
+				<p>${data["message"]}</p>
+			`
+			return newDiv
+		}
+
+		const makeMessageBox = (data) => {
+			let newDiv = document.createElement("div")
+			newDiv.setAttribute("class", "messagebox")
+
+			let authordiv = document.createElement("div")
+			let messagediv = document.createElement("div")
+			authordiv.setAttribute("class", "author")
+			messagediv.setAttribute("class", "message")
+			authordiv.innerHTML = data["sender"]
+			messagediv.innerHTML = data["message"]
+			newDiv.appendChild(authordiv)
+			newDiv.appendChild(messagediv)
+
+			return newDiv
+		}
+
+		const getPreviousMessages = async () => {
+			let url = undefined
+			if (lastmsgid === undefined)
+				url = `http://localhost:8000/api/chat/${roomid}/history`
+			else
+				url = `http://localhost:8000/api/chat/${roomid}/history?start_id=${lastmsgid}`
+
+			try {
+				const response = await fetch(url)
+				const data = await response.json()
+				const messageList = data["history"]
+
+				if (!messageList.length) {
+					return
+				}
+
+				lastmsgid = messageList.at(-1)["chatid"]
+				messageList.forEach(pastMessage => {
+					let messageBlock = makeMessageBox({
+						"sender": pastMessage["sender"]["username"],
+						"message": pastMessage["content"]
+					})
+					messageScreen.append(messageBlock)
+				})
+				return messageList.length
+			} catch (e) {
+				console.log(e.message)
+			}
+			return -1
+		}
+
+		const setDetails = async (data) => {
 			let members = data["members"]
 			let owner = data["owner"]
 			let title = data["title"]
 			let titleField = document.getElementById("serverid")
 
+			titleField.classList.remove("hide")
 			titleField.innerHTML = `Connected to room ${title} | ID: ${roomid}`
 
 			let newDiv = document.createElement("div")
@@ -87,6 +224,8 @@ export default function chat(prop={}) {
 				newDiv.innerHTML = member["username"]
 				memberListDiv.appendChild(newDiv)
 			});
+
+			await getPreviousMessages()
 		}
 
 		const sendMessage = (data) => {
@@ -94,8 +233,10 @@ export default function chat(prop={}) {
 		}
 
 		const connectToNewSocket = (url) => {
+			// reset everything
 			messageScreen.innerHTML = ''
 			memberListDiv.innerHTML = ''
+			lastmsgid = undefined
 
 			if (websocket)
 				websocket.close()
@@ -109,39 +250,31 @@ export default function chat(prop={}) {
 			}
 
 			websocket.onerror = (e) => {
-				console.log("Cry")
+				newDiv = makeErrorBox({
+					"message": "Unexpectedly Disconnected"
+				})
+				message.prepend(newDiv)
 			}
 
-			websocket.onmessage = (e) => {
+			websocket.onmessage = async (e) => {
 				let data = JSON.parse(e.data)
 				let status = data["status"]
+				let newDiv = undefined
 
-				let newDiv = document.createElement("div")
 				switch (status)
 				{
 					case "error":
-						newDiv.setAttribute("class", "errorbox")
-						newDiv.innerHTML = `
-							<h4>Error</h4>
-							<p>${data["message"]}</p>
-						`
+						newDiv = makeErrorBox(data)
+						messageScreen.prepend(newDiv)
 						break
 					case "new_message":
-						newDiv.setAttribute("class", "messagebox")
-						let authordiv = document.createElement("div")
-						let messagediv = document.createElement("div")
-						authordiv.setAttribute("class", "author")
-						messagediv.setAttribute("class", "message")
-						authordiv.innerHTML = data["sender"]
-						messagediv.innerHTML = data["message"]
-						newDiv.appendChild(authordiv)
-						newDiv.appendChild(messagediv)
+						newDiv = makeMessageBox(data)
+						messageScreen.prepend(newDiv)
 						break
 					case "details":
-						setDetails(data["details"])
-						break
+						await setDetails(data["details"])
+						return
 				}
-				messageScreen.prepend(newDiv)
 			}
 
 			websocket.onclose = (data) => {
@@ -156,51 +289,66 @@ export default function chat(prop={}) {
 			if (!nameField.value)
 				return
 			name = nameField.value
+
+			nameHeader.classList.remove("hide")
 			nameHeader.innerHTML = `Hello ${name}`
 
 			let ownerField = document.getElementById("ownerField")
 			if (!ownerField) {
 				ownerField = document.create
 			}
+			
+			getInServerList()
 		}
+
+		let memberField = document.getElementById("memberName")
+		let memberBtn = document.getElementById("addToGroup")
+		let newMemberBox = document.getElementById("newMemberList")
 
 		memberBtn.onclick = () => {
 			let newMember = memberField.value
 			if (newMember && !memberList.includes(newMember)) {
 				memberList.push(newMember)
 				let newdiv = document.createElement("div")
-				newdiv.setAttribute("class", "memberlist")
+				newdiv.setAttribute("class", "memberBox")
 				newdiv.innerHTML = `${newMember}`
-				memberListDiv.appendChild(newdiv)
+				newMemberBox.appendChild(newdiv)
 			}
+
+			// clear memeber field
+			memberField.value = ''
 		}
 
 		let serverField = document.getElementById("servername")
 		let sendToApi = document.getElementById("sendapi")
 		let serverid = document.getElementById("serverid")
-		let payload
 
 		sendToApi.onclick = async () => {
+			serverid.classList.remove("hide")
 			if (!name) {
 				serverid.innerHTML = "Put your Username First!"
 				return
 			}
-
 			if (!serverField.value) {
 				serverid.innerHTML = "Put a server title First!"
 				return
 			}
+			serverid.innerHTML = `Creating new server ${serverField.value}`
 
-			serverid.innerHTML = `Connecting to = ${serverField.value}`
-
-			payload = {
+			let payload = {
 				"username": name,
 				"chat_title": serverField.value,
 				"members": memberList
 			}
 
-			console.log(payload)
+			// clear member list
+			memberList = []
+			newMemberBox.innerHTML = ''
 
+			// clear server title
+			serverField.value = ''
+
+			console.log(payload)
 			try {
 				let result = await fetch(
 					"http://localhost:8000/api/chat", {
@@ -218,6 +366,9 @@ export default function chat(prop={}) {
 					roomid = data["roomid"]
 					connectToNewSocket(`ws://localhost:8000/chat/${roomid}`)
 				}
+
+				// refresh server list
+				getInServerList()
 			}
 			catch (err) {
 				serverid.innerText = err.message
@@ -239,14 +390,7 @@ export default function chat(prop={}) {
 				'sender': name,
 				'message': inputField.value
 			})
-		}
-
-		let serveridField = document.getElementById("serveridfield")
-		let attemptoConnect = document.getElementById("attemptConnection")
-
-		attemptoConnect.onclick = () => {
-			roomid = serveridField.value
-			connectToNewSocket(`ws://localhost:8000/chat/${roomid}`)
+			inputField.value = ""
 		}
 	}
 

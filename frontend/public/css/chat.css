@@ -1,3 +1,105 @@
+.hide {
+	display: none;
+}
+
+.usernameDiv {
+	border: 1px solid black;
+	padding: 5px;
+	margin-bottom: 5px;
+}
+
+.usernameDiv * {
+	margin: 5px;
+}
+
+.usernameDiv .name_selection {
+	margin: 0px;
+}
+
+.newServerDiv {
+	display: grid;
+	height: 20vh;
+	grid-template-columns: 1fr 1fr;
+	border: 1px solid black;
+	margin-bottom: 5px;
+}
+
+.newServerDiv .left {
+	display: flex;
+	flex-direction: column;
+	border-right: 1px solid black;
+	margin: 0px;
+}
+
+.newServerDiv .left * {
+	margin: 5px;
+}
+
+.newServerDiv .right {
+	display: flex;
+	flex-direction: column;
+	margin: 0px;
+}
+
+.newServerDiv .right * {
+	margin: 5px;
+}
+
+.newServerDiv .memberList {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	flex-basis: 0;
+	border: 1px solid black;
+	overflow: auto;
+}
+
+.newServerDiv .memberList .memberBox {
+	display: flex;
+	border-bottom: 1px solid black;
+	margin: 0;
+	padding: 3px;
+}
+
+.existingServerDiv {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid black;
+	padding: 5px;
+	margin-bottom: 5px;
+}
+
+.existingServerDiv #serveridfield {
+	flex-grow: 1;
+	margin-bottom: 5px;
+}
+
+.existingServerDiv * {
+	margin: 5px;
+}
+
+
+.existingServerDiv .serverSelection {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	border: 1px solid black;
+	margin-bottom: 5px;
+	height: 25vh;
+	overflow: auto;
+}
+
+.existingServerDiv .serverSelection .serverDetailBlock {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid black;
+	max-height: 40%;
+	min-height: 95px;
+}
+
+.existingServerDiv .serverSelection .serverDetailBlock * {
+	margin: 5px;
+}
+
 .chat {
 	display: grid;
 	height: 80vh;
@@ -42,17 +144,12 @@
 
 .inputbox {
 	display: flex;
+	margin-top: 5px;
 }
 
 #inputfield {
 	flex-grow: 1;
-	margin: 0 5px;
-}
-
-.memberlist {
-	display: flex;
-	border-bottom: 1px solid black;
-	overflow: auto;
+	margin-right: 5px;
 }
 
 .chatbox .errorbox {

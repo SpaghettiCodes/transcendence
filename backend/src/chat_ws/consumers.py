@@ -31,6 +31,10 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
     async def send_status(self):
         await self.send_json({
+            "status": "ok"
+        })
+
+        await self.send_json({
             "status": "details",
             "details": await sync_to_async(self.get_serialized_data)()
         })

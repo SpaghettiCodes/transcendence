@@ -39,6 +39,7 @@ class ChatRoom(models.Model):
     )
 
 class ChatMessages(models.Model):
+    chatid = models.BigAutoField(primary_key=True)
     room = models.ForeignKey(
         ChatRoom,
         on_delete=models.CASCADE

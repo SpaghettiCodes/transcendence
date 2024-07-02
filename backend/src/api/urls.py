@@ -10,6 +10,7 @@ urlpatterns = [
     path('matchmaking/create', matchmaking.createNewGame),
     path('matchmaking/match', matchmaking.matchmake),
     path('chat', chat.Chat.as_view()),
+    path('chat/<chat_id>/history', chat.chatHistory),
     path('ft/auth', ft.get_ft_code),
     path('ft/me', ft.get_ft_me),
     path('ft/env', ft.get_ft_env),

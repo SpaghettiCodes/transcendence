@@ -60,6 +60,6 @@ def SpecificPlayerMatches(request, player_username):
 @api_view(['GET'])
 def SpecificPlayerChats(request, player_username):
     p = get_object_or_404(Player.objects, username=player_username)
-    c = p.members.all() | p.owner.all()
+    c = (p.members.all() | p.owner.all()).distinct()
     serialized = ChatRoomSerializer(c, many=True)
     return Response(serialized.data)

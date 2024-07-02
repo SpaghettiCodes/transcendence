@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from database.models import Player, Match, ChatRoom
+from database.models import Player, Match, ChatRoom, ChatMessages
 
 class PublicPlayerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,4 +26,12 @@ class ChatRoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ChatRoom
+        fields = '__all__'
+
+class ChatMessageSerializer(serializers.ModelSerializer):
+    room = ChatRoomSerializer()
+    sender = PublicPlayerSerializer()
+
+    class Meta:
+        model = ChatMessages
         fields = '__all__'
