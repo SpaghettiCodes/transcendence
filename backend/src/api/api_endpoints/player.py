@@ -8,10 +8,13 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 
+from django.middleware import csrf
 from database.models import Player
 from ..serializer import PlayerSerializer, PublicPlayerSerializer
+from ..token import create_jwt_pair_for_user
 from django.core.exceptions import FieldDoesNotExist
 from django.core.files.images import ImageFile
+from django.conf import settings
 
 from django.db.utils import IntegrityError
 
@@ -84,7 +87,18 @@ def login(request):
     p = get_object_or_404(Player.objects, username=username)
 
     if p.verify_password(raw_password=raw_password):
-        return Response(status=status.HTTP_200_OK)
+        data = create_jwt_pair_for_user(p)
+        response = Response()
+        response.set_cookie(
+							key = settings.SIMPLE_JWT['AUTH_COOKIE'], 
+							value = data["access"],
+							expires = settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
+							secure = settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+							httponly = settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+							samesite = settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
+								)
+        response.data = {"Success" : "Login successfully","data":data}       
+        return response
     else:
         return Response({"Error": 'Password is incorrect'},
                 status=status.HTTP_400_BAD_REQUEST)

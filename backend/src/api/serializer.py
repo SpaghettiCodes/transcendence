@@ -9,7 +9,8 @@ class PublicPlayerSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PlayerSerializer(serializers.ModelSerializer):
-    friends = serializers.StringRelatedField(many=True)
+    friends = serializers.StringRelatedField(many=True, required=False)
+    match_history = serializers.StringRelatedField(many=True, required=False)
 
     class Meta:
         model = Player

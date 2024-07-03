@@ -15,6 +15,7 @@ daphne==4.1.0
 Django==4.1
 django-cors-headers==4.3.1
 djangorestframework==3.14.0
+djangorestframework-simplejwt==5.3.1
 hyperlink==21.0.0
 idna==3.4
 incremental==22.10.0
@@ -24,6 +25,7 @@ pip==23.3.1
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycparser==2.21
+PyJWT==2.8.0
 pyOpenSSL==24.0.0
 PySocks==1.7.1
 pytz==2023.3.post1
