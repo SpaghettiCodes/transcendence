@@ -9,6 +9,9 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
     # called when client connects to websocket
     async def connect(self):
         self.gameid = self.scope['url_route']['kwargs']['pongid']
+        self.player_name = None
+        self.authorized = False
+
         await self.accept()
         await self.channel_layer.group_add(
             f"game-{self.gameid}", self.channel_name
@@ -28,7 +31,9 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
         if content.get('command'):
             command = content['command']
         else:
-            return PongServer.pass_info(content, self.gameid)
+            if self.authorized:
+                return PongServer.pass_info(content, self.gameid)
+            return
 
         match command:
             case 'join':
@@ -36,7 +41,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
                 self.player_name = player_name
 
-                result = await PongServer.join_player(player_name, self.gameid)
+                result = await PongServer.join_player(self.player_name, self.gameid)
                 if not result[0]:
                     await self.send_json({
                         'status': 'error',
@@ -45,6 +50,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
                     return
 
+                self.authorized = True
             case 'watch':
                 player_name = content['username']
 
@@ -56,9 +62,9 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
                         'status': 'error',
                         'message': result[1]
                     })
-
                     return
 
+                self.authorized = True
             case _:
                 await self.send_json({
                     'status': 'error',
@@ -67,6 +73,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
     async def message(self, event):
         try:
-            await self.send_json(event["text"])
+            if (self.authorized):
+                await self.send_json(event["text"])
         except Exception as e:
             print(e.args[0])

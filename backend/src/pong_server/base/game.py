@@ -7,10 +7,17 @@ import json
 
 from datetime import datetime
 
+from ..base.state import State
+from ..common.states.pause import Pause
+
 class Game:
+    FRAME_RATE = 1/60
+
     def __init__(self, gameid, hidden=False, expectedPlayers=None) -> None:
         # initial positions and shit
         self.gameid = gameid
+        self.group_name = f"game-{gameid}"
+
         self.players = []
         self.spectator = []
 
@@ -18,7 +25,7 @@ class Game:
         self.hidden = hidden
 
         self.begin = False
-        self.pause = False
+        self.currentState = None
         self.channel_layer = get_channel_layer()
 
     def emptyLobby(self):
@@ -32,9 +39,6 @@ class Game:
 
     def has_begin(self):
         return self.begin
-
-    def paused(self):
-        return self.pause
 
     def get_data(self):
         return {
@@ -62,7 +66,8 @@ class Game:
         })
 
         if self.has_begin():
-            self.pause = True
+            # player has left, pause the game
+            self.currentState.setforcedTransition(Pause(self.currentState))
 
     async def playerJoin(self, username):
         if not self.has_begin():
@@ -73,13 +78,16 @@ class Game:
             if username not in self.expectedPlayers:
                 return (False, "Ongoing Match!")
 
+        # anyone that come here should be
+        # 1. a new player
+        # 2. a reconnected old player
         self.players.append(username)
 
         if not self.has_begin():
             if self.canStart():
                 await self.start()
             else:
-                await self.channel_layer.group_send(self.gameid, {
+                await self.channel_layer.group_send(self.group_name, {
                     "type": "message",
                     "text": {
                         "status": "wait"
@@ -87,7 +95,13 @@ class Game:
                 })
         else:
             if self.canStart():
-                self.pause = False
+                if (not isinstance(self.currentState, Pause)):
+                    print("Thats not suppose to happen, fix your code")
+                    print("Details:")
+                    print(self.currentState)
+                    print(type(self.currentState))
+                    return
+                self.currentState.unpause()
 
         return (True, "nothing to see here, move along")
 
@@ -97,7 +111,7 @@ class Game:
 
     async def start(self):
         if not self.begin:
-            await self.channel_layer.group_send(self.gameid, {
+            await self.channel_layer.group_send(self.group_name, {
                 "type": "message",
                 "text": {
                     "status": "start"
@@ -105,6 +119,7 @@ class Game:
             })
 
             self.begin = True
+            self.currentState = self.initialState()
             self.loop_start = asyncio.create_task(self.loop()) # thanks wallace
 
     async def stop(self):
@@ -123,3 +138,32 @@ class Game:
     @abstractmethod
     async def loop(self):
         pass
+
+    @abstractmethod
+    def initialization(self):
+        pass
+
+    @abstractmethod
+    def initialState(self):
+        pass
+
+    async def loop(self):
+        self.initialization()
+        self.currentState: State = self.initialState()
+
+        while self.begin:
+            await asyncio.sleep(float(self.FRAME_RATE))
+
+            forcedTransition, nextTransition = self.currentState.forceTransition()
+            if (forcedTransition):
+                self.currentState = nextTransition
+            elif self.currentState.stateEnded():
+                self.currentState = self.currentState.nextState()
+            else:
+                self.currentState.runState()
+                data = self.currentState.getData()
+
+                await self.channel_layer.group_send(self.group_name, {
+                    "type": "message",
+                    "text": data
+                })

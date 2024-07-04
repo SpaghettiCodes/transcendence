@@ -1,6 +1,6 @@
-from .components.ball import Ball
-from .components.paddle import Paddle
-from .components.gameframe import GameFrame
+from ..common.components.ball import Ball
+from ..common.components.paddle import Paddle
+from ..common.components.gameframe import GameFrame
 
 import asyncio
 
@@ -13,17 +13,7 @@ class PongGame(Game):
     def __init__(self, gameid, hidden=False, expectedPlayers=[]) -> None:
         super().__init__(gameid, hidden, expectedPlayers)
 
-        self.gameid = f"game-{self.gameid}"
-
-        self.attacker = Paddle()
-        self.defender = Paddle()
-        self.ball = Ball()
-
-        self.field = GameFrame(
-            ball=self.ball,
-            attacker=self.attacker,
-            defender=self.defender
-        )
+        self.field = GameFrame()
 
         self.attackerid = None
         self.defenderid = None
@@ -41,6 +31,12 @@ class PongGame(Game):
         random.shuffle(self.players)
         self.attackerid = self.players[0]
         self.defenderid = self.players[1]
+
+        self.resetField()
+
+    def resetField(self):
+        self.field.initialization()
+        self.field.setPlayers(self.attackerid, self.defenderid)
 
     def command(self, json_info):
         target = json_info['username']
@@ -61,25 +57,6 @@ class PongGame(Game):
             case 'stop':
                 affected_paddle.set_velocity(0, 0)
 
-    async def loop(self):
-        self.initialization()
-        self.field.initialization()
-
-        while self.begin:
-            await asyncio.sleep(float(1/60))
-            if not self.pause:
-                self.field.renderFrame(float(1/60))
-                data = self.field.getFrame()
-
-                await self.channel_layer.group_send(self.gameid, {
-                    "type": "message",
-                    "text": data
-                })
-            else:
-                await self.channel_layer.group_send(self.gameid, {
-                    "type": "message",
-                    "text": {
-                        "status": "pause"
-                    }
-                })
-                
+    def initialState(self):
+        from ..common.states.processPhysics import ProcessPhysics
+        return ProcessPhysics(self)

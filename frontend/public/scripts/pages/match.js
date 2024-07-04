@@ -73,6 +73,17 @@ export default function match(prop={}) {
 			console.log(waitingInterval)
 		}
 
+		const drawScore = (scorer) => {
+			ctx.fillStyle = "#000000"
+			ctx.font = '20px sans-serif'
+			ctx.textBaseline = "middle"
+			ctx.textAlign = "center"
+
+			let text = `${scorer} Scored`
+			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+			ctx.fillText(text , 115, 25, ctx.canvas.width)
+		}
+
 		let showError = (message) => {
 			const errorDiv = document.getElementById("canvasDiv")
 
@@ -117,6 +128,17 @@ export default function match(prop={}) {
 			ctx.fillText(text , 115, 25, ctx.canvas.width)
 		}
 
+		const drawNumber = (number) => {
+			ctx.fillStyle = "#000000"
+			ctx.font = '20px sans-serif'
+			ctx.textBaseline = "middle"
+			ctx.textAlign = "center"
+
+			let text = `${number}`
+			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+			ctx.fillText(text , 115, 25, ctx.canvas.width)
+		}
+
 		const processFrame = (data) => {
 			drawStage(data)
 		}
@@ -142,7 +164,6 @@ export default function match(prop={}) {
 			const data = JSON.parse(e.data)
 			const status = data["status"]
 
-			console.log(status)
 			switch (status)
 			{
 				case "update":
@@ -166,6 +187,12 @@ export default function match(prop={}) {
 				case "pause":
 					drawGamePaused()
 					break
+				case "countdown":
+					drawNumber(data["value"])
+					break
+				case "score":
+					drawScore(data["scorer"])
+					break
 				default:
 					console.log("unrecognizable message")
 					break
@@ -174,6 +201,10 @@ export default function match(prop={}) {
 
 		pongSocket.onclose = function(e) {
 			console.error('Chat socket close unexpectedly');
+		}
+
+		pongSocket.onerror = (e) => {
+			console.log("bro left")
 		}
 
 		addEventListener("resize", (event) => {recalibratePixels()})
@@ -220,6 +251,10 @@ export default function match(prop={}) {
 	let cleanup = () => {
 		if (pongSocket)
 			pongSocket.close()
+
+		// uhhh should work
+		document.onkeydown = () => {}
+		document.onkeyup = () => {}
 	}
 
 	return [prerender, render_code, postrender, cleanup]

@@ -127,6 +127,10 @@
 	overflow: auto;
 }
 
+.chat .memberbox .memberlist {
+	padding-left: 5px;
+}
+
 .chat .right {
 	display: flex;
 	flex-direction: column;

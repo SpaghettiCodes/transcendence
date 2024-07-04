@@ -1,16 +1,15 @@
 from ...base.component import Component
 
 class Paddle(Component):
-    def __init__(self, initial_x=0, initial_y=0, width=10, height=50) -> None:
+    def __init__(self, initial_x=0, initial_y=0, width=10, height=100) -> None:
         super().__init__(initial_x, initial_y)
-        self.width = 10
-        self.height = 100
+        self.width = width
+        self.height = height
 
     def get_height(self):
         return self.height
 
     def collided_with_ball(self, ball):
-        # why is x and y the top fucking corner of the rect
         ball_coordinate = ball.get_coord()
         ball_radius = ball.get_radius()
         ball_x = ball_coordinate[0]
