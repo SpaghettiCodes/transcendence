@@ -47,6 +47,9 @@ class Player(models.Model):
             self.match_history.add(match)
             self.matches_played += 1
             self.save()
+            
+    def online(self):
+        self.is_online = True
 
 class Friend_Request(models.Model):
     sender = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='sender', default=None)
@@ -70,6 +73,18 @@ class Friend_Request(models.Model):
         self.is_active = False
         self.save()
 
+class Tournament(models.Model):
+    name = models.CharField(max_length=40, unique=True, blank=True)
+    players = models.ManyToManyField("Player", blank=True)
+    matches = models.ManyToManyField("Match", blank=True)
+    
+    def __str__(self) -> str:
+        return self.name
+    
+    def is_full_tournament(number):
+        return (number and (not(number & (number - 1))))
+        
+    
 class Match(models.Model):
     attacker = models.ForeignKey(Player, on_delete=models.CASCADE, related_name="attacker")
     defender = models.ForeignKey(Player, on_delete=models.CASCADE, related_name="defender")

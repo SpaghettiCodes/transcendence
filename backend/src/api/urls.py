@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from .api_endpoints import ft, player, playerid, matches, hello, list_match, friend_reqs
+from .api_endpoints import ft, player, playerid, matches, hello, list_match, friend_reqs, error_page
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 urlpatterns = [
@@ -21,6 +21,7 @@ urlpatterns = [
     path('ft/auth', ft.get_ft_code),
     path('ft/me', ft.get_ft_me),
     path('ft/env', ft.get_ft_env),
+	path('error/401', error_page.Return401),
 	path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 	path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
