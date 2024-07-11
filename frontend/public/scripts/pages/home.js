@@ -6,13 +6,13 @@ export default function home(prop={}) {
 
 	let render_code = () => {
 		return `
-		<div class="video-container">
-			<video autoplay muted loop id="bg-video">
-				<source src="video/among_us.mp4" type="video/mp4">
-				Your browser does not support HTML5 video.
-			</video>
-		</div>
 		<div class="container-fluid d-flex flex-column min-vh-100 justify-content-center align-items-center text-white">
+			<div class="video-container">
+				<video autoplay muted loop id="bg-video">
+					<source src="video/among_us.mp4" type="video/mp4">
+					Your browser does not support HTML5 video.
+				</video>
+			</div>
 			<div class="text-center mb-5">
 				<h1 class="header-font">APONG US</h1>
 			</div>
@@ -26,6 +26,15 @@ export default function home(prop={}) {
 				</div>
 				<div class="col-md-4 mb-3" id="tournament">
 				<button class="ui-btn btn-block"><span>Tournament</span></button>
+				</div>
+				<div class="col-md-4 mb-3">
+				<button class="ui-btn btn-block"><span>Language</span></button>
+				</div>
+				<div class="col-md-4 mb-3">
+				<button class="ui-btn btn-block"><span>Profile</span></button>
+				</div>
+				<div class="col-md-4 mb-3">
+				<button class="ui-btn btn-block"><span>Friends....?</span></button>
 				</div>
 			</div> 
 		</div>
