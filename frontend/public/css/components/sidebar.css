@@ -44,24 +44,19 @@
 .sidebar_menu .menu li{
     margin-top: 6px;
     padding: 14px 20px;
-    align-items: center;
 }
 
 .sidebar_menu .menu i{
     color: #fff;
     font-size: 30px;
     padding-right: 8px;
-    text-align: center;
-    margin-right: 10px;
 }
 
 .sidebar_menu .menu a{
     color: #fff;
-    font-size: 30px;
-    display: flex;
-    text-align: center;
+    font-size: 25px;
     text-decoration: none;
-    margin-right: 10px;
+    text-align: center;
 }
 
 .sidebar_menu .menu li:hover{
