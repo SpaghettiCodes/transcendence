@@ -14,12 +14,12 @@ export default function landing(prop={}) {
 			<div class="text-center mb-5">
 				<h1 class="header-font">APONG US</h1>
 			</div>
-        <div class="video-container">
-            <video autoplay muted loop id="bg-video">
-                <source src="video/among_us.mp4" type="video/mp4">
-                Your browser does not support HTML5 video.
-            </video>
-        </div>
+			<div class="video-container">
+				<video autoplay muted loop id="bg-video">
+					<source src="video/among_us.mp4" type="video/mp4">
+					Your browser does not support HTML5 video.
+				</video>
+			</div>
         <div class="d-flex flex-column align-items-center lowered">
                 <div class="mb-3 mt-3">
 				<form id="login">
