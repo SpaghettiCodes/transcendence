@@ -10,30 +10,36 @@ export default function landing(prop={}) {
 
 	let render_code = () => {
 		return `
-		<div>
-			<form id="login">
-				<div class="input_field">
-					<input type="text" name="username" placeholder="username" value="">
-					<input type="text" name="password" placeholder="password" value="">
-				</div>
-				<div id="submit_button">
-					<input type="submit" id="login" value="Sign In">
-					<input type="submit" id="sign_up" value="Sign Up">
-				</div>
-			</form>
-			<br>
-
-			<div>
-				<p id="42login">Log in via 42</p>
+		<div class="container-fluid d-flex flex-column min-vh-100 justify-content-center align-items-center text-white">
+			<div class="text-center mb-5">
+				<h1 class="header-font">APONG US</h1>
 			</div>
-
-			<h1>Testing</h1>
-			<div>
-				<a href="/game">List Games</a>
-				<br>
-				<a href="/chat">Chat</a>
-			</div>
-		</div>
+        <div class="video-container">
+            <video autoplay muted loop id="bg-video">
+                <source src="video/among_us.mp4" type="video/mp4">
+                Your browser does not support HTML5 video.
+            </video>
+        </div>
+        <div class="d-flex flex-column align-items-center lowered">
+                <div class="mb-3 mt-3">
+				<form id="login">
+					<div class="input_field">
+						<input type="text" name="username" placeholder="username" value="">
+						<input type="text" name="password" placeholder="password" value="">
+					</div>
+					<div id="submit_button">
+						<input type="submit" id="login" value="Sign In">
+						<input type="submit" id="sign_up" value="Sign Up">
+					</div>
+                </div>
+                <div class="mb-3 mt-3">
+                    <button type="submit" class="btn btn-outline-light">Login</button> <button type="submit" class="btn btn-outline-light">Sign up</button>
+                </div>
+				</form>
+                <div class="mb-3 mt-3">
+                    <button type="42-login" class="btn btn-outline-light">Login via 42</button>
+                </div>
+        </div>
 		`
 	}
 

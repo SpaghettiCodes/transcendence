@@ -4,9 +4,10 @@ export default function fourofour(prop={}) {
 
 	let render_code = () => {
 		return `
-		<div>
-			404 not found
-		</div>
+        <div class="content container text-white">
+            <p>404</p>
+            <h1>Impostor(page) not found</h1>
+        </div>
 		`
 	}
 

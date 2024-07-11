@@ -6,20 +6,46 @@ export default function home(prop={}) {
 
 	let render_code = () => {
 		return `
-		<h1>Pong</h1>
-		<div id="playbutton">
-			<p>Play Now</p>
+		<div class="video-container">
+			<video autoplay muted loop id="bg-video">
+				<source src="video/among_us.mp4" type="video/mp4">
+				Your browser does not support HTML5 video.
+			</video>
+		</div>
+		<div class="container-fluid d-flex flex-column min-vh-100 justify-content-center align-items-center text-white">
+			<div class="text-center mb-5">
+				<h1 class="header-font">APONG US</h1>
+			</div>
+
+			<div id="content" class="row text-center">
+				<div class="col-md-4 mb-3" id="pongGame">
+					<button class="ui-btn btn-block"><span>Pong</span></button>
+				</div>
+				<div class="col-md-4 mb-3" id="apongUsGame">
+				<button class="ui-btn btn-block"><span>APong Us</span></button>
+				</div>
+				<div class="col-md-4 mb-3" id="tournament">
+				<button class="ui-btn btn-block"><span>Tournament</span></button>
+				</div>
+			</div> 
 		</div>
 		`
 	}
 
 	let postrender = () => {
-		const	play_game = async () => {
-			alert("Playing the GAME")
+		const	pongGame = async () => {
+			alert("Playing the PONG game")
 		}
 
-		const play_button = document.getElementById("playbutton")
-		play_button.addEventListener('click', play_game)
+		const	ApongUsGame = async () => {
+			alert('Entering APONG US game')
+		}
+
+		const pong_button = document.getElementById("pongGame")
+		pong_button.addEventListener('click', pongGame)
+		
+		const apongUs_button = document.getElementById("apongUsGame")
+		apongUs_button.addEventListener('click', ApongUsGame)
 	}
 
 	let cleanup = () => {
