@@ -6,38 +6,13 @@ export default function sidebar(prop={}) {
 
 	let render_code = () => {
 		return `
+        <h2 style="color: white">Sidebar</h2>
         <input type="checkbox" id="check">
         <div class="btn_one">
           <label for="check">
-            <i class="bi bi-list"></i>
+            <i class="bi bi-list" style="font-size: 2rem; color: white;"></i>
           </label>
         </div>
-		<div class="sidebar_menu">
-			<div class="logo">
-				<a href="/home">Apong Us</a>
-			</div>
-			<div class="btn_two">
-				<label for="check">
-					<i class="bi bi-x"></i>
-				</label>
-			</div>
-			<div class="menu">
-				<ul>
-					<li>
-						<i class="bi bi-house"></i>
-						<a href="/home">Home</a>
-					</li>
-					<li>
-			 			<i class="bi bi-person"></i>
-						<a href="/userprofile">Profile</a>
-					</li>
-					<li>
-						<i class="bi bi-chat"></i>
-						<a href="/chat">Chat</a>
-					</li>
-				</ul>
-			</div>
-		</div>
 		`
 	}
 
