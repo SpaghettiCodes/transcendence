@@ -10,13 +10,17 @@ from datetime import datetime
 from ..base.state import State
 from ..common.states.pause import Pause
 
-class Game:
+class Game(ABC):
     FRAME_RATE = 1/60
 
-    def __init__(self, gameid, hidden=False, expectedPlayers=None) -> None:
+    def __init__(self, gameid, removalFunction, subserver_id = None, hidden=False, expectedPlayers=[]) -> None:
         # initial positions and shit
         self.gameid = gameid
-        self.group_name = f"game-{gameid}"
+
+        if subserver_id:
+            self.group_name = f"game-{subserver_id}-{gameid}"
+        else:
+            self.group_name = f"game-{gameid}"
 
         self.players = []
         self.spectator = []
@@ -24,9 +28,19 @@ class Game:
         self.expectedPlayers = expectedPlayers
         self.hidden = hidden
 
+        self.removalFunction = removalFunction
+
+        self.played = False
         self.begin = False
         self.currentState = None
         self.channel_layer = get_channel_layer()
+
+    def setRemovalFunction(self, newRemovalFunction):
+        self.removalFunction = newRemovalFunction
+
+    async def removeFromServer(self):
+        await self.stop()
+        await self.removalFunction()
 
     def emptyLobby(self):
         return not len(self.players)
@@ -44,7 +58,9 @@ class Game:
         return {
             "game_id": self.gameid,
             "player_count": len(self.players),
-            "spectator_count": len(self.spectator)
+            "spectator_count": len(self.spectator),
+            "begin": self.begin,
+            "players": self.expectedPlayers
         }
 
     async def playerLeft(self, username):
@@ -57,6 +73,7 @@ class Game:
             return
 
         self.players.remove(username)
+
         await self.channel_layer.group_send(self.gameid, {
             "type": "message",
             "text": json.dumps({
@@ -65,9 +82,8 @@ class Game:
             })
         })
 
-        if self.has_begin():
-            # player has left, pause the game
-            self.currentState.setforcedTransition(Pause(self.currentState))
+        if self.emptyLobby():
+            await self.removeFromServer()
 
     async def playerJoin(self, username):
         if not self.has_begin():
@@ -93,15 +109,6 @@ class Game:
                         "status": "wait"
                     }
                 })
-        else:
-            if self.canStart():
-                if (not isinstance(self.currentState, Pause)):
-                    print("Thats not suppose to happen, fix your code")
-                    print("Details:")
-                    print(self.currentState)
-                    print(type(self.currentState))
-                    return
-                self.currentState.unpause()
 
         return (True, "nothing to see here, move along")
 
@@ -111,6 +118,7 @@ class Game:
 
     async def start(self):
         if not self.begin:
+            self.played = True
             await self.channel_layer.group_send(self.group_name, {
                 "type": "message",
                 "text": {
@@ -128,11 +136,19 @@ class Game:
             asyncio.gather(self.loop_start)
 
     @abstractmethod
+    def uploadScores(self):
+        pass
+
+    @abstractmethod
     def canStart(self):
         pass
 
     @abstractmethod
     def command(self, json_info):
+        pass
+
+    @abstractmethod
+    def getDetails(self):
         pass
 
     @abstractmethod
@@ -160,7 +176,7 @@ class Game:
             elif self.currentState.stateEnded():
                 self.currentState = self.currentState.nextState()
             else:
-                self.currentState.runState()
+                await self.currentState.runState()
                 data = self.currentState.getData()
 
                 await self.channel_layer.group_send(self.group_name, {

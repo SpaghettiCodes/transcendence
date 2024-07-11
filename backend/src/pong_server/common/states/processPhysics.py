@@ -1,13 +1,13 @@
 from ...base.state import State
-from ...pong.pong import PongGame
 from .score import Score
+from .pause import Pause
 
 class ProcessPhysics(State):
-    def __init__(self, gameInstance: PongGame) -> None:
-        super().__init__()
-        self.gameInstance = gameInstance
-    
-    def runState(self):
+    async def runState(self):
+        if (not self.gameInstance.canStart()):
+            self.setforcedTransition(Pause(self, self.gameInstance))
+            return
+
         frameRate = self.gameInstance.FRAME_RATE
         self.gameInstance.field.renderFrame(frameRate)
         scored, whoScored = self.gameInstance.field.checkGoal()

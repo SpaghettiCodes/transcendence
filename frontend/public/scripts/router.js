@@ -12,17 +12,20 @@ import home from "./pages/home.js"
 import match from "./pages/match.js"
 import game from "./pages/game.js"
 import chat from "./pages/chat.js"
+import tournamentList from "./pages/tournamentList.js"
+import tournament from "./pages/tournament.js"
 
 const routes = {
 	'/': landing,
 	'/error': fourofour,
 	'/ftlogin': ftlogin,
 	'/home': home,
-	'/match': match,
+	'/match': game,
 	'/match/<game_id>': match,
-	'/match/<test>/<test2>': match,
-	'/games': game,
-	'/chat': chat
+	'/chat': chat,
+	'/tournament': tournamentList,
+	'/tournament/<tournament_id>': tournament,
+	'/tournament/<tournament_id>/match/<game_id>': match,
 }
 
 let clean_up_function = () => {}
@@ -35,7 +38,6 @@ const get_renderer = (uri, prop) => {
 	// no direct match, time to crY
 	const	uri_chunks = uri.slice(1).split("/")
 	const	argument_count = uri_chunks.length - 1
-	console.log(uri_chunks)
 
 	// first one gotta match someone
 	const regex = new RegExp("^\/" + uri_chunks[0])
@@ -54,16 +56,47 @@ const get_renderer = (uri, prop) => {
 	if (!with_arguments.length)
 		return routes["/error"]
 
-	// it should only have 1 that fits
-	// it would be really concerning if there is more
-	// oh wait there may be more eh i worry about that tmr morning
-	const found_uri = with_arguments[0]
-	const arg_names = found_uri.slice(1).split("/").slice(1).map((value) => value.slice(1, value.length - 1))
+	let found_uri = undefined
+	for (uri of with_arguments) {
+		const segments = uri.slice(1).split("/")
+
+		segments.forEach((segment, index, array) => {
+			if (segment.match(/\<.*\>/)) {
+				// is a variable
+				array[index] = true
+			} else {
+				// not a variable, must be direct match
+				let regex = new RegExp("^" + uri_chunks[index] + "$")
+				array[index] = Boolean(segment.match(regex))
+			}
+		})
+
+		if (segments.every(v => v === true)) {
+			found_uri = uri
+			break
+		}
+	}
+
+	if (found_uri === undefined)
+		return routes["/error"]
+
+	const arg_names = found_uri.slice(1).split("/").slice(1)
 
 	prop["arguments"] = {}
+
 	arg_names.forEach((value, index) => {
-		prop["arguments"][value] = uri_chunks[index + 1]
+		if (value.match(/\<.*\>/)) {
+			// is a variable
+			value = value.slice(1, value.length - 1)
+			prop["arguments"][value] = uri_chunks[index + 1]
+		} else {
+			// direct
+			prop["arguments"][value] = true
+		}
 	})
+
+	console.log("Bringing you to " + found_uri)
+	console.log("With the props " + JSON.stringify(prop))
 
 	return routes[with_arguments[0]]
 }

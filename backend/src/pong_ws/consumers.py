@@ -9,22 +9,31 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
     # called when client connects to websocket
     async def connect(self):
         self.gameid = self.scope['url_route']['kwargs']['pongid']
+        self.subserverid = self.scope['url_route']['kwargs'].get('tournamentid')
+
+        if self.subserverid:
+            self.groupname = f"game-{self.subserverid}-{self.gameid}"
+        else:
+            self.groupname = f"game-{self.gameid}"
+
         self.player_name = None
         self.authorized = False
+        self.spectate = False
 
         await self.accept()
         await self.channel_layer.group_add(
-            f"game-{self.gameid}", self.channel_name
+            self.groupname, self.channel_name
         )
 
     # called when websocket connection closed
     async def disconnect(self, code):
-        if self.gameid:
-            await PongServer.player_left(self.player_name, self.gameid)
-            await self.channel_layer.group_discard(
-                f"game-{self.gameid}", self.channel_name
-            )
-        pass
+        if self.authorized:
+            await PongServer.player_left(self.player_name, self.gameid, self.subserverid)
+        if self.spectate:
+            print("kicking spectator off...")
+        await self.channel_layer.group_discard(
+            self.groupname, self.channel_name
+        )
 
     # called when server recieves a message from the client
     async def receive_json(self, content):
@@ -32,16 +41,14 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
             command = content['command']
         else:
             if self.authorized:
-                return PongServer.pass_info(content, self.gameid)
+                await PongServer.pass_info(content, self.gameid)
             return
 
         match command:
             case 'join':
-                player_name = content['username']
+                self.player_name = content['username']
 
-                self.player_name = player_name
-
-                result = await PongServer.join_player(self.player_name, self.gameid)
+                result = await PongServer.join_player(self.player_name, self.gameid, self.subserverid)
                 if not result[0]:
                     await self.send_json({
                         'status': 'error',
@@ -52,11 +59,9 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
                 self.authorized = True
             case 'watch':
-                player_name = content['username']
+                self.player_name = content['username']
 
-                self.player_name = player_name
-
-                result = await PongServer.new_spectator(player_name, self.gameid)
+                result = await PongServer.new_spectator(self.player_name, self.gameid, self.subserverid)
                 if not result[0]:
                     await self.send_json({
                         'status': 'error',
@@ -64,7 +69,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
                     })
                     return
 
-                self.authorized = True
+                self.spectate = True
             case _:
                 await self.send_json({
                     'status': 'error',
@@ -73,7 +78,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
     async def message(self, event):
         try:
-            if (self.authorized):
+            if (self.authorized or self.spectate):
                 await self.send_json(event["text"])
         except Exception as e:
             print(e.args[0])

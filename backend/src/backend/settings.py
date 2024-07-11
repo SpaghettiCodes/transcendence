@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'pong_ws',
     'match_list_ws',
     'chat_ws',
+    'tournament_ws',
 ]
 
 MIDDLEWARE = [

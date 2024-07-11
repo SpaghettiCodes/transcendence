@@ -1,20 +1,30 @@
-from .scoreFrame import scoreFrame
-from .ball import Ball
-from .paddle import Paddle
+from ..common.components.scoreFrame import scoreFrame
+from ..common.components.ball import Ball
+from ..common.components.paddle import Paddle
+
 import random
+import math
 
 class GameFrame:
-    def __init__(self, width=750, height=350) -> None:
+    def __init__(
+            self,
+            width=750,
+            height=350
+        ) -> None:
         self.width = width
         self.height = height
-        self.ball = Ball()
+
+        self.ballRadius = 7
+        self.ballSpeed = 350
+        self.ball = Ball(radius=self.ballRadius, speed=self.ballSpeed)
 
         self.paddleWidth = 10
         self.paddleHeight = 100
         self.paddleOffset = 20
+        self.paddleSpeed = 450
 
-        self.attacker = Paddle(width=self.paddleWidth, height=self.paddleHeight)
-        self.defender = Paddle(width=self.paddleWidth, height=self.paddleHeight)
+        self.attacker = Paddle(width=self.paddleWidth, height=self.paddleHeight, speed=self.paddleSpeed)
+        self.defender = Paddle(width=self.paddleWidth, height=self.paddleHeight, speed=self.paddleSpeed)
 
         self.goalWidth = 10
 
@@ -26,6 +36,33 @@ class GameFrame:
         self.attackerScore = 0
         self.defenderScore = 0
 
+    def getDetails(self):
+        return {
+            "width": self.width,
+            "height": self.height,
+            "ball": {
+                "radius": self.ballRadius
+            },
+            "paddle": {
+                "width": self.paddleWidth,
+                "height": self.paddleHeight
+            },
+        }
+
+    def getWinnerLoser(self):
+        if self.attackerScore > self.defenderScore:
+            return (self.attackerId, self.defenderId)
+        return (self.defenderId, self.attackerId)
+
+    def getMaxScore(self):
+        return max(self.attackerScore, self.defenderScore)
+
+    def getJsonScore(self):
+        return {
+            "attacker": self.attackerScore,
+            "defender": self.defenderScore
+        }
+
     def get_dimensions(self):
         return (self.width, self.height)
 
@@ -36,10 +73,12 @@ class GameFrame:
         return self.defender
 
     def renderFrame(self, delta):
-        self.attacker.move_Component(delta, 150)
-        self.defender.move_Component(delta, 150)
-        self.ball.move_Component(delta, 200)
-        self.ball_logic()
+        self.attacker.move_Component(delta)
+        self.defender.move_Component(delta,)
+        self.ball.move_Component(delta)
+        self.ball_collided_with_wall(self.ball)
+        self.attacker.collided_with_ball(self.ball)
+        self.defender.collided_with_ball(self.ball)
         self.paddle_logic()
 
     def checkGoal(self):
@@ -50,31 +89,26 @@ class GameFrame:
             self.attackerScore += 1
             return (True, self.attackerId)
         return (False, "No one scored")
+    
+    def ball_collided_with_wall(self, ball):
+        ball_cord = ball.get_coord()
+        ball_radius = ball.get_radius()
 
-    def ball_logic(self):
-        ball_cord = self.ball.get_coord()
-        ball_radius = self.ball.get_radius()
-
-        # wall collision
-        # for the width collision, we need to check points also
         if (ball_cord[0] - ball_radius < 0 or 
             ball_cord[0] + ball_radius > self.width):
             if (ball_cord[0] - ball_radius < 0):
-                self.ball.set_x(ball_radius)
+                ball.set_x(ball_radius)
             else:
-                self.ball.set_x(self.width - ball_radius)
-            self.ball.reverse_x()
+                ball.set_x(self.width - ball_radius)
+            ball.reverse_x()
 
         elif (ball_cord[1] - ball_radius < 0 or 
               ball_cord[1] + ball_radius > self.height):
             if (ball_cord[1] - ball_radius < 0):
-                self.ball.set_y(ball_radius)
+                ball.set_y(ball_radius)
             else:
-                self.ball.set_y(self.height - ball_radius)
-            self.ball.reverse_y()
-
-        self.attacker.collided_with_ball(self.ball)
-        self.defender.collided_with_ball(self.ball)
+                ball.set_y(self.height - ball_radius)
+            ball.reverse_y()
 
     def paddle_logic(self):
         paddles = [self.attacker, self.defender]
@@ -89,20 +123,21 @@ class GameFrame:
                 paddle.set_coord(x_value, y_value)
 
     def getFrame(self):
-        attacker_cord = self.attacker.get_coord()
-        defender_cord = self.defender.get_coord()
-        ball_cord = self.ball.get_coord()
+        attacker_cord = self.attacker.get_json_coord()
+        defender_cord = self.defender.get_json_coord()
+        ball_cord = self.ball.get_json_coord()
 
         return {
             "status": "update",
-            "ballx": ball_cord[0],
-            "bally": ball_cord[1],
-            "attackerid": self.attackerId,
-            "attackerx": attacker_cord[0],
-            "attackery": attacker_cord[1],
-            "defenderid": self.defenderId,
-            "defenderx": defender_cord[0],
-            "defendery": defender_cord[1]
+            "balls": [ball_cord],
+            "attacker": {
+                "id": self.attackerId,
+                **attacker_cord
+            },
+            "defender": {
+                "id": self.defenderId,
+                **defender_cord
+            }
         }
 
     def initialization(self):
@@ -110,12 +145,7 @@ class GameFrame:
         self.defender.set_coord(self.width - self.paddleOffset - self.paddleWidth, (self.height / 2) - (self.paddleHeight / 2))
 
         self.ball.set_coord(self.width / 2, self.height / 2)
-
-        x_rand, y_rand = (0, 0)
-        while ((not x_rand) and (not y_rand)):
-            x_rand = (random.random() * 2) - 1
-            y_rand = (random.random() * 2) - 1
-        self.ball.set_velocity(x_rand, y_rand)
+        self.ball.random_velocity()
 
     def setPlayers(self, attackerId, defenderId):
         self.attackerId = attackerId

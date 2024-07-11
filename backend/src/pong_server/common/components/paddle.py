@@ -1,15 +1,18 @@
 from ...base.component import Component
+from .ball import Ball
 
 class Paddle(Component):
-    def __init__(self, initial_x=0, initial_y=0, width=10, height=100) -> None:
-        super().__init__(initial_x, initial_y)
+    def __init__(self, initial_x=0, initial_y=0, width=10, height=100, speed=10) -> None:
+        super().__init__(initial_x, initial_y, speed)
+
         self.width = width
         self.height = height
+        self.paddleEffect = 0.5
 
     def get_height(self):
         return self.height
 
-    def collided_with_ball(self, ball):
+    def collided_with_ball(self, ball: Ball):
         ball_coordinate = ball.get_coord()
         ball_radius = ball.get_radius()
         ball_x = ball_coordinate[0]
@@ -40,3 +43,8 @@ class Paddle(Component):
                 elif (ball_x > self.x + self.width):
                     new_x = self.x + self.width + ball_radius
             ball.set_coord(new_x, new_y)
+
+            x_velo, y_velo = self.get_velocity()
+            ball_x_velo, ball_y_velo = ball.get_velocity()
+
+            ball.set_velocity(ball_x_velo + (x_velo * self.paddleEffect), ball_y_velo + (y_velo * self.paddleEffect))

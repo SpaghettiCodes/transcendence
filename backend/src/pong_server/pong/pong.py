@@ -1,6 +1,6 @@
 from ..common.components.ball import Ball
 from ..common.components.paddle import Paddle
-from ..common.components.gameframe import GameFrame
+from .gameframe import GameFrame
 
 import asyncio
 
@@ -10,13 +10,21 @@ import random
 from ..base.game import Game
 
 class PongGame(Game):
-    def __init__(self, gameid, hidden=False, expectedPlayers=[]) -> None:
-        super().__init__(gameid, hidden, expectedPlayers)
+
+    def __init__(self, gameid, removalFunction, subserver_id=None, hidden=False, expectedPlayers=...) -> None:
+        super().__init__(gameid, removalFunction, subserver_id, hidden, expectedPlayers)
+
+        self.type = "pong"
 
         self.field = GameFrame()
 
+        self.maxScore = 1
+
         self.attackerid = None
         self.defenderid = None
+
+    def getMaxScore(self):
+        return self.maxScore
 
     def canStart(self):
         # to start the game, you must have 2 players
@@ -33,6 +41,40 @@ class PongGame(Game):
         self.defenderid = self.players[1]
 
         self.resetField()
+
+    def getDetails(self):
+        return {
+            "players": self.players,
+            "spectators": self.spectator,
+            "started": self.begin,
+            "sides": {
+                "attacker": self.attackerid,
+                "defender": self.defenderid
+            },
+            "score": self.field.getJsonScore(),
+            "settings": self.field.getDetails()
+        }
+
+    def getResults(self):
+        if not self.played:
+            return {
+                "id": self.gameid,
+                "played": self.played,
+                "reason": "Welp, gotta save why now"
+            }
+        else:
+            winner, loser = self.field.getWinnerLoser()
+            return {
+                "id": self.gameid,
+                "played": self.played,
+                "sides": {
+                    "attacker": self.attackerid,
+                    "defender": self.defenderid
+                },
+                "score": self.field.getJsonScore(),
+                "winner": winner,
+                "loser": loser
+            }
 
     def resetField(self):
         self.field.initialization()
@@ -60,3 +102,8 @@ class PongGame(Game):
     def initialState(self):
         from ..common.states.processPhysics import ProcessPhysics
         return ProcessPhysics(self)
+
+    def uploadScores(self):
+        if not self.played:
+            return
+        print("Uploading Scores to Database...")

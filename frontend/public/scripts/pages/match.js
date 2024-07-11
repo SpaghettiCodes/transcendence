@@ -2,16 +2,18 @@ import { redirect } from "../router.js"
 
 export default function match(prop={}) {
 	let game_id = (prop["arguments"]) ? (prop["arguments"]["game_id"]) : undefined
+	let tournament_id = prop["arguments"]["tournament_id"]
+
+	let apiURI = (tournament_id) ? `tournament/${tournament_id}/game/${game_id}` : `game/${game_id}`
+
 	let player_id = localStorage.getItem("username") || "default"
-	let server_up = false
 	let pongSocket = undefined
-	let waitingInterval = undefined
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
 	let prerender = () => {
 		if (game_id === undefined)
 		{
-			redirect("/games")
+			redirect("/match")
 			return false
 		}
 		return true
@@ -24,6 +26,8 @@ export default function match(prop={}) {
 			<div>
 				<h1>Game ID: ${game_id || "nope nothing"}</h1>
 			</div>
+			<div id="details">Loading...</div>
+			<div id="score"></div>
 			<div id="canvasDiv">
 			<canvas id="gameWindow"></canvas>
 			</div>
@@ -35,6 +39,57 @@ export default function match(prop={}) {
 	let postrender = () => {
 		const canvas = document.getElementById("gameWindow")
 		const ctx = canvas.getContext("2d")
+
+		let waitingInterval = undefined	
+
+		let ballRadius = undefined
+		let paddleWidth = undefined
+		let paddleHeight = undefined
+		let ventWidth = undefined
+
+		let attacker = undefined
+		let defender = undefined
+
+		let scores = {}
+
+		const detailDiv = document.getElementById("details")
+		const scoreDiv = document.getElementById("score")
+
+		const getGameData = () => {
+			fetch (
+				`http://localhost:8000/api/${apiURI}`,
+				{
+					method: "GET",
+				}
+			).then( (value) => {
+				detailDiv.innerHTML = ''
+				return value.json()
+			}).then( (data) => {
+				if (data["started"])
+				{
+					attacker = data["sides"]["attacker"]
+					defender = data["sides"]["defender"]
+					detailDiv.innerHTML = `${attacker} vs ${defender}`
+					scores[attacker] = data["score"]["attacker"]
+					scores[defender] = data["score"]["defender"]
+
+					rerenderScoreDiv()
+				}
+
+				let settings = data["settings"]
+
+				ballRadius = settings["ball"]["radius"],
+				paddleWidth = settings["paddle"]["width"],
+				paddleHeight = settings["paddle"]["height"]
+
+				if (settings["vent"])
+					ventWidth = settings["vent"]["width"]
+			})
+		}
+
+		const rerenderScoreDiv = () => {
+			scoreDiv.innerHTML = `${scores[attacker]} - ${scores[defender]}`
+		}
 
 		// why does my ball looks so blury
 		// this is cuz of the devicePixelRatio property
@@ -70,7 +125,6 @@ export default function match(prop={}) {
 				ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 				ctx.fillText(text , 115, 25, ctx.canvas.width)
 			}, 100)
-			console.log(waitingInterval)
 		}
 
 		const drawScore = (scorer) => {
@@ -93,25 +147,42 @@ export default function match(prop={}) {
 		let drawStage = (data) => {
 			// clear canvas
 			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-			let { ballx, bally, attackerx, attackery, defenderx, defendery } = data
+			let { balls, vents, attacker, defender } = data
 
-			drawBall(ballx, bally)
-			drawPaddle(attackerx, attackery, "#00FF80")
-			drawPaddle(defenderx, defendery, "#D99FFF")
+			balls.forEach(ball => {
+				drawBall(ball["x"], ball["y"], ballRadius)
+			});
+			drawPaddle(attacker["x"], attacker["y"], paddleWidth, paddleHeight, "#00FF80")
+			drawPaddle(defender["x"], defender["y"], paddleWidth, paddleHeight, "#D99FFF")
+
+			// temp, will make proper check, eventually yes
+			if (vents) {
+				vents.forEach(vent => {
+					drawVents(vent["x"], vent["y"], ventWidth)
+				})
+			}
 		}
 
-		let drawBall = (x, y) => {
+		let drawVents = (x, y, width, color="#707070") => {
+			ctx.beginPath()
+			ctx.rect(x, y, width, 5)
+			ctx.fillStyle = color
+			ctx.fill()
+			ctx.closePath()
+		}
+
+		let drawBall = (x, y, radius) => {
 			ctx.fillStyle = "#000000"
 			ctx.beginPath();
-			ctx.arc(x, y, 7, 0, Math.PI * 2);
+			ctx.arc(x, y, radius, 0, Math.PI * 2);
 			ctx.fill()
 			ctx.closePath() 
 		}
 
 		// the coordinates of the paddle is at the upper left corner
-		let drawPaddle = (x, y, color="#000000") => {
+		let drawPaddle = (x, y, width, height, color="#000000") => {
 			ctx.beginPath()
-			ctx.rect(x, y, 10, 100)
+			ctx.rect(x, y, width, height)
 			ctx.fillStyle = color
 			ctx.fill()
 			ctx.closePath()
@@ -143,72 +214,103 @@ export default function match(prop={}) {
 			drawStage(data)
 		}
 
-		pongSocket = new WebSocket(`ws://localhost:8000/pong/${game_id}`)
+		const updateScore = (scorer) => {
+			++scores[scorer]
+			rerenderScoreDiv()
+		}
+
 		const sendMessage = (data) => {
 			pongSocket.send(JSON.stringify(data))
 		}
 
-		pongSocket.onopen = function(e) {
-			sendMessage({
-				'command': 'join',
-				'username': player_id, // fuck gotta figure out how to do this now wohoo
-			})
-			server_up = true
+		const drawEnd = () => {
+			ctx.fillStyle = "#000000"
+			ctx.font = '20px sans-serif'
+			ctx.textBaseline = "middle"
+			ctx.textAlign = "center"
+
+			let text = "Game ended, and i have no idea what do now"
+			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+			ctx.fillText(text , 115, 25, ctx.canvas.width)
 		}
 
-		pongSocket.onerror = function(e) {
-			console.log("player left prematurely")
-		}
-
-		pongSocket.onmessage = function(e) {
-			const data = JSON.parse(e.data)
-			const status = data["status"]
-
-			switch (status)
-			{
-				case "update":
-					processFrame(data)
-					break
-				case "joined":
-					// do something here
-					break
-				case "start":
-					console.log("starting...")
-					if (waitingInterval)
-						clearInterval(waitingInterval)
-					break
-				case "wait":
-					drawWaitingPlayer()
-					break
-				case "error":
-					let message = data["message"]
-					showError(message)
-					break
-				case "pause":
-					drawGamePaused()
-					break
-				case "countdown":
-					drawNumber(data["value"])
-					break
-				case "score":
-					drawScore(data["scorer"])
-					break
-				default:
-					console.log("unrecognizable message")
-					break
+		const connectSocket = () => {
+			pongSocket = new WebSocket(`ws://localhost:8000/${apiURI}`)
+	
+			pongSocket.onopen = function(e) {
+				sendMessage({
+					'command': 'join',
+					'username': player_id, // fuck gotta figure out how to do this now wohoo
+				})
 			}
-		}
-
-		pongSocket.onclose = function(e) {
-			console.error('Chat socket close unexpectedly');
-		}
-
-		pongSocket.onerror = (e) => {
-			console.log("bro left")
+	
+			pongSocket.onerror = function(e) {
+				console.log("player left prematurely")
+			}
+	
+			pongSocket.onmessage = function(e) {
+				const data = JSON.parse(e.data)
+				const status = data["status"]
+	
+				switch (status)
+				{
+					case "update":
+						processFrame(data)
+						break
+					case "joined":
+						// do something here
+						break
+					case "start":
+						console.log("starting...")
+						if (waitingInterval)
+							clearInterval(waitingInterval)
+						getGameData()
+						break
+					case "wait":
+						drawWaitingPlayer()
+						break
+					case "error":
+						let message = data["message"]
+						showError(message)
+						break
+					case "pause":
+						drawGamePaused()
+						break
+					case "countdown":
+						drawNumber(data["value"])
+						break
+					case "score":
+						drawScore(data["scorer"])
+						if (data["update"])
+							updateScore(data["scorer"])
+						break
+					case "end":
+						drawEnd()
+						break
+					case "redirect":
+						history.back()
+						// redirect("/match")
+						break
+					default:
+						console.log("unrecognizable message")
+						break
+				}
+			}
+	
+			pongSocket.onclose = function(e) {
+				console.error('Chat socket close unexpectedly');
+			}
+	
+			pongSocket.onerror = (e) => {
+				console.log("bro left")
+			}	
 		}
 
 		addEventListener("resize", (event) => {recalibratePixels()})
 		recalibratePixels()
+
+		getGameData()
+		connectSocket()
 
 		document.onkeydown = (e) => {
 			e = e || window.event

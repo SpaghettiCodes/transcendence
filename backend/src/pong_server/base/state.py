@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
 
 class State(ABC):
-    def __init__(self) -> None:
+    def __init__(self, gameInstance) -> None:
+        self.gameInstance = gameInstance
         self.forcedTransition = False
         self.forcedNextTransition = None
 
     @abstractmethod
-    def runState(self):
+    async def runState(self):
         pass
 
     @abstractmethod

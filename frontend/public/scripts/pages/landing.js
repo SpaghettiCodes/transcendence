@@ -29,7 +29,7 @@ export default function landing(prop={}) {
 
 			<h1>Testing</h1>
 			<div>
-				<a href="/games">List Games</a>
+				<a href="/match">List Games</a>
 				<br>
 				<a href="/chat">Chat</a>
 			</div>

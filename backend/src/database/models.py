@@ -8,6 +8,7 @@ class Player(models.Model):
         return self.username
 
 class Match(models.Model):
+    matchid = models.BigAutoField(primary_key=True)
     attacker = models.ForeignKey(
         Player,
         on_delete=models.CASCADE,

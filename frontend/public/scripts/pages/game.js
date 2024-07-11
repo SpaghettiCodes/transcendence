@@ -15,6 +15,7 @@ export default function game(prop={}) {
 		return `
 			<div>
 				<button id="newgame">New Game</button>
+				<button id="newapongame">New Apong Game</button>
 				<button id="matchmake">Find a Match</button>
 				<button id="refresh">Refresh List</button>
 				<input id="player_id" type="text" placeholder="this test, expect removal" value="">
@@ -35,6 +36,7 @@ export default function game(prop={}) {
 		let room_list = document.getElementById("room_container")
 		const refresh_button = document.getElementById("refresh")
 		const new_game = document.getElementById("newgame")
+		const new_apong = document.getElementById("newapongame")
 		const save_button = document.getElementById("save")
 		const matchmake_button = document.getElementById("matchmake")
 		const matchSocket = new WebSocket("ws://localhost:8000/match")
@@ -44,7 +46,6 @@ export default function game(prop={}) {
 		}
 
 		matchSocket.onerror = function(e) {
-			console.log(e)
 			console.error("Mm yes socket failed")
 		}
 
@@ -62,9 +63,15 @@ export default function game(prop={}) {
 			try
 			{
 				response = await fetch(
-					"http://localhost:8000/api/matchmaking/create",
+					"http://localhost:8000/api/game",
 					{
-						method: "GET",
+						method: "POST",
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							"type": "pong"
+						})
 					}
 				)
 
@@ -78,6 +85,40 @@ export default function game(prop={}) {
 				setTimeout(() => {
 					new_game.innerHTML = "New Game"
 					new_game.disabled = false
+				}, 5000)
+			}
+		}
+
+		const create_new_apongame = async () => {
+			new_apong.innerHTML = "Creating..."
+			new_apong.disabled = true
+
+			let response
+			try
+			{
+				response = await fetch(
+					"http://localhost:8000/api/game",
+					{
+						method: "POST",
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							"type": "apong"
+						})
+					}
+				)
+
+				let data = await response.json()
+				let game_code = data["game_id"]
+				redirect(`/match/${game_code}`)
+			}
+			catch
+			{
+				new_apong.innerHTML = "Server Is Down"
+				setTimeout(() => {
+					new_apong.innerHTML = "New Game"
+					new_apong.disabled = false
 				}, 5000)
 			}
 		}
@@ -129,11 +170,14 @@ export default function game(prop={}) {
 			try
 			{
 				response = await fetch(
-					"http://localhost:8000/api/matchmaking/match",
+					"http://localhost:8000/api/game",
 					{
 						method: "GET",
 					}
 				)
+
+				if (!response.ok)
+					throw "panic"
 
 				let data = await response.json()
 				let game_code = data["game_id"]
@@ -153,6 +197,7 @@ export default function game(prop={}) {
 		new_game.addEventListener("click", create_new_game)
 		save_button.addEventListener("click", set_username)
 		matchmake_button.addEventListener("click", random_matchmaking)
+		new_apong.addEventListener("click", create_new_apongame)
 	}
 
 	let cleanup = () => {
