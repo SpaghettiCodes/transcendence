@@ -12,6 +12,8 @@ import home from "./pages/home.js"
 import match from "./pages/match.js"
 import game from "./pages/game.js"
 import chat from "./pages/chat.js"
+import profile from "./pages/profile.js"
+import tournament from "./pages/tournament.js"
 
 const routes = {
 	'/': landing,
@@ -22,7 +24,9 @@ const routes = {
 	'/match/<game_id>': match,
 	'/match/<test>/<test2>': match,
 	'/games': game,
-	'/chat': chat
+	'/chat': chat,
+	'/profile': profile,
+	'/tournament': tournament
 }
 
 let clean_up_function = () => {}

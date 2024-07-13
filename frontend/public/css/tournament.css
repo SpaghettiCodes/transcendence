@@ -1,0 +1,146 @@
+.video-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+video {
+    min-width: 100%;
+    min-height: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.tournament.body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+.title {
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+}
+.tournament {
+    position: relative;
+    width: 80%;
+    max-width: 800px;
+    height: 500px;
+    margin: auto;
+}
+.box {
+    width: 100px;
+    height: 100px;
+    background-color: rgba(128, 128, 128, 1);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    border-radius: 5px;
+}
+.corner-top-left {
+    top: 0;
+    left: 0;
+}
+.corner-top-right {
+    top: 0;
+    right: 0;
+}
+.corner-bottom-left {
+    bottom: 0;
+    left: 0;
+}
+.corner-bottom-right {
+    bottom: 0;
+    right: 0;
+}
+.final-left {
+    top: 50%;
+    left: 25%;
+    transform: translateY(-50%);
+}
+.final-right {
+    top: 50%;
+    right: 25%;
+    transform: translateY(-50%);
+}
+.center {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.line {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 1);
+    z-index: -1;
+}
+.line.horizontal {
+    height: 4px;
+    width: 50%;
+}
+.line.vertical {
+    width: 4px;
+    height: 40%;
+}
+.line.top-left-to-bottom-left {
+    top: 2cm;
+    left: 5.5%;
+    height: 80%;
+    width: 4px;
+}
+.line.top-right-to-bottom-right {
+    top: 2cm;
+    right: 5.5%;
+    height: 80%;
+    width: 4px;
+}
+.line.bottom-left-to-final-left {
+    top: 50%;
+    right: 2cm;
+    left: 3cm;
+    width: 50%;
+    height: 4px;
+}
+.line.bottom-right-to-final-right {
+    top: 50%;
+    right: 6%;
+    width: 25%;
+    height: 4px;
+}
+.line.final-left-to-center {
+    top: 50%;
+    left: 6%;
+    width: 20%;
+    height: 4px;
+}
+.line.final-right-to-center {
+    top: 50%;
+    height: 4px;
+}
+.middle-left {
+    top: 42%;
+    left: 0;
+}
+.middle-right {
+    top: 42%;
+    right: 0;
+}
+.center-up {
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.line.center-to-winner {
+    top: 2cm;
+    left: 50%;
+    height: 40%;
+    width: 4px;
+}
