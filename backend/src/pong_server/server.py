@@ -1,9 +1,9 @@
-# surely i can use random
-import random
 from .base.game import Game
 from .pong.pong import PongGame
 from .apongus.apongus import APongUsGame
 from channels.layers import get_channel_layer
+from asgiref.sync import sync_to_async
+from database.models import Match
 
 class PongServer:
     queue = []
@@ -17,9 +17,6 @@ class PongServer:
     }
 
     channel_layer = get_channel_layer()
-
-    # peak lazyness
-    ran_letter = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
     @classmethod
     def getDetails(cls, game_id, subserver_id=None):
@@ -91,6 +88,18 @@ class PongServer:
         return res
 
     @classmethod
+    async def getNewServerID(cls):
+        # go and fuck yourself
+        # server_id = "".join(random.choices(cls.ran_letter, k=8))
+        # while server_id in subserver.keys():
+        #     server_id = "".join(random.choices(cls.ran_letter, k=8))
+
+        newId = Match()
+        await newId.asave()
+
+        return newId.matchid
+
+    @classmethod
     async def new_game(
         cls, 
         removalFunction=None, 
@@ -103,9 +112,7 @@ class PongServer:
             cls.servers[subserver_id] = dict()
         subserver = cls.servers[subserver_id]
 
-        server_id = "".join(random.choices(cls.ran_letter, k=8))
-        while server_id in subserver.keys():
-            server_id = "".join(random.choices(cls.ran_letter, k=8))
+        server_id = await cls.getNewServerID()
 
         if removalFunction is None:
             removalFunction = cls.createRemovalFunction(server_id, subserver_id)

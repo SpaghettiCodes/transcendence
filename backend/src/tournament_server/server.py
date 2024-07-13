@@ -164,20 +164,10 @@ class TournamentServer:
 
     async def endMatch(self):
         print("One round of the tournament ended")
-        # winner gets to play again, yeepe!
-        self.currentPlayers = []
-        for round in self.currentResults:
-            self.currentPlayers.append(round["winner"])
-
-        # loser gets to cry in a corner
-        self.expectedPlayers = [player for player in self.currentPlayers]
 
         # save the result
         self.completeResults.append(self.currentResults)
-        print(self.completeResults)
-
         self.reset()
-        await self.notify_ToRefresh()
 
     async def matchUp(self) -> None:
         random.shuffle(self.currentPlayers)
@@ -199,15 +189,30 @@ class TournamentServer:
 
     def collectData(self, gameInstance: PongGame):
         async def function():
-            print("Game ended, collecting data...")
-            self.currentResults.append(gameInstance.getResults())
             gameId = gameInstance.gameid
             subserverId = self.subserverId
             # remove game instance from Server
             await PongServer.createRemovalFunction(gameId, subserverId)()
+
+            print("Game ended, collecting data...")
+            results = gameInstance.getResults()
+            self.currentResults.append(results)
+
+            # collect data
+            # i may do this differently
+
+            # loser is kicked out of the tournament
+            loser = results["loser"]
+            if loser in self.currentPlayers:
+                self.currentPlayers.remove(loser)
+            if loser in self.expectedPlayers:
+                self.expectedPlayers.remove(loser)
+
             self.matchesPlayed += 1
             if (self.matchesPlayed == self.matchesCount):
                 await self.endMatch()
+
+            await self.notify_ToRefresh()
         return function
 
     async def refresh_PlayerList(self) -> None:

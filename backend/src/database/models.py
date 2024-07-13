@@ -9,6 +9,15 @@ class Player(models.Model):
 
 class Match(models.Model):
     matchid = models.BigAutoField(primary_key=True)
+
+    status = models.CharField(
+        choices=(
+            ("waiting", "Waiting"),
+            ("done", "Done")
+        ),
+        initial='waiting'
+    )
+
     attacker = models.ForeignKey(
         Player,
         on_delete=models.CASCADE,

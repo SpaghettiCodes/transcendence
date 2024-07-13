@@ -41,7 +41,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
             command = content['command']
         else:
             if self.authorized:
-                await PongServer.pass_info(content, self.gameid)
+                PongServer.pass_info(content, self.gameid, self.subserverid)
             return
 
         match command:

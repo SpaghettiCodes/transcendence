@@ -152,6 +152,41 @@ export default function tournament(prop={}) {
 			}
 		}
 
+		const loadPlayedlist = (previousRounds) => {
+			if (!previousRounds.length) {
+				previousMatchesDiv.innerHTML = "No matches played yet"
+			} else {
+				previousRounds.forEach(previousRound => {
+					previousRound.forEach(match => {
+						let newDiv = document.createElement("div")
+	
+						let historyIdDiv = document.createElement("div")
+						historyIdDiv.innerText = `Game ID: ${match["id"]}`
+	
+						let attackerSideDiv = document.createElement("div")
+						let attacker = match["sides"]["attacker"]
+						let attackerScore = match["score"]["attacker"]
+						attackerSideDiv.innerText = `Player ${attacker} Score : ${attackerScore}`
+	
+						let defenderSideDiv = document.createElement("div")
+						let defender = match["sides"]["defender"]
+						let defenderScore = match["score"]["defender"]
+						defenderSideDiv.innerText = `Player ${defender} Score : ${defenderScore}`
+	
+						let winnerDiv = document.createElement("div")
+						let winner = match["winner"]
+						winnerDiv.innerText = `Winner : ${winner}`
+
+						newDiv.append(historyIdDiv)
+						newDiv.append(attackerSideDiv)
+						newDiv.append(defenderSideDiv)
+						newDiv.append(winnerDiv)
+						previousMatchesDiv.append(newDiv)
+					})
+				});
+			}
+		}
+
 		const loadTournamentData = (data) => {
 			statusTag.innerHTML = data["started"] ? "In Progress" : "Waiting Players"
 			previousMatchesDiv.innerHTML = ''
@@ -162,16 +197,7 @@ export default function tournament(prop={}) {
 			loadPlayerList(players, readiedPlayers)
 
 			let previousMatchesList = data["previousMatches"]
-
-			if (!previousMatchesList.length) {
-				previousMatchesDiv.innerHTML = "No matches played yet"
-			} else {
-				previousMatchesList.forEach(previousMatch => {
-					let newDiv = document.createElement("div")
-					newDiv.innerText = JSON.stringify(previousMatch)
-					previousMatchesDiv.append(newDiv)
-				});
-			}
+			loadPlayedlist(previousMatchesList)
 
 			let currentPlayingList = data["matches"]
 			loadCurrentGameList(currentPlayingList)

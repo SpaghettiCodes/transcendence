@@ -15,6 +15,8 @@ import chat from "./pages/chat.js"
 import tournamentList from "./pages/tournamentList.js"
 import tournament from "./pages/tournament.js"
 
+// match ==> 
+
 const routes = {
 	'/': landing,
 	'/error': fourofour,
@@ -22,6 +24,7 @@ const routes = {
 	'/home': home,
 	'/match': game,
 	'/match/<game_id>': match,
+	'/match/<game_id>/results': fourofour,
 	'/chat': chat,
 	'/tournament': tournamentList,
 	'/tournament/<tournament_id>': tournament,
