@@ -1,16 +1,14 @@
 #fourofour {
-    height: 100%;
-    padding: 0;
-    margin: 0;
     background-image: url('blackhole.jpg');
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
+    font: 100px Arial, sans-serif;
 }
 #fourofour.title {
     text-align: center;
     color: white;
-    margin-bottom: 30px;
+    margin-bottom: 50px;
 }
 #fourofour.content {
     display: flex;
