@@ -4,7 +4,7 @@ export default function match(prop={}) {
 	let game_id = (prop["arguments"]) ? (prop["arguments"]["game_id"]) : undefined
 	let tournament_id = prop["arguments"]["tournament_id"]
 
-	let apiURI = (tournament_id) ? `tournament/${tournament_id}/game/${game_id}` : `game/${game_id}`
+	let apiURI = (tournament_id) ? `tournament/${tournament_id}/match/${game_id}` : `match/${game_id}`
 
 	let player_id = localStorage.getItem("username") || "default"
 	let pongSocket = undefined
@@ -188,15 +188,14 @@ export default function match(prop={}) {
 			ctx.closePath()
 		}
 
-		const drawGamePaused = () => {
+		const drawGamePaused = (msg) => {
 			ctx.fillStyle = "#000000"
 			ctx.font = '20px sans-serif'
 			ctx.textBaseline = "middle"
 			ctx.textAlign = "center"
 
-			let text = "Game Paused"
 			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-			ctx.fillText(text , 115, 25, ctx.canvas.width)
+			ctx.fillText(msg , 115, 25, ctx.canvas.width)
 		}
 
 		const drawNumber = (number) => {
@@ -274,7 +273,7 @@ export default function match(prop={}) {
 						showError(message)
 						break
 					case "pause":
-						drawGamePaused()
+						drawGamePaused(data["message"])
 						break
 					case "countdown":
 						drawNumber(data["value"])

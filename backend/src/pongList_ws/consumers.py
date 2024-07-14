@@ -7,7 +7,7 @@ from pong_server.server import PongServer
 
 match_list_newsletter = "match_list_newsletter"
 
-class ListMatchConsumer(AsyncJsonWebsocketConsumer):
+class PongListConsumer(AsyncJsonWebsocketConsumer):
     # called when client connects to websocket
     async def connect(self):
         await self.accept()
@@ -32,16 +32,6 @@ class ListMatchConsumer(AsyncJsonWebsocketConsumer):
         match command:
             case 'list':
                 await self.send_json(PongServer.get_servers_list())
-
-    # temp
-    # will make one that only sends what to change
-    # then frontend probably parses it
-    @classmethod
-    async def update(cls):
-        await cls.channel_layer.group_send(match_list_newsletter, {
-            "type": "message",
-            "text": PongServer.get_servers_list()
-        })
 
     async def message(self, event):
         try:

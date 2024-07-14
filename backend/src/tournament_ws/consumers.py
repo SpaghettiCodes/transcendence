@@ -30,6 +30,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             case "join":
                 result, message = await TournamentManager.player_join(username, self.tournament_id)
                 if result:
+                    self.playerName = username
                     self.authorized = True
                     await self.send_json({
                         "status": "refresh"

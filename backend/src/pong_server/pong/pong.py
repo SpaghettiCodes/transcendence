@@ -9,6 +9,9 @@ import random
 
 from ..base.game import Game
 
+from database.models import Match, Player, MatchResult
+from django.core.exceptions import ObjectDoesNotExist
+
 class PongGame(Game):
 
     def __init__(self, gameid, removalFunction, subserver_id=None, hidden=False, expectedPlayers=...) -> None:
@@ -55,27 +58,6 @@ class PongGame(Game):
             "settings": self.field.getDetails()
         }
 
-    def getResults(self):
-        if not self.played:
-            return {
-                "id": self.gameid,
-                "played": self.played,
-                "reason": "Welp, gotta save why now"
-            }
-        else:
-            winner, loser = self.field.getWinnerLoser()
-            return {
-                "id": self.gameid,
-                "played": self.played,
-                "sides": {
-                    "attacker": self.attackerid,
-                    "defender": self.defenderid
-                },
-                "score": self.field.getJsonScore(),
-                "winner": winner,
-                "loser": loser
-            }
-
     def resetField(self):
         self.field.initialization()
         self.field.setPlayers(self.attackerid, self.defenderid)
@@ -98,6 +80,56 @@ class PongGame(Game):
                 affected_paddle.set_velocity(0, 1)
             case 'stop':
                 affected_paddle.set_velocity(0, 0)
+
+    async def uploadMatchResults(self):
+        matchObject = None
+        attacker = None
+        defender = None
+
+        try:
+            matchObject = await Match.objects.aget(matchid=self.gameid)
+            matchObject.status = 'done'
+            await matchObject.asave()
+        except ObjectDoesNotExist:
+            print("What, how")
+            return
+
+        try:
+            attacker = await Player.objects.aget(username=self.attackerid)
+            defender = await Player.objects.aget(username=self.defenderid)
+        except ObjectDoesNotExist:
+            print("Player does not exist, who were we playing against, ghosts?")
+            return
+
+        attacker_score = int(self.field.attackerScore)
+        defender_score = int(self.field.defenderScore)
+
+        winner, loser = self.field.getWinnerLoser()
+        if self.isForfeit():
+            winner = self.getNotMissingPlayer()
+
+        if winner == self.attackerid:
+            winner = attacker
+            loser = defender
+        else:
+            winner = defender
+            loser = attacker
+
+        newResult = MatchResult(
+            attacker=attacker, 
+            defender=defender,
+            attacker_score=attacker_score,
+            defender_score=defender_score,
+            winner=winner,
+            loser=loser,
+            match=matchObject
+        )
+
+        if self.isForfeit():
+            newResult.reason = 2
+
+        await newResult.asave()
+
 
     def initialState(self):
         from ..common.states.processPhysics import ProcessPhysics

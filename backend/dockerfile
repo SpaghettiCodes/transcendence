@@ -1,12 +1,12 @@
 FROM python:latest
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY requirements.txt ./
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./src .
-COPY ./script.bash .
-RUN chmod +x ./script.bash
+# COPY ./src .
+# COPY ./script.bash .
+# RUN chmod +x ./script.bash
 
 CMD ["./script.bash"]

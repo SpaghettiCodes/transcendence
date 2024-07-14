@@ -63,7 +63,7 @@ export default function game(prop={}) {
 			try
 			{
 				response = await fetch(
-					"http://localhost:8000/api/game",
+					"http://localhost:8000/api/match",
 					{
 						method: "POST",
 						headers: {
@@ -97,7 +97,7 @@ export default function game(prop={}) {
 			try
 			{
 				response = await fetch(
-					"http://localhost:8000/api/game",
+					"http://localhost:8000/api/match",
 					{
 						method: "POST",
 						headers: {
@@ -170,7 +170,7 @@ export default function game(prop={}) {
 			try
 			{
 				response = await fetch(
-					"http://localhost:8000/api/game",
+					"http://localhost:8000/api/match",
 					{
 						method: "GET",
 					}

@@ -5,10 +5,7 @@ from channels.layers import get_channel_layer
 import asyncio
 import json
 
-from datetime import datetime
-
 from ..base.state import State
-from ..common.states.pause import Pause
 
 class Game(ABC):
     FRAME_RATE = 1/60
@@ -33,6 +30,7 @@ class Game(ABC):
         self.played = False
         self.begin = False
         self.currentState = None
+        self.forfeit = False
         self.channel_layer = get_channel_layer()
 
     def setRemovalFunction(self, newRemovalFunction):
@@ -53,6 +51,9 @@ class Game(ABC):
 
     def has_begin(self):
         return self.begin
+
+    def matchPlayed(self):
+        return self.played
 
     def get_data(self):
         return {
@@ -162,6 +163,26 @@ class Game(ABC):
     @abstractmethod
     def initialState(self):
         pass
+
+    @abstractmethod
+    async def uploadMatchResults(self):
+        pass
+
+    def setForfeit(self):
+        self.forfeit = True
+
+    def isForfeit(self):
+        return self.forfeit
+
+    def getNotMissingPlayer(self):
+        notMissingPlayer = [player for player in self.expectedPlayers if player in self.players]
+        print(notMissingPlayer)
+        return notMissingPlayer[0]
+
+    def getMissingPlayer(self):
+        missingPlayer = [player for player in self.expectedPlayers if player not in self.players]
+        print(missingPlayer)
+        return missingPlayer[0]
 
     async def loop(self):
         self.initialization()

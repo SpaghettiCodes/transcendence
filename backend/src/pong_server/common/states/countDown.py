@@ -21,8 +21,8 @@ class CountDown(State):
             # difference = currentTime - self.startTime
             self.timeLeft = max(0, self.time - difference)
         else:
-            from .pause import Pause
-            self.setforcedTransition(Pause(CountDown(self.next, self.time, self.gameInstance), self.gameInstance))
+            from .playerLeft import PlayerLeft
+            self.setforcedTransition(PlayerLeft(CountDown(self.next, self.time, self.gameInstance), self.gameInstance))
 
     def stateEnded(self):
         # a bit of leeway for the stuff to render

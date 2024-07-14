@@ -6,26 +6,35 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework.views import APIView
 
-from tournament_server.manager import TournamentManager
+from django.shortcuts import get_object_or_404
 
-import asyncio
+from tournament_server.manager import TournamentManager
+from database.models import Tournament
+from ..serializer import TournamentSerializer
+from util.base_converter import from_base52, to_base52
 
 class TournamentView(APIView):
     parser_classes = [JSONParser]
     renderer_classes = [JSONRenderer]
 
+    # new match
     def post(self, request: Request, format = None):
-        server_id = asyncio.run(TournamentManager.new_tournament())
+        server_id = TournamentManager.new_tournament()
 
         if server_id == None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
         return Response({
             "tournament_id": server_id
-        }, status=status.HTTP_200_OK)
+        }, status=status.HTTP_201_CREATED)
 
+    # random matchmaking
     def get(self, request: Request, format = None):
-        return Response(TournamentManager.getAllDetails(), status=status.HTTP_200_OK)
+        server_id = TournamentManager.randomMatchmake()
+
+        return Response({
+            "tournament_id": server_id
+        }, status=status.HTTP_200_OK)
 
 @api_view(["GET"])
 def specificTournamentDetails(request: Request, tournament_id):
@@ -33,3 +42,9 @@ def specificTournamentDetails(request: Request, tournament_id):
     if data is None:
         return Response(status=status.HTTP_404_NOT_FOUND)
     return Response(data, status=status.HTTP_200_OK)
+
+@api_view(["GET"])
+def specificTournamentResults(request: Request, tournament_id):
+    tournamentObject = get_object_or_404(Tournament.objects, tournamentid=tournament_id)
+    serialized = TournamentSerializer(tournamentObject)
+    return Response(serialized.data)

@@ -23,8 +23,9 @@ services:
     networks:
       - frontend_net
       - backend_net
-    # volumes:
-    #   - ./backend/src:/
+    working_dir: "/app"
+    volumes:
+      - ./backend/src:/app
     ports:
       - "8000:8000"
     expose:

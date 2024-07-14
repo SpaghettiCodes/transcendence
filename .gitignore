@@ -2,6 +2,8 @@ data
 data/*
 node_modules/
 __pycache__/
+migrations/
 .env
 *.pyc
 *.pyo
+requirements.in

@@ -1,6 +1,6 @@
 from ...base.state import State
 from ...pong.pong import PongGame
-from .pause import Pause
+from .playerLeft import PlayerLeft
 
 class Reset(State):
     def __init__(self, nextState, gameInstance: PongGame) -> None:
@@ -11,7 +11,7 @@ class Reset(State):
     async def runState(self):
         self.gameInstance.resetField()
         if not self.gameInstance.canStart():
-            self.setforcedTransition(Pause(self.next, self.gameInstance))
+            self.setforcedTransition(PlayerLeft(self.next, self.gameInstance))
 
     def stateEnded(self):
         return self.dataSent

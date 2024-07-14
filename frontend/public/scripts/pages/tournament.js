@@ -5,6 +5,7 @@ export default function tournament(prop={}) {
 	const player_id = localStorage.getItem("username") || "default"
 
 	let tournamentSocket = undefined
+	let goingToBattle = false
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
 	let prerender = () => {
@@ -153,10 +154,17 @@ export default function tournament(prop={}) {
 		}
 
 		const loadPlayedlist = (previousRounds) => {
+			let rounds = 0
+
 			if (!previousRounds.length) {
 				previousMatchesDiv.innerHTML = "No matches played yet"
 			} else {
 				previousRounds.forEach(previousRound => {
+					let newTitle = document.createElement("h4")
+					++rounds
+					newTitle.innerText = `Round ${rounds}`
+					previousMatchesDiv.append(newTitle)
+
 					previousRound.forEach(match => {
 						let newDiv = document.createElement("div")
 	
@@ -203,6 +211,10 @@ export default function tournament(prop={}) {
 			loadCurrentGameList(currentPlayingList)
 		}
 
+		const setStatusMessage = (message) => {
+			statusTag.innerHTML = message
+		}
+
 		const getData = async () => {
 			try {
 				const response = await fetch(
@@ -241,10 +253,7 @@ export default function tournament(prop={}) {
 			}
 
 			tournamentSocket.onmessage = (e) => {
-				console.log("message received")
-
 				const data = JSON.parse(e.data)
-				console.log(data)
 
 				const status = data["status"]
 
@@ -259,6 +268,19 @@ export default function tournament(prop={}) {
 						break
 					case "playerList":
 						loadPlayerList(data["players"], data["ready"])
+						break
+					case "timer":
+						setStatusMessage(data["message"])
+						break
+					case "cancel":
+						setStatusMessage("Waiting for enough people to ready up...")
+						break
+					case "leave":
+						history.back()
+						break
+					case "winner":
+						setStatusMessage(`The winner of the tournament is Player ${data["winner"]}</br>The tournament room will close in ${data["time"]} second`)
+						break
 				}
 			}
 		}

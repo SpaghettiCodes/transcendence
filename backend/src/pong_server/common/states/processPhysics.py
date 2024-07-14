@@ -1,11 +1,11 @@
 from ...base.state import State
 from .score import Score
-from .pause import Pause
+from .playerLeft import PlayerLeft
 
 class ProcessPhysics(State):
     async def runState(self):
         if (not self.gameInstance.canStart()):
-            self.setforcedTransition(Pause(self, self.gameInstance))
+            self.setforcedTransition(PlayerLeft(self, self.gameInstance))
             return
 
         frameRate = self.gameInstance.FRAME_RATE

@@ -10,34 +10,35 @@ from rest_framework import status
 
 import asyncio
 
-class GameView(APIView):
+class MatchView(APIView):
     parser_classes = [JSONParser]
     renderer_classes = [JSONRenderer]
 
     # CREATE A NEW GAME
     def post(self, request: Request, format = None):
         data = request.data
-        server_id = asyncio.run(PongServer.new_game(type=data["type"]))
+        server_id = PongServer.new_game(type=data["type"])
+        # server_id = asyncio.run(PongServer.new_game(type=data["type"]))
 
         if server_id == None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         return Response({
             "game_id": server_id
-        }, status=status.HTTP_200_OK)
+        }, status=status.HTTP_201_CREATED)
 
     # RANDOM MATCHMAKING
     def get(self, request: Request, format = None):
-        server_id = asyncio.run(PongServer.random_matchmake())
+        server_id = PongServer.random_matchmake()
 
         return Response({
             "game_id": server_id
         }, status=status.HTTP_200_OK)
 
 @api_view(["GET"])
-def specificGameGet(request, game_id, tournament_id=None):
+def specificMatchGet(request, match_id, tournament_id=None):
     try:
-        return Response(PongServer.getDetails(game_id, tournament_id))
+        return Response(PongServer.getDetails(match_id, tournament_id))
     except Exception as e:
         print("uh oh stinky")
         print(e)

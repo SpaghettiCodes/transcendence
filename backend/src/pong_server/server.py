@@ -2,18 +2,17 @@ from .base.game import Game
 from .pong.pong import PongGame
 from .apongus.apongus import APongUsGame
 from channels.layers import get_channel_layer
-from asgiref.sync import sync_to_async
-from database.models import Match
+import asyncio
+from asgiref.sync import sync_to_async, async_to_sync
+from database.models import Match, Player, MatchResult
+from util.base_converter import to_base52, from_base52
+import datetime
+from django.core.exceptions import ObjectDoesNotExist
 
 class PongServer:
     queue = []
     servers: dict[None | str, dict[str, Game]] = {
-        None: {
-            # "abc": PongGame("abc"),
-            # "def": PongGame("def", True),
-            # "ghi": PongGame("ghi", False, ["test1", "test2"]),
-            # "jkl": APongUsGame("jkl")
-        }
+        None: {}
     }
 
     channel_layer = get_channel_layer()
@@ -42,7 +41,7 @@ class PongServer:
     @classmethod
     # most probably for random matchmaking
     # put on hold for now
-    async def random_matchmake(cls):
+    def random_matchmake(cls):
         server_to_join = None
         subserver = cls.servers[None]
 
@@ -54,7 +53,7 @@ class PongServer:
                     break
 
         if server_to_join is None:
-            server_to_join = await cls.new_game()
+            server_to_join = cls.new_game()
 
         print(f"Sending that guy to {server_to_join}")
         return server_to_join
@@ -88,19 +87,23 @@ class PongServer:
         return res
 
     @classmethod
-    async def getNewServerID(cls):
+    def getNewServerID(cls):
         # go and fuck yourself
         # server_id = "".join(random.choices(cls.ran_letter, k=8))
         # while server_id in subserver.keys():
         #     server_id = "".join(random.choices(cls.ran_letter, k=8))
 
-        newId = Match()
-        await newId.asave()
+        # newMatch = await sync_to_async(Match.objects.create)()
+        newMatch = Match.objects.create(time_played=datetime.datetime.now())
+        matchId = newMatch.id
+        displayId = to_base52(matchId)
+        newMatch.matchid = displayId
+        newMatch.save()
 
-        return newId.matchid
+        return displayId
 
     @classmethod
-    async def new_game(
+    def new_game(
         cls, 
         removalFunction=None, 
         type="pong", 
@@ -112,7 +115,7 @@ class PongServer:
             cls.servers[subserver_id] = dict()
         subserver = cls.servers[subserver_id]
 
-        server_id = await cls.getNewServerID()
+        server_id = cls.getNewServerID()
 
         if removalFunction is None:
             removalFunction = cls.createRemovalFunction(server_id, subserver_id)
@@ -125,7 +128,8 @@ class PongServer:
             return None
 
         if not hidden:
-            await cls.update_list()
+            async_to_sync(cls.update_list)()
+
         return server_id
 
     @classmethod
@@ -143,7 +147,12 @@ class PongServer:
                 return
             subserver = cls.servers[subserver_id]
 
-            subserver.pop(game_id)
+            gameInstance = subserver.pop(game_id)
+            if not gameInstance.matchPlayed():
+                matchObject = await Match.objects.aget(matchid=game_id)
+                await matchObject.adelete()
+            else:
+                await gameInstance.uploadMatchResults()
 
             if subserver_id is not None and not len(subserver):
                 cls.servers.pop(subserver_id)
@@ -174,7 +183,7 @@ class PongServer:
 
     @classmethod
     async def update_list(cls):
-        from match_list_ws.consumers import match_list_newsletter
+        from pongList_ws.consumers import match_list_newsletter
 
         await cls.channel_layer.group_send(match_list_newsletter, {
                 "type": "message",

@@ -10,9 +10,9 @@ import fourofour from "./pages/404.js"
 import ftlogin from "./pages/ft_login.js"
 import home from "./pages/home.js"
 import match from "./pages/match.js"
-import game from "./pages/game.js"
+import game from "./pages/matchListing.js"
 import chat from "./pages/chat.js"
-import tournamentList from "./pages/tournamentList.js"
+import tournamentList from "./pages/tournamentListing.js"
 import tournament from "./pages/tournament.js"
 
 // match ==> 

@@ -1,15 +1,17 @@
 from ...base.state import State
 from datetime import datetime
+import asyncio
 import math
 
 class endGame(State):
-    def __init__(self, gameInstance, durationUntilClose) -> None:
+    def __init__(self, gameInstance, durationUntilClose=1) -> None:
         super().__init__(gameInstance)
         self.duration = durationUntilClose
         self.durationLeft = durationUntilClose
         self.startTime = datetime.now()
 
         self.gameInstance.uploadScores()
+        self.removingFromServer = False
         self.kickEveryoneOut = False
 
     async def runState(self):
@@ -17,9 +19,10 @@ class endGame(State):
         difference = (currentTime - self.startTime).total_seconds()
         self.durationLeft = max(0, self.duration - difference)
 
-        if (self.durationLeft < 0.25):
+        if (self.durationLeft < 0.25 and not self.removingFromServer):
+            self.removingFromServer = True
+            await self.gameInstance.removeFromServer()
             self.kickEveryoneOut = True
-            self.gameInstance.removeFromServer()
 
     def getData(self):
         if not self.kickEveryoneOut:

@@ -44,9 +44,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'pong_ws',
-    'match_list_ws',
+    'pongList_ws',
     'chat_ws',
     'tournament_ws',
+    'tournamentList_ws',
 ]
 
 MIDDLEWARE = [
