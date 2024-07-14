@@ -17,6 +17,7 @@ import tournament from "./pages/tournament.js"
 import matchmaking from "./pages/matchmaking.js"
 import msg from "./pages/msg.js"
 import friendlist from "./pages/friendlist.js"
+import tournamentlist from "./pages/tournamentlist.js"
 
 const routes = {
 	'/': landing,
@@ -32,7 +33,8 @@ const routes = {
 	'/tournament': tournament,
 	'/matchmaking': matchmaking,
 	'/msg': msg,
-	'/friendlist': friendlist
+	'/friendlist': friendlist,
+	'/tournamentlist': tournamentlist
 }
 
 let clean_up_function = () => {}
