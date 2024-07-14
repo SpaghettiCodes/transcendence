@@ -13,9 +13,11 @@ from database.models import Match, Player, MatchResult
 from django.core.exceptions import ObjectDoesNotExist
 
 class PongGame(Game):
-
-    def __init__(self, gameid, removalFunction, subserver_id=None, hidden=False, expectedPlayers=...) -> None:
+    def __init__(self, gameid, removalFunction, subserver_id=None, hidden=False, expectedPlayers=[]) -> None:
         super().__init__(gameid, removalFunction, subserver_id, hidden, expectedPlayers)
+
+        if len(expectedPlayers):
+            assert len(expectedPlayers) == 2, "Expected Players MUST HAVE THE LENGTH OF 2"
 
         self.type = "pong"
 
@@ -25,6 +27,12 @@ class PongGame(Game):
 
         self.attackerid = None
         self.defenderid = None
+
+    def getWinner(self):
+        winner, loser = self.field.getWinnerLoser()
+        if (self.forfeit):
+            return self.getNotMissingPlayer()
+        return winner
 
     def getMaxScore(self):
         return self.maxScore
@@ -36,12 +44,15 @@ class PongGame(Game):
     def initialization(self):
         # allow reconnection
         # deep copy
-        self.expectedPlayers = [x for x in self.players]
+        if len(self.expectedPlayers) < 2:
+            # only do this if expected players is less than 2 (i.e. 0)
+            self.expectedPlayers = [x for x in self.players]
+            # if we already have expected players, we know who is joining the server already
 
         # determine who left and who right
-        random.shuffle(self.players)
-        self.attackerid = self.players[0]
-        self.defenderid = self.players[1]
+        random.shuffle(self.expectedPlayers)
+        self.attackerid = self.expectedPlayers[0]
+        self.defenderid = self.expectedPlayers[1]
 
         self.resetField()
 
@@ -133,7 +144,9 @@ class PongGame(Game):
 
     def initialState(self):
         from ..common.states.processPhysics import ProcessPhysics
-        return ProcessPhysics(self)
+        from ..common.states.startingCountDown import startingCountDown
+
+        return startingCountDown(ProcessPhysics(self), 5, self)
 
     def uploadScores(self):
         if not self.played:

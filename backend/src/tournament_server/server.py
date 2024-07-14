@@ -285,21 +285,33 @@ class TournamentServer:
         matchups = [(first_half[x], second_half[x]) for x in range(len(first_half))]
 
         for matchup in matchups:
-            gameId = await sync_to_async(PongServer.new_game)(
+            gameId = await sync_to_async(PongServer.new_game) (
                 expectedPlayers=[matchup[0], matchup[1]],
+                startImmediately=True,
                 subserver_id=self.subserverId
             )
 
             # i have only myself to blame for this situation
             gameInstance = PongServer.getGameInstance(gameId, self.subserverId)
             gameInstance.setRemovalFunction(self.collectData(gameInstance))
-            self.matchesCount += 1
+            await gameInstance.startImmediately()
 
+            self.matchesCount += 1
             # temp
             self.playedIDs.append(gameId)
             # temp end
 
+    async def panicRemove(self):
+        tournamentObject = await Tournament.objects.aget(tournamentid=self.id)
+        await tournamentObject.adelete()
+
     async def uploadResults(self):
+        if self.winner is None:
+            # winner CANT be empty
+            # this only means one thing, the tournament did not end and everyone left
+            await self.panicRemove()
+            return
+
         playerObjects: list[Player] = []
         winnerObject: Player = None
         tournamentObject: Tournament = None
@@ -311,6 +323,7 @@ class TournamentServer:
             tournamentObject = await Tournament.objects.aget(tournamentid=self.id)
         except ObjectDoesNotExist:
             print("what the fuck? tournamentID not found??")
+            await self.panicRemove()
             return
 
         for player in self.completePlayers:
@@ -321,6 +334,10 @@ class TournamentServer:
                 playerObjects.append(playerObject)
             except ObjectDoesNotExist:
                 print("well that person doesnt exist")
+                if (player == self.winner):
+                    print("Cant really have a non existant winner...")
+                    await self.panicRemove()
+                    return
 
         print(playerObjects)
 
@@ -336,6 +353,7 @@ class TournamentServer:
                     roundMatchObjects.append(matchObject)
                 except ObjectDoesNotExist:
                     print("Fuck u mean? ABORT")
+                    await self.panicRemove()
                     return
             matchObjects.append(roundMatchObjects)
 

@@ -61,7 +61,7 @@ class PongServer:
     @classmethod
     async def join_player(cls, username, gameid, subserver_id=None):
         if cls.servers.get(subserver_id) is None:
-            return
+            return (False, "That tournament no longer Exist")
         subserver = cls.servers[subserver_id]
 
         if gameid not in subserver.keys():
@@ -75,7 +75,7 @@ class PongServer:
     @classmethod
     async def new_spectator(cls, username, gameid, subserver_id=None):
         if cls.servers.get(subserver_id) is None:
-            return
+            return (False, "That tournament no longer Exist")
         subserver = cls.servers[subserver_id]
 
         if gameid not in subserver.keys():
@@ -102,13 +102,18 @@ class PongServer:
 
         return displayId
 
+    def __init__(self, gameid, removalFunction, subserver_id=None, hidden=False, expectedPlayers=[], startImmediately=False) -> None:
+        super().__init__(gameid, removalFunction, subserver_id, hidden, expectedPlayers, startImmediately)
+
+
     @classmethod
     def new_game(
         cls, 
         removalFunction=None, 
         type="pong", 
         hidden=False, 
-        expectedPlayers=[], 
+        expectedPlayers=[],
+        startImmediately=False,
         subserver_id=None
     ):
         if (cls.servers.get(subserver_id) is None):
@@ -126,6 +131,9 @@ class PongServer:
             subserver[server_id] = APongUsGame(server_id, removalFunction, subserver_id, hidden, expectedPlayers)
         else:
             return None
+
+        # if startImmediately:
+        #     asyncio.create_task(subserver[server_id].startImmediately())
 
         if not hidden:
             async_to_sync(cls.update_list)()

@@ -101,8 +101,7 @@ class TournamentManager:
             serverInstance = cls.servers.pop(id)
             if not serverInstance.hasStarted():
                 # remove
-                tournamentObject = await Tournament.objects.aget(tournamentid=from_base52(id))
-                await tournamentObject.adelete()
+                await serverInstance.panicRemove()
             else:
                 await serverInstance.uploadResults()
 

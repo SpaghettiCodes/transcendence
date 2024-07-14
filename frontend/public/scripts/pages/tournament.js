@@ -128,14 +128,9 @@ export default function tournament(prop={}) {
 					newDiv.append(vsTitleDiv)
 
 					if (players.includes(player_id)) {
-						let joinButton = document.createElement("button")
-						joinButton.innerText = "play"
-
-						joinButton.onclick = () => {
-							redirect(`/tournament/${tournamentID}/match/${id}`)
-						}
-
-						newDiv.append(joinButton)
+						// what are you doing here? go play your match!
+						redirect(`/tournament/${tournamentID}/match/${id}`)
+						return
 					} else {
 						let spectateButton = document.createElement("button")
 						spectateButton.innerText = "spectate"

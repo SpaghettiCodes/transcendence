@@ -222,15 +222,17 @@ export default function match(prop={}) {
 			pongSocket.send(JSON.stringify(data))
 		}
 
-		const drawEnd = () => {
+		const drawEnd = (durationLeft, winner) => {
 			ctx.fillStyle = "#000000"
 			ctx.font = '20px sans-serif'
 			ctx.textBaseline = "middle"
 			ctx.textAlign = "center"
 
-			let text = "Game ended, and i have no idea what do now"
+			let text = `Player ${winner} wins!`
+			let text2 = `This match will close in ${durationLeft} seconds`
 			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 			ctx.fillText(text , 115, 25, ctx.canvas.width)
+			ctx.fillText(text2, 115, 50, ctx.canvas.width)
 		}
 
 		const connectSocket = () => {
@@ -284,7 +286,7 @@ export default function match(prop={}) {
 							updateScore(data["scorer"])
 						break
 					case "end":
-						drawEnd()
+						drawEnd(data["lifetime"], data["winner"])
 						break
 					case "redirect":
 						history.back()

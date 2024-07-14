@@ -10,7 +10,7 @@ class endGame(State):
         self.durationLeft = durationUntilClose
         self.startTime = datetime.now()
 
-        self.gameInstance.uploadScores()
+        self.winner = self.gameInstance.getWinner()
         self.removingFromServer = False
         self.kickEveryoneOut = False
 
@@ -28,6 +28,7 @@ class endGame(State):
         if not self.kickEveryoneOut:
             return {
                 "status": "end",
+                "winner": self.winner,
                 "lifetime": math.ceil(self.durationLeft)
             }
         else: 

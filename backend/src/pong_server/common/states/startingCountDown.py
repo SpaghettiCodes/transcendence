@@ -3,7 +3,7 @@ import time
 from datetime import datetime
 import math
 
-class CountDown(State):
+class startingCountDown(State):
     def __init__(self, nextState, time, gameInstance) -> None:
         super().__init__(gameInstance)
         self.next = nextState
@@ -14,13 +14,9 @@ class CountDown(State):
         # self.startTime = time.time() # hm yes bad idea
 
     async def runState(self):
-        if self.gameInstance.canStart():
-            currentTime = datetime.now()
-            difference = (currentTime - self.startTime).total_seconds()
-            self.timeLeft = max(0, self.time - difference)
-        else:
-            from .playerLeft import PlayerLeft
-            self.setforcedTransition(PlayerLeft(CountDown(self.next, self.time, self.gameInstance), self.gameInstance))
+        currentTime = datetime.now()
+        difference = (currentTime - self.startTime).total_seconds()
+        self.timeLeft = max(0, self.time - difference)
 
     def stateEnded(self):
         # a bit of leeway for the stuff to render

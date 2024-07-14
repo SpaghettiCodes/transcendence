@@ -33,6 +33,9 @@ class Game(ABC):
         self.forfeit = False
         self.channel_layer = get_channel_layer()
 
+    async def startImmediately(self):
+        await self.start()
+
     def setRemovalFunction(self, newRemovalFunction):
         self.removalFunction = newRemovalFunction
 
@@ -166,6 +169,10 @@ class Game(ABC):
 
     @abstractmethod
     async def uploadMatchResults(self):
+        pass
+
+    @abstractmethod
+    def getWinner(self):
         pass
 
     def setForfeit(self):

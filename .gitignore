@@ -7,3 +7,4 @@ migrations/
 *.pyc
 *.pyo
 requirements.in
+.vscode/

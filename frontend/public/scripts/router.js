@@ -34,6 +34,8 @@ const routes = {
 let clean_up_function = () => {}
 
 const get_renderer = (uri, prop) => {
+	console.log(uri)
+
 	// direct match
 	if (uri in routes)
 		return routes[uri]
@@ -119,14 +121,21 @@ const render_html = (which, prop={}) => {
 const navigate = (e, prop={}) => {
 	e.preventDefault()
 
-	const uri = window.location.pathname
+	var uri = window.location.pathname
+
+	// clean uri
+	uri = uri.replace(/^\/+|\/+$/g, '');
+	uri = '/' + uri.split("/").filter(Boolean).join('/')
+
+	history.replaceState(null, null, uri)
+
 	render_html(uri, prop)
 }
 
 export const redirect = (uri, prop={}) => {
 	clean_up_function()
 	render_html(uri, prop)
-	history.pushState("", "", uri)
+	history.pushState(null, null, uri)
 }
 
 // catch all links and change their default behavior
@@ -138,8 +147,8 @@ document.onclick = (e) => {
 	var element = e.target || e.srcElement
 
 	if (element.tagName.toLowerCase() === 'a') {
-		history.pushState("", "", element.href)
 		render_html(element.getAttribute("href"))
+		history.pushState(null, null, element.href)
 		return false // prevents default action and stops event propagation
 	}
 }
