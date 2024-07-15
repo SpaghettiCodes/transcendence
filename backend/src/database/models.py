@@ -13,13 +13,12 @@ class Match(models.Model):
     matchid = models.CharField(max_length=8, unique=True, null=True, blank=True)
     time_played = models.DateTimeField()
 
-    status = models.CharField(
+    status = models.SmallIntegerField(
         choices=(
-            ("ongoing", "Ongoing"),
-            ("done", "Done")
+            (1, "ongoing"),
+            (2, "done")
         ),
-        max_length=7,
-        default='waiting',
+        default=1,
     )
 
     related_tournament = models.ForeignKey(
@@ -64,8 +63,8 @@ class MatchResult(models.Model):
 
     reason = models.SmallIntegerField(
         choices=(
-            (1, "Normal"),
-            (2, "Player Forfeited")
+            (1, "normal"),
+            (2, "player Forfeited")
         ),
         default=1
     )
@@ -84,13 +83,12 @@ class Tournament(models.Model):
     tournamentid = models.CharField(max_length=8, unique=True)
     time_played = models.DateTimeField()
 
-    status = models.CharField(
+    status = models.SmallIntegerField(
         choices=(
-            ("ongoing", "Ongoing"),
-            ("done", "Done")
+            (1, 'ongoing'),
+            (2, 'done')
         ),
-        max_length=7,
-        default='waiting',
+        default=1,
     )
 
     def __str__(self) -> str:
@@ -136,7 +134,7 @@ class ChatRoom(models.Model):
         related_name="members",
     )
 
-class ChatMessages(models.Model):
+class ChatMessage(models.Model):
     chatid = models.BigAutoField(primary_key=True)
     room = models.ForeignKey(
         ChatRoom,
@@ -146,5 +144,41 @@ class ChatMessages(models.Model):
         Player,
         on_delete=models.PROTECT
     )
+    type = models.SmallIntegerField(
+        choices=(
+            (1, "normal"),
+            (2, "invite")
+        ),
+        default=1
+    )
     posted = models.DateTimeField()
     content = models.CharField(max_length=200)
+
+class InviteMessage(models.Model):
+    status = models.SmallIntegerField(
+        choices=(
+            (1, "waiting"),
+            (2, "done"),
+            (3, "expired")
+        ),
+        default=1
+    )
+
+    match = models.ForeignKey(
+        Match,
+        on_delete=models.CASCADE,
+        related_name="invite_match",
+        null=True
+    )
+
+    chatMessage = models.OneToOneField(
+        ChatMessage,
+        on_delete=models.CASCADE,
+        related_name='invite_details'
+    )
+
+    def __str__(self) -> str:
+        if {self.match}:
+            return f"Invitation for match {self.match}"
+        else:
+            return f"An expired invitation"

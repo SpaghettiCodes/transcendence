@@ -13,11 +13,8 @@ class Game(ABC):
     def __init__(self, gameid, removalFunction, subserver_id = None, hidden=False, expectedPlayers=[]) -> None:
         # initial positions and shit
         self.gameid = gameid
-
-        if subserver_id:
-            self.group_name = f"game-{subserver_id}-{gameid}"
-        else:
-            self.group_name = f"game-{gameid}"
+        
+        self.group_name = f"game-{gameid}" # game id is guranteed to be unique
 
         self.players = []
         self.spectator = []
@@ -32,6 +29,14 @@ class Game(ABC):
         self.currentState = None
         self.forfeit = False
         self.channel_layer = get_channel_layer()
+
+        self.type = None
+
+    def setPlayed(self):
+        self.played = True
+
+    def getType(self):
+        return self.type
 
     async def startImmediately(self):
         await self.start()
@@ -122,7 +127,6 @@ class Game(ABC):
 
     async def start(self):
         if not self.begin:
-            self.played = True
             await self.channel_layer.group_send(self.group_name, {
                 "type": "message",
                 "text": {

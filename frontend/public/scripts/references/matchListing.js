@@ -1,5 +1,4 @@
 import { redirect } from "../router.js"
-import match from "./match.js"
 
 export default function game(prop={}) {
 	let sendMatchSocket = null
@@ -170,9 +169,12 @@ export default function game(prop={}) {
 			try
 			{
 				response = await fetch(
-					"http://localhost:8000/api/match",
+					"http://localhost:8000/api/match?type=pong",
 					{
 						method: "GET",
+						headers: {
+							'Content-Type': 'application/json',
+						}
 					}
 				)
 
@@ -183,8 +185,9 @@ export default function game(prop={}) {
 				let game_code = data["game_id"]
 				redirect(`/match/${game_code}`)
 			}
-			catch
+			catch (e)
 			{
+				console.log(e)
 				matchmake_button.innerHTML = "Server Is Down"
 				setTimeout(() => {
 					matchmake_button.innerHTML = "Find a Match"

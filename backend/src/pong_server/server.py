@@ -10,7 +10,8 @@ import datetime
 from django.core.exceptions import ObjectDoesNotExist
 
 class PongServer:
-    queue = []
+    pongQueue = 0
+    apongQueue = 0
     servers: dict[None | str, dict[str, Game]] = {
         None: {}
     }
@@ -41,22 +42,40 @@ class PongServer:
     @classmethod
     # most probably for random matchmaking
     # put on hold for now
-    def random_matchmake(cls):
+    def random_matchmake(cls, type="pong"):
         server_to_join = None
         subserver = cls.servers[None]
 
         if len(cls.servers):
             for server_id, server in subserver.items():
-                # should not be able to join a hidden server, nor a server with player restriction, nor a server that already started playing
-                if (not server.is_hidden() and not server.has_begin() and not server.is_restricted()):
+                # should not be able to join a hidden server
+                # nor a server with player restriction
+                # nor a server that already started playing
+                if (not server.is_hidden() and 
+                    not server.has_begin() and 
+                    not server.is_restricted() and
+                    server.getType() == type
+                    ):
                     server_to_join = server_id
                     break
 
-        if server_to_join is None:
-            server_to_join = cls.new_game()
-
-        print(f"Sending that guy to {server_to_join}")
         return server_to_join
+
+    @classmethod
+    def matchMaking(cls, type="pong"):
+        print(cls.pongQueue, cls.apongQueue)
+        if type == "pong":
+            cls.pongQueue += 1
+            if cls.pongQueue >= 2:
+                cls.new_game(type=type)
+        elif type == "apong":
+            cls.apongQueue += 1
+            if cls.apongQueue >= 2:
+                cls.new_game(type=type)
+        else:
+            return False
+
+        return True
 
     @classmethod
     async def join_player(cls, username, gameid, subserver_id=None):
@@ -102,10 +121,6 @@ class PongServer:
 
         return displayId
 
-    def __init__(self, gameid, removalFunction, subserver_id=None, hidden=False, expectedPlayers=[], startImmediately=False) -> None:
-        super().__init__(gameid, removalFunction, subserver_id, hidden, expectedPlayers, startImmediately)
-
-
     @classmethod
     def new_game(
         cls, 
@@ -113,7 +128,6 @@ class PongServer:
         type="pong", 
         hidden=False, 
         expectedPlayers=[],
-        startImmediately=False,
         subserver_id=None
     ):
         if (cls.servers.get(subserver_id) is None):
@@ -132,16 +146,13 @@ class PongServer:
         else:
             return None
 
-        # if startImmediately:
-        #     asyncio.create_task(subserver[server_id].startImmediately())
-
         if not hidden:
             async_to_sync(cls.update_list)()
 
         return server_id
 
     @classmethod
-    def getGameInstance(cls, game_id, subserver_id):
+    def getGameInstance(cls, game_id, subserver_id=None):
         if (cls.servers.get(subserver_id) is None):
             return None
         subserver = cls.servers[subserver_id]
@@ -149,7 +160,7 @@ class PongServer:
         return subserver.get(game_id)
 
     @classmethod
-    def createRemovalFunction(cls, game_id, subserver_id):
+    def createRemovalFunction(cls, game_id, subserver_id=None):
         async def removalFunction():
             if cls.servers.get(subserver_id) is None:
                 return

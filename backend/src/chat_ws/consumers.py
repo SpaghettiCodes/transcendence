@@ -1,5 +1,5 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from database.models import ChatRoom, ChatMessages, Player
+from database.models import ChatRoom, ChatMessage, Player
 from asgiref.sync import sync_to_async
 from api.serializer import ChatRoomSerializer
 import datetime
@@ -31,11 +31,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
     async def send_status(self):
         await self.send_json({
-            "status": "ok"
-        })
-
-        await self.send_json({
-            "status": "details",
+            "command": "details",
             "details": await sync_to_async(self.get_serialized_data)()
         })
 
@@ -46,7 +42,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         except Exception as e:
             # fuck u mean doesnt exist
             await self.send_json({
-                "status": "error",
+                "command": "error",
                 "message": "Who are you?"
             })
             return await self.close()
@@ -55,7 +51,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         # if its not, boot the fuck out
         if (await sync_to_async(self.check)(userObject)):
             await self.send_json({
-                "status": "error",
+                "command": "error",
                 "message": "You arent Invited!"
             })
             return await self.close()
@@ -79,22 +75,6 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             match command:
                 case 'join':
                     await self.new_connection(content['username'])
-        else:
-            if self.registered:
-                await sync_to_async(self.save_message_to_database)(content)
-                await self.channel_layer.group_send(self.room_name, {
-                    "type": "message",
-                    "text": content
-                })
-
-    def save_message_to_database(self, content):
-        room = self.chatObject
-        sender = Player.objects.get(username=content["sender"])
-        posted = datetime.datetime.now()
-        content = content["message"]
-
-        newMessage = ChatMessages(room=room, sender=sender, posted=posted, content=content)
-        newMessage.save()
 
     async def message(self, event):
         if (self.registered):

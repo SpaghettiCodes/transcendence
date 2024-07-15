@@ -2,6 +2,8 @@ import { redirect } from "../router.js"
 
 // this is merely a placeholder as i cook up a chat system
 export default function chat(prop={}) {
+	let websocket = undefined
+
 	// attach all pre-rendering code here (like idk, fetch request or something)
 	let prerender = () => {
 		return true // return true to continue to render_code
@@ -60,6 +62,7 @@ export default function chat(prop={}) {
 						<div class="inputbox">
 							<input id="inputfield" placeholder="Some text..">
 							<button id="sendbtn">Send</button>
+							<button id="invitefight">Invite to Pong</button>
 						</div>
 					</div>
 				</div>
@@ -71,7 +74,6 @@ export default function chat(prop={}) {
 	let postrender = () => {
 		let name = ""
 
-		let websocket = undefined
 		let roomid = undefined
 		let lastmsgid = undefined
 
@@ -122,7 +124,6 @@ export default function chat(prop={}) {
 				generateListOfServersIn(value)
 			}).catch((reason) => {
 				console.log(reason)
-				console.log("cry")
 			})
 		}
 
@@ -173,6 +174,66 @@ export default function chat(prop={}) {
 			return newDiv
 		}
 
+		const makeInviteBox = (data) => {
+			let gameData = data["gameid"]
+			let sender = data["sender"]
+			let chatId = data["chatid"]
+			console.log(gameData)
+			console.log(sender)
+
+			let newDiv = document.createElement("div")
+			newDiv.setAttribute("class", "invitebox")
+			newDiv.setAttribute("id", `msg-${chatId}`)
+
+			let messageDiv = document.createElement("div")
+			messageDiv.setAttribute("class", "message")
+			messageDiv.innerText = `Game Invitation By ${sender}`
+
+			let button = document.createElement("button")
+			button.setAttribute("id", `msg-button-${chatId}`)
+
+			let status = data["status"]
+			if (status === "waiting") {
+				button.innerText = "Join Match"
+				button.onclick = () => {
+					redirect(`/match/${gameData}`)
+				}
+			} else if (status === "done") {
+				button.innerText = "Match Results"
+				button.onclick = () => {
+					redirect(`/match/${gameData}/results`)
+				}
+			} else if (status === "expired") {
+				button.innerText = "Unavailable"
+				button.disabled = true
+			}
+
+			newDiv.append(messageDiv)
+			newDiv.append(button)
+			return newDiv
+		}
+
+		const updateInviteBox = (data) => {
+			let chatid = data["chatid"]
+			let status = data["status"]
+
+			let inviteButton = document.getElementById(`msg-button-${chatid}`)
+			if (status === "waiting") {
+				inviteButton.innerText = "Join Match"
+				inviteButton.onclick = () => {
+					redirect(`/match/${gameData}`)
+				}
+			} else if (status === "done") {
+				inviteButton.innerText = "Match Results"
+				inviteButton.onclick = () => {
+					redirect(`/match/${gameData}/results`)
+				}
+			} else if (status === "expired") {
+				inviteButton.innerText = "Unavailable"
+				inviteButton.disabled = true
+			}
+		}
+
 		const getPreviousMessages = async () => {
 			let url = undefined
 			if (lastmsgid === undefined)
@@ -182,7 +243,13 @@ export default function chat(prop={}) {
 
 			try {
 				const response = await fetch(url)
+
+				if (!response.ok)
+					throw "Panic"
+
 				const data = await response.json()
+
+				console.log(data)
 				const messageList = data["history"]
 
 				if (!messageList.length) {
@@ -191,10 +258,26 @@ export default function chat(prop={}) {
 
 				lastmsgid = messageList.at(-1)["chatid"]
 				messageList.forEach(pastMessage => {
-					let messageBlock = makeMessageBox({
-						"sender": pastMessage["sender"]["username"],
-						"message": pastMessage["content"]
-					})
+					let type = pastMessage["type"]
+					let messageBlock = undefined
+
+					switch (type) {
+						case ("normal"):
+							messageBlock = makeMessageBox({
+								"sender": pastMessage["sender"]["username"],
+								"message": pastMessage["content"]
+							})
+							break
+						case ("invite"):
+							messageBlock = makeInviteBox({
+								"chatid": pastMessage["chatid"],
+								"gameid": pastMessage["invite_details"]["match"],
+								"sender": pastMessage["sender"]["username"],
+								"status": pastMessage["invite_details"]["status"]
+							})
+							break
+					}
+
 					messageScreen.append(messageBlock)
 				})
 				return messageList.length
@@ -258,10 +341,11 @@ export default function chat(prop={}) {
 
 			websocket.onmessage = async (e) => {
 				let data = JSON.parse(e.data)
-				let status = data["status"]
+				console.log(data)
+				let command = data["command"]
 				let newDiv = undefined
 
-				switch (status)
+				switch (command)
 				{
 					case "error":
 						newDiv = makeErrorBox(data)
@@ -270,6 +354,13 @@ export default function chat(prop={}) {
 					case "new_message":
 						newDiv = makeMessageBox(data)
 						messageScreen.prepend(newDiv)
+						break
+					case "new_invite":
+						newDiv = makeInviteBox(data)
+						messageScreen.prepend(newDiv)
+						break
+					case "update_match":
+						updateInviteBox(data)
 						break
 					case "details":
 						await setDetails(data["details"])
@@ -379,22 +470,61 @@ export default function chat(prop={}) {
 		let inputField = document.getElementById("inputfield")
 		let sendBtn = document.getElementById("sendbtn")
 
-		sendBtn.onclick = () => {
-			if (!websocket) {
-				console.error("Go connect to something first")
-				return
+		sendBtn.onclick = async () => {
+			let payload = {
+				"type": "message",
+				"sender": name,
+				"message": inputField.value
 			}
 
-			sendMessage({
-				'status': "new_message",
-				'sender': name,
-				'message': inputField.value
-			})
+			try {
+				fetch(
+					`http://localhost:8000/api/chat/${roomid}`,
+					{
+						method: "POST",
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(payload)
+					}
+				)
+			} catch (e) {
+				console.log(e)
+			}
+
 			inputField.value = ""
+		}
+
+		let inviteBtn = document.getElementById("invitefight")
+
+		inviteBtn.onclick = async () => {
+			let payload = {
+				"type": "invite",
+				"sender": name,
+				"message": "Optional Message Goes here",
+				"match_type": "pong"
+			}
+
+			try {
+				fetch(
+					`http://localhost:8000/api/chat/${roomid}`,
+					{
+						method: "POST",
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(payload)
+					}
+				)
+			} catch (e) {
+				console.log(e)
+			}
 		}
 	}
 
 	let cleanup = () => {
+		if (websocket)
+			websocket.close()
 	}
 
 	return [prerender, render_code, postrender, cleanup]

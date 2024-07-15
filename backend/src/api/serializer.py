@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from database.models import Player, Match, ChatRoom, ChatMessages, MatchResult, Tournament, TournamentResult, TournamentRound
+from database.models import Player, Match, ChatRoom, ChatMessage, MatchResult, Tournament, TournamentResult, TournamentRound, InviteMessage
 from util.base_converter import from_base52, to_base52
 
 class PublicPlayerSerializer(serializers.ModelSerializer):
@@ -29,15 +29,24 @@ class MatchResultSerializer(serializers.ModelSerializer):
         return obj.get_reason_display()
 
 class MatchSerializer(serializers.ModelSerializer):
-    result = MatchResultSerializer()
+    status = serializers.SerializerMethodField()
+
+    def get_status(self, obj):
+        return obj.get_status_display()
 
     class Meta:
         model = Match
-        fields = ('matchid', 'time_played', 'status', 'result')
+        fields = ('matchid', 'time_played', 'status')
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if (ret['status'] == 'done'):
+            ret['result'] = MatchResultSerializer(instance.result).data
+        return ret
 
 class TournamentRoundSerializer(serializers.ModelSerializer):
-    match = serializers.SlugRelatedField(queryset=Match, many=True, slug_field='matchid')
-    # match = MatchSerializer(many=True)
+    # match = serializers.SlugRelatedField(queryset=Match, many=True, slug_field='matchid')
+    match = MatchSerializer(many=True)
 
     class Meta:
         model = TournamentRound
@@ -53,11 +62,20 @@ class TournamentResultSerializer(serializers.ModelSerializer):
         fields = ('winner', 'players', 'rounds')
 
 class TournamentSerializer(serializers.ModelSerializer):
-    result = TournamentResultSerializer()
+    status = serializers.SerializerMethodField()
+
+    def get_status(self, obj):
+        return obj.get_status_display()
 
     class Meta:
         model = Tournament
-        fields = ('tournamentid', 'time_played', 'status', 'result')
+        fields = ('tournamentid', 'time_played', 'status')
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if ret['status'] == 'done':
+            ret['result'] = TournamentResultSerializer(instance.result).data
+        return ret
 
 class ChatRoomSerializer(serializers.ModelSerializer):
     owner = PublicPlayerSerializer()
@@ -68,10 +86,35 @@ class ChatRoomSerializer(serializers.ModelSerializer):
         model = ChatRoom
         fields = '__all__'
 
-class ChatMessageSerializer(serializers.ModelSerializer):
-    room = ChatRoomSerializer()
-    sender = PublicPlayerSerializer()
+class InviteMessageSerializer(serializers.ModelSerializer):
+    status = serializers.SerializerMethodField()
 
     class Meta:
-        model = ChatMessages
-        fields = '__all__'
+        model = InviteMessage
+        fields = ['status']
+
+    def get_status(self, obj):
+        return obj.get_status_display()
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if ret['status'] != 'expired':
+            ret['match'] = instance.match.matchid
+        return ret
+
+class ChatMessageSerializer(serializers.ModelSerializer):
+    sender = PublicPlayerSerializer()
+    type = serializers.SerializerMethodField()
+
+    def get_type(self, obj):
+        return obj.get_type_display()
+
+    class Meta:
+        model = ChatMessage
+        fields = ['chatid', 'type', 'posted', 'sender', 'content']
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if ret["type"] == 'invite':
+            ret['invite_details'] = InviteMessageSerializer(instance.invite_details).data
+        return ret

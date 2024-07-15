@@ -8,6 +8,8 @@ from rest_framework.views import APIView
 from pong_server.server import PongServer
 from rest_framework import status
 
+from datetime import datetime
+
 import asyncio
 
 class MatchView(APIView):
@@ -29,7 +31,38 @@ class MatchView(APIView):
 
     # RANDOM MATCHMAKING
     def get(self, request: Request, format = None):
-        server_id = PongServer.random_matchmake()
+        type = request.GET.get("type")
+
+        server_id = PongServer.random_matchmake(type)
+        if server_id is not None:
+            return Response({
+                "game_id": server_id
+            }, status=status.HTTP_200_OK)
+        
+        if not PongServer.matchMaking(type):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        # wait for 10 seconds
+        # now its 3, cuz idw wait 10 years
+        duration = 3
+        durationLeft = duration
+        timeStart = datetime.now()
+
+        while (durationLeft >= 0.25):
+            currentTime = datetime.now()
+            difference = (currentTime - timeStart).total_seconds()
+            durationLeft = max(0, duration - difference)
+
+            server_id = PongServer.random_matchmake(type)
+            if server_id is not None:
+                if type == "pong":
+                    PongServer.pongQueue -= 1
+                elif type == "apong":
+                    PongServer.apongQueue -= 1
+                break
+
+        if server_id == None:
+            return Response(status=status.HTTP_408_REQUEST_TIMEOUT)
 
         return Response({
             "game_id": server_id

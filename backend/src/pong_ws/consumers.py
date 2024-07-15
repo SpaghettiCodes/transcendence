@@ -11,10 +11,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
         self.gameid = self.scope['url_route']['kwargs']['pongid']
         self.subserverid = self.scope['url_route']['kwargs'].get('tournamentid')
 
-        if self.subserverid:
-            self.groupname = f"game-{self.subserverid}-{self.gameid}"
-        else:
-            self.groupname = f"game-{self.gameid}"
+        self.groupname = f"game-{self.gameid}" # gameid is guranteed to be unique
 
         self.player_name = None
         self.authorized = False

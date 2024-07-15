@@ -5,15 +5,16 @@
 
 let mainDoc = document.getElementById("main")
 
-import landing from "./pages/landing.js"
-import fourofour from "./pages/404.js"
-import ftlogin from "./pages/ft_login.js"
-import home from "./pages/home.js"
-import match from "./pages/match.js"
-import game from "./pages/matchListing.js"
-import chat from "./pages/chat.js"
-import tournamentList from "./pages/tournamentListing.js"
-import tournament from "./pages/tournament.js"
+import landing from "./references/landing.js"
+import fourofour from "./references/404.js"
+import ftlogin from "./references/ft_login.js"
+import home from "./references/home.js"
+import match from "./references/match.js"
+import game from "./references/matchListing.js"
+import chat from "./references/chat.js"
+import tournamentList from "./references/tournamentListing.js"
+import tournament from "./references/tournament.js"
+import result from "./references/result.js"
 
 // match ==> 
 
@@ -24,11 +25,10 @@ const routes = {
 	'/home': home,
 	'/match': game,
 	'/match/<game_id>': match,
-	'/match/<game_id>/results': fourofour,
+	'/match/<game_id>/results': result,
 	'/chat': chat,
 	'/tournament': tournamentList,
 	'/tournament/<tournament_id>': tournament,
-	'/tournament/<tournament_id>/match/<game_id>': match,
 }
 
 let clean_up_function = () => {}
@@ -87,7 +87,8 @@ const get_renderer = (uri, prop) => {
 
 	const arg_names = found_uri.slice(1).split("/").slice(1)
 
-	prop["arguments"] = {}
+	if (!prop["arguments"])
+		prop["arguments"] = {}
 
 	arg_names.forEach((value, index) => {
 		if (value.match(/\<.*\>/)) {

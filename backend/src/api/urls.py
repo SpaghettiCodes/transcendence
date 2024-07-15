@@ -11,6 +11,7 @@ urlpatterns = [
     path('match/<match_id>', match.specificMatchGet),
     path('match/<match_id>/result', result.MatchResult.as_view()),
     path('chat', chat.Chat.as_view()),
+    path('chat/<chat_id>', chat.chatPostingMessages),
     path('chat/<chat_id>/history', chat.chatHistory),
     path('ft/auth', ft.get_ft_code),
     path('ft/me', ft.get_ft_me),

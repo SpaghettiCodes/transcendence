@@ -99,7 +99,7 @@ class PongGame(Game):
 
         try:
             matchObject = await Match.objects.aget(matchid=self.gameid)
-            matchObject.status = 'done'
+            matchObject.status = 2
             await matchObject.asave()
         except ObjectDoesNotExist:
             print("What, how")

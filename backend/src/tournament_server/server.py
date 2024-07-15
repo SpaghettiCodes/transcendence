@@ -11,6 +11,7 @@ from math import ceil
 from asgiref.sync import sync_to_async, async_to_sync
 
 from database.models import Tournament, TournamentResult, TournamentRound, Player, Match
+from api.serializer import MatchSerializer
 from util.base_converter import from_base52, to_base52
 
 import asyncio
@@ -44,11 +45,6 @@ class TournamentServer:
         # for database saving
         self.completePlayers = []
         self.completeResults = []
-
-        # temp
-        self.completeIDs = []
-        self.playedIDs = [] # temp
-
 
         # for running the server
         self.currentPlayers = []
@@ -148,13 +144,17 @@ class TournamentServer:
         await self.refresh_PlayerList()
         return (True, "")
 
+    def getSerializedCompleteResults(self):
+        data = [ [ match.matchid for match in round ] for round in self.completeResults ]
+        return data
+
     def getDetails(self):
         return {
             "players": self.currentPlayers,
             "ready": self.readiedPlayers,
             "spectators": self.spectators,
             "started": self.tournamentStarted,
-            "previousMatches": self.completeResults,
+            "previousMatches": self.getSerializedCompleteResults(),
             "matches": self.getMatches()
         }
 
@@ -267,10 +267,6 @@ class TournamentServer:
         # save the result
         self.completeResults.append(self.currentResults)
 
-        # temp
-        self.completeIDs.append(self.playedIDs)
-        # tempEnd
-
         self.reset()
 
         if (len(self.currentPlayers) == 1):
@@ -287,7 +283,6 @@ class TournamentServer:
         for matchup in matchups:
             gameId = await sync_to_async(PongServer.new_game) (
                 expectedPlayers=[matchup[0], matchup[1]],
-                startImmediately=True,
                 subserver_id=self.subserverId
             )
 
@@ -297,9 +292,6 @@ class TournamentServer:
             await gameInstance.startImmediately()
 
             self.matchesCount += 1
-            # temp
-            self.playedIDs.append(gameId)
-            # temp end
 
     async def panicRemove(self):
         tournamentObject = await Tournament.objects.aget(tournamentid=self.id)
@@ -317,7 +309,7 @@ class TournamentServer:
         tournamentObject: Tournament = None
 
         print(self.completePlayers)
-        print(self.completeIDs)
+        print(self.completeResults)
 
         try:
             tournamentObject = await Tournament.objects.aget(tournamentid=self.id)
@@ -341,22 +333,6 @@ class TournamentServer:
 
         print(playerObjects)
 
-        matchObjects: list[list[Match]] = []
-
-        # bad! should just get the object from the removal function
-        # i cba tho man
-        for round in self.completeIDs:
-            roundMatchObjects = []
-            for matchId in round:
-                try:
-                    matchObject = await Match.objects.aget(matchid=matchId)
-                    roundMatchObjects.append(matchObject)
-                except ObjectDoesNotExist:
-                    print("Fuck u mean? ABORT")
-                    await self.panicRemove()
-                    return
-            matchObjects.append(roundMatchObjects)
-
         # create new tournamentResult
         # add winner and players in
         newTournamentResult = await TournamentResult.objects.acreate(
@@ -368,7 +344,7 @@ class TournamentServer:
 
         # create the rounds
         roundNumber = 1
-        for round in matchObjects:
+        for round in self.completeResults:
             roundObject = await TournamentRound.objects.acreate(
                 roundNumber=roundNumber,
                 result=newTournamentResult
@@ -379,7 +355,7 @@ class TournamentServer:
             await roundObject.asave()
             roundNumber += 1
 
-        tournamentObject.status = 'done'
+        tournamentObject.status = 2
         await tournamentObject.asave()
         print("done uploading")
 
@@ -391,6 +367,8 @@ class TournamentServer:
             await PongServer.createRemovalFunction(gameId, subserverId)()
 
             matchObject = await Match.objects.aget(matchid=gameId)
+
+            self.currentResults.append(matchObject)
 
             loserGetter = lambda : matchObject.result.loser.username
             loser = await sync_to_async(loserGetter)()
@@ -431,7 +409,7 @@ class TournamentServer:
         await self.channel_layer.group_send(self.groupName, {
             "type": "message",
             "text": {
-                "matches": self.completeResults
+                "matches": self.getSerializedCompleteResults()
             }
         })
 

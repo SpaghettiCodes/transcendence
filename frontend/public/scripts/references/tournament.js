@@ -129,7 +129,7 @@ export default function tournament(prop={}) {
 
 					if (players.includes(player_id)) {
 						// what are you doing here? go play your match!
-						redirect(`/tournament/${tournamentID}/match/${id}`)
+						redirect(`/match/${id}`, {"arguments": {"tournament_id": tournamentID}})
 						return
 					} else {
 						let spectateButton = document.createElement("button")
@@ -149,6 +149,8 @@ export default function tournament(prop={}) {
 		}
 
 		const loadPlayedlist = (previousRounds) => {
+			console.log(previousRounds)
+
 			let rounds = 0
 
 			if (!previousRounds.length) {
@@ -163,27 +165,29 @@ export default function tournament(prop={}) {
 					previousRound.forEach(match => {
 						let newDiv = document.createElement("div")
 	
-						let historyIdDiv = document.createElement("div")
-						historyIdDiv.innerText = `Game ID: ${match["id"]}`
+						// let historyIdDiv = document.createElement("div")
+						// historyIdDiv.innerText = `Game ID: ${match["id"]}`
 	
-						let attackerSideDiv = document.createElement("div")
-						let attacker = match["sides"]["attacker"]
-						let attackerScore = match["score"]["attacker"]
-						attackerSideDiv.innerText = `Player ${attacker} Score : ${attackerScore}`
+						// let attackerSideDiv = document.createElement("div")
+						// let attacker = match["sides"]["attacker"]
+						// let attackerScore = match["score"]["attacker"]
+						// attackerSideDiv.innerText = `Player ${attacker} Score : ${attackerScore}`
 	
-						let defenderSideDiv = document.createElement("div")
-						let defender = match["sides"]["defender"]
-						let defenderScore = match["score"]["defender"]
-						defenderSideDiv.innerText = `Player ${defender} Score : ${defenderScore}`
+						// let defenderSideDiv = document.createElement("div")
+						// let defender = match["sides"]["defender"]
+						// let defenderScore = match["score"]["defender"]
+						// defenderSideDiv.innerText = `Player ${defender} Score : ${defenderScore}`
 	
-						let winnerDiv = document.createElement("div")
-						let winner = match["winner"]
-						winnerDiv.innerText = `Winner : ${winner}`
+						// let winnerDiv = document.createElement("div")
+						// let winner = match["winner"]
+						// winnerDiv.innerText = `Winner : ${winner}`
 
-						newDiv.append(historyIdDiv)
-						newDiv.append(attackerSideDiv)
-						newDiv.append(defenderSideDiv)
-						newDiv.append(winnerDiv)
+						// newDiv.append(historyIdDiv)
+						// newDiv.append(attackerSideDiv)
+						// newDiv.append(defenderSideDiv)
+						// newDiv.append(winnerDiv)
+
+						newDiv.innerText = match
 						previousMatchesDiv.append(newDiv)
 					})
 				});
