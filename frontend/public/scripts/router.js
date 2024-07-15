@@ -17,6 +17,12 @@ import tournament from "./references/tournament.js"
 import result from "./references/result.js"
 
 // match ==> 
+import profile from "./pages/profile.js"
+import tournament from "./pages/tournament.js"
+import matchmaking from "./pages/matchmaking.js"
+import msg from "./pages/msg.js"
+import friendlist from "./pages/friendlist.js"
+import tournamentlist from "./pages/tournamentlist.js"
 
 const routes = {
 	'/': landing,
@@ -29,6 +35,12 @@ const routes = {
 	'/chat': chat,
 	'/tournament': tournamentList,
 	'/tournament/<tournament_id>': tournament,
+	'/profile': profile,
+	'/tournament': tournament,
+	'/matchmaking': matchmaking,
+	'/msg': msg,
+	'/friendlist': friendlist,
+	'/tournamentlist': tournamentlist
 }
 
 let clean_up_function = () => {}

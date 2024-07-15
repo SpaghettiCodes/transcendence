@@ -9,10 +9,21 @@ export default function template(prop={}) {
 
 	// return the html code here
 	let render_code = () => {
-		return `<div>
-		404 Not Found :(
-		</div>
-		`
+		return `
+        <div id="mm">
+            <div class="white-bar top-bar"></div>
+            <div class="content container text-white">
+                <p>MATCHMAKING</p>
+            </div>
+            <div class="video-container">
+                <video autoplay muted loop id="bg-video">
+                    <source src="video/among_us.mp4" type="video/mp4">
+                    Your browser does not support HTML5 video.
+                </video>
+            </div>
+            <div class="white-bar bottom-bar"></div>
+        </div>
+        `
 	}
 
 	// attach all event listeners here (or do anything that needs to be done AFTER attaching the html code)
