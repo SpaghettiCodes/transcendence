@@ -48,8 +48,22 @@ export default function test(prop={}) {
 				console.log("success")
 			}
 			else {
-				window.location.href = 'http://localhost:8080/login';
 				console.log("error")
+				const response_player = await fetch('http://localhost:8000/api/player/e', {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${jwt}`
+					 },
+				});
+				if (response_player.ok) {
+					const result = await response_player.json();
+					console.log(result)
+					console.log("success player")
+				}
+				else {
+					console.log("error player")
+				}
 			}
 
         });

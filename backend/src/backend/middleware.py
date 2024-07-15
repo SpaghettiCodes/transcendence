@@ -1,6 +1,6 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.authentication import CSRFCheck
-from rest_framework import exceptions
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from django.conf import settings
 from django.shortcuts import redirect
@@ -43,23 +43,14 @@ class AuthenticateJWTMiddleware(JWTAuthentication):
         header = self.get_header(request)
         
         try:
-            print(header)
-            if header is None:
-                # raw_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE']) or None
-                raw_token = request.headers.get('Authorization')
-            else:
-                raw_token = self.get_header('Authorization')
-            token = re.search('b\'Bearer(.*)\'', raw_token)
-            print("token: " + token)
-            self.get_validated_token(token)
+            raw_token = self.get_raw_token(header)
+            # print("authenticating... ")
+            post_jwt_auth = self.get_validated_token(raw_token)
+            print(post_jwt_auth)
         except:
-            # print("nope")
+            # print("authentication failed")
             return redirect(PATH_401)
 
-
-        # 
-        # enforce_csrf(request)
-        # return self.get_user(validated_token), validated_token
         return None
 
 """

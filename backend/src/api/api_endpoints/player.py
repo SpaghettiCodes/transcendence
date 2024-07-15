@@ -90,14 +90,7 @@ def login(request):
         p.online()
         data = create_jwt_pair_for_user(p)
         response = Response()
-        response.set_cookie(
-							key = settings.SIMPLE_JWT['AUTH_COOKIE'], 
-							value = data["access"],
-							expires = settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
-							secure = settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
-							httponly = settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
-							samesite = settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
-								)
+
         response.data = {"Success" : "Login successfully","data":data}       
         return response
     else:
