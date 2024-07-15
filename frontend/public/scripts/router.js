@@ -4,10 +4,12 @@
 // https://dev.to/rohanbagchi/how-to-write-a-vanillajs-router-hk3
 
 let mainDoc = document.getElementById("main")
-
+import "./jwt.js"
 import landing from "./references/landing.js"
 import fourofour from "./references/404.js"
 import ftlogin from "./references/ft_login.js"
+import login from "./pages/login.js"
+import test from "./pages/test.js"
 import home from "./references/home.js"
 import match from "./references/match.js"
 import game from "./references/matchListing.js"
@@ -28,6 +30,8 @@ const routes = {
 	'/': landing,
 	'/error': fourofour,
 	'/ftlogin': ftlogin,
+	'/login': login,
+	'/test': test,
 	'/home': home,
 	'/match': game,
 	'/match/<game_id>': match,

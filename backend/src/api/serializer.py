@@ -1,15 +1,24 @@
 from rest_framework import serializers
 from database.models import Player, Match, ChatRoom, ChatMessage, MatchResult, Tournament, TournamentResult, TournamentRound, InviteMessage
+from database.models import Friend_Request
 from util.base_converter import from_base52, to_base52
 
 class PublicPlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = ("username", )
+        fields = '__all__'
 
 class PlayerSerializer(serializers.ModelSerializer):
+    friends = serializers.StringRelatedField(many=True, required=False)
+    match_history = serializers.StringRelatedField(many=True, required=False)
+
     class Meta:
         model = Player
+        fields = '__all__'
+
+class FriendRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Friend_Request
         fields = '__all__'
 
 class MatchResultSerializer(serializers.ModelSerializer):
@@ -118,3 +127,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
         if ret["type"] == 'invite':
             ret['invite_details'] = InviteMessageSerializer(instance.invite_details).data
         return ret
+
+        
+class ImageSerializer(serializers.Serializer):
+    image = serializers.ImageField()
