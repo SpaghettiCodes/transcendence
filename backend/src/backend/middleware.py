@@ -1,9 +1,8 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from django.conf import settings
 from django.shortcuts import redirect
+from database.models import Player
 from rest_framework.response import Response
 from rest_framework import status
 import re
@@ -25,6 +24,8 @@ LOGIN_URL = '/api/player/login'
 PATH_401 = '/api/error/401'
 
 class AuthenticateJWTMiddleware(JWTAuthentication):
+    user_model = Player
+
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -44,11 +45,17 @@ class AuthenticateJWTMiddleware(JWTAuthentication):
         
         try:
             raw_token = self.get_raw_token(header)
-            # print("authenticating... ")
+            print("authenticating... ")
             post_jwt_auth = self.get_validated_token(raw_token)
-            print(post_jwt_auth)
+            try:
+                user = self.get_user(post_jwt_auth)
+                print("username: ", user)
+            except Exception as error:
+                print(error)
+            request.META['username'] = user.username
+            # print(request.META)
         except:
-            # print("authentication failed")
+            print("authentication failed")
             return redirect(PATH_401)
 
         return None

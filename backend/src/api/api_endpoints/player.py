@@ -87,7 +87,7 @@ def login(request):
     p = get_object_or_404(Player.objects, username=username)
 
     if p.verify_password(raw_password=raw_password):
-        p.online()
+        p.now_online()
         data = create_jwt_pair_for_user(p)
         response = Response()
 

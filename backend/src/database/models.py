@@ -11,7 +11,7 @@ class Player(models.Model):
     email = models.EmailField(max_length=100, unique=True)
     profile_pic = models.ImageField(default="./firefly.png", blank=True)
     friends = models.ManyToManyField("Player", blank=True)
-    is_online = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
     matches_played = models.PositiveIntegerField(blank=True, default=0)
     matches_won = models.PositiveIntegerField(blank=True, default=0)
@@ -48,8 +48,13 @@ class Player(models.Model):
             self.matches_played += 1
             self.save()
             
-    def online(self):
-        self.is_online = True
+    def now_online(self):
+        self.is_active = True
+        self.save()
+        
+    def now_offline(self):
+        self.is_active = False
+        self.save()
 
 class Friend_Request(models.Model):
     sender = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='sender', default=None)
