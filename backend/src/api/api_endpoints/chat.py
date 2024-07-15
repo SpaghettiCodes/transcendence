@@ -133,10 +133,9 @@ def chatPostingMessages(request: Request, chat_id):
     if sender not in members and sender != owner:
         return Response(status=status.HTTP_403_FORBIDDEN)
 
-    posted = datetime.now()
     content = data["message"]
 
-    newMessage = ChatMessage(room=room, sender=sender, posted=posted, content=content)
+    newMessage = ChatMessage(room=room, sender=sender, content=content)
     newMessage.save()
     if data['type'] == 'invite':
         newMessage.type = 2

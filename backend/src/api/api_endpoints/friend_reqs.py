@@ -10,6 +10,7 @@ from ..serializer import PlayerSerializer, FriendRequestSerializer
 from django.core.exceptions import FieldDoesNotExist
 from django.core.files.images import ImageFile
 
+# debugging purposes, remove later
 @api_view(['GET'])
 def DisplayAllFriendRequest(request):
     fr_all = FriendRequestSerializer(Friend_Request.objects.all(), many=True)
@@ -38,7 +39,6 @@ def MakeFriendRequest(request):
             {"Error": "Failed to create friend request"},
             status=status.HTTP_400_BAD_REQUEST
             )
-
 
 """
 

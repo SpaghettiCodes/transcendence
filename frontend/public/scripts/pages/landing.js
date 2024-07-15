@@ -14,18 +14,6 @@ export default function landing(prop={}) {
 			<div class="text-center mb-5">
 				<h1 class="header-font">APONG US</h1>
 			</div>
-<<<<<<< HEAD:frontend/public/scripts/references/landing.js
-
-			<h1>Testing</h1>
-			<div>
-				<a href="/match">List Games</a>
-				<br>
-				<a href="/chat">Chat</a>
-				<br>
-				<a href="/tournament">List Tournament</a>
-			</div>
-		</div>
-=======
         <div class="video-container">
             <video autoplay muted loop id="bg-video">
                 <source src="video/among_us.mp4" type="video/mp4">
@@ -47,7 +35,6 @@ export default function landing(prop={}) {
                 <button type="button" class="btn btn-outline-light btn-sm">Login via 42</button>
             </div>
         </div>
->>>>>>> html:frontend/public/scripts/pages/landing.js
 		`
 	}
 

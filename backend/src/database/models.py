@@ -8,23 +8,28 @@ import os
 # Create your models here.
 class Player(models.Model):
     username = models.CharField(max_length=20, unique=True)
-    password = models.CharField(max_length=256, blank=True)
+    password = models.CharField(max_length=256)
     email = models.EmailField(max_length=100, unique=True)
     profile_pic = models.ImageField(default="./firefly.png", blank=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
+
     friends = models.ManyToManyField("Player", blank=True)
     is_active = models.BooleanField(default=False)
-    date_joined = models.DateTimeField(auto_now_add=True)
+
+    # hmmm
     matches_played = models.PositiveIntegerField(blank=True, default=0)
     matches_won = models.PositiveIntegerField(blank=True, default=0)
     matches_lost = models.PositiveIntegerField(blank=True, default=0)
-    match_history = models.ManyToManyField("Match", blank=True)
 
     def __str__(self) -> str:
-        return self.username
+        return f"User {self.username}"
     
     def encrypt_password(raw_password):
-        return pbkdf2_sha256.encrypt(raw_password, rounds=12000, salt_size=32)
-    
+        return pbkdf2_sha256.hash(raw_password, rounds=12000, salt_size=32) 
+        # encrypt is depreciated according to docs
+        # also why is the object to be hashed called secret??? 
+        # mf i thought secret is the "secret phrase" used to hash your password
+
     def verify_password(self, raw_password):
         return pbkdf2_sha256.verify(raw_password, self.password)
     
@@ -42,12 +47,6 @@ class Player(models.Model):
 
     def lost_match(self):
         self.matches_lost += 1
-
-    def add_match_history(self, match):
-        if not match in self.match_history.all():
-            self.match_history.add(match)
-            self.matches_played += 1
-            self.save()
             
     def now_online(self):
         self.is_active = True
@@ -58,9 +57,18 @@ class Player(models.Model):
         self.save()
 
 class Friend_Request(models.Model):
-    sender = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='sender', default=None)
-    receiver = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='receiver', default=None)
-    is_active = models.BooleanField(blank=True, null=False, default=True)
+    sender = models.ForeignKey(
+        Player, 
+        on_delete=models.CASCADE, 
+        related_name='friend_request_sender', 
+        default=None
+    )
+    receiver = models.ForeignKey(
+        Player, 
+        on_delete=models.CASCADE, 
+        related_name='friend_request_receiver', 
+        default=None
+    )
 
     def __str__(self) -> str:
         return f"{self.sender} to {self.receiver}"
@@ -72,29 +80,15 @@ class Friend_Request(models.Model):
             sender_player = Player.objects.get(username=self.sender.username)
             if sender_player:
                 sender_player.add_friend(self.receiver)
-                self.is_active = False
-                self.save()
+                self.delete()
 
     def decline(self):
-        self.is_active = False
-        self.save()
-
-class Tournament(models.Model):
-    name = models.CharField(max_length=40, unique=True, blank=True)
-    players = models.ManyToManyField("Player", blank=True)
-    matches = models.ManyToManyField("Match", blank=True)
-    
-    def __str__(self) -> str:
-        return self.name
-    
-    def is_full_tournament(number):
-        return (number and (not(number & (number - 1))))
-        
+        self.delete()
     
 class Match(models.Model):
     id = models.BigAutoField(primary_key=True)
     matchid = models.CharField(max_length=8, unique=True, null=True, blank=True)
-    time_played = models.DateTimeField()
+    time_played = models.DateTimeField(auto_now_add=True)
 
     status = models.SmallIntegerField(
         choices=(
@@ -164,7 +158,7 @@ class MatchResult(models.Model):
 class Tournament(models.Model):
     id = models.BigAutoField(primary_key=True)
     tournamentid = models.CharField(max_length=8, unique=True)
-    time_played = models.DateTimeField()
+    time_played = models.DateTimeField(auto_now_add=True)
 
     status = models.SmallIntegerField(
         choices=(
@@ -234,7 +228,7 @@ class ChatMessage(models.Model):
         ),
         default=1
     )
-    posted = models.DateTimeField()
+    posted = models.DateTimeField(auto_now_add=True)
     content = models.CharField(max_length=200)
 
 class InviteMessage(models.Model):

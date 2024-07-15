@@ -58,7 +58,7 @@ class TournamentManager:
 
     @classmethod 
     def getNewTournamentID(cls):
-        newTournament = Tournament.objects.create(time_played=datetime.now())
+        newTournament = Tournament.objects.create()
         tournamentId = newTournament.id
         displayId = to_base52(tournamentId)
         newTournament.tournamentid = displayId

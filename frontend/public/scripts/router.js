@@ -5,22 +5,19 @@
 
 let mainDoc = document.getElementById("main")
 import "./jwt.js"
-import landing from "./references/landing.js"
-import fourofour from "./references/404.js"
-import ftlogin from "./references/ft_login.js"
+import landing from "./pages/landing.js"
+import fourofour from "./pages/404.js"
+import ftlogin from "./pages/ft_login.js"
 import login from "./pages/login.js"
 import test from "./pages/test.js"
-import home from "./references/home.js"
-import match from "./references/match.js"
-import game from "./references/matchListing.js"
-import chat from "./references/chat.js"
-import tournamentList from "./references/tournamentListing.js"
-import tournament from "./references/tournament.js"
-import result from "./references/result.js"
-
-// match ==> 
-import profile from "./pages/profile.js"
+import home from "./pages/home.js"
+import match from "./pages/match.js"
+import game from "./pages/matchListing.js"
+import chat from "./pages/chat.js"
+import tournamentList from "./pages/tournamentListing.js"
 import tournament from "./pages/tournament.js"
+import result from "./pages/result.js"
+import profile from "./pages/profile.js"
 import matchmaking from "./pages/matchmaking.js"
 import msg from "./pages/msg.js"
 import friendlist from "./pages/friendlist.js"
@@ -40,11 +37,9 @@ const routes = {
 	'/tournament': tournamentList,
 	'/tournament/<tournament_id>': tournament,
 	'/profile': profile,
-	'/tournament': tournament,
 	'/matchmaking': matchmaking,
 	'/msg': msg,
 	'/friendlist': friendlist,
-	'/tournamentlist': tournamentlist
 }
 
 let clean_up_function = () => {}

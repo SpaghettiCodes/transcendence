@@ -113,7 +113,7 @@ class PongServer:
         #     server_id = "".join(random.choices(cls.ran_letter, k=8))
 
         # newMatch = await sync_to_async(Match.objects.create)()
-        newMatch = Match.objects.create(time_played=datetime.datetime.now())
+        newMatch = Match.objects.create()
         matchId = newMatch.id
         displayId = to_base52(matchId)
         newMatch.matchid = displayId

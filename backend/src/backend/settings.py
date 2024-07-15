@@ -116,12 +116,12 @@ CHANNEL_LAYERS = {
 
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
+#         'ENGINE': 'django.db.backends.postgresql',
 #         'NAME': 'mydatabase',
 #     }
 # }
 
-# connect to postgresqlpy
+# # connect to postgresqlpy
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',

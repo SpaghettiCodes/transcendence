@@ -12,15 +12,14 @@ import re
 JWT_AUTH_EXEMPT_PARTIAL = [
     '/admin/',
     '/api/ft/',
-    '/api/player/create',
-    '/api/player/login',
 ]
 
 JWT_AUTH_EXEMPT_FULL = [
-    '/api/player/',
+    '/api/login',
+    '/api/register',
 ]
 
-LOGIN_URL = '/api/player/login'
+LOGIN_URL = '/api/player/login' # bro i think you forgot to set thisu
 PATH_401 = '/api/error/401'
 
 class AuthenticateJWTMiddleware(JWTAuthentication):

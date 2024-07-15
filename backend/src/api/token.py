@@ -6,9 +6,9 @@ from database.models import Player
 
 # https://django-rest-framework-simplejwt.readthedocs.io/en/latest/getting_started.html
 # https://www.youtube.com/watch?v=ax2AorU9PNc
-def create_jwt_pair_for_user(user:Player):
+def create_jwt_pair_for_user(user: Player):
+    print(user)
     refresh = RefreshToken.for_user(user)
     tokens = {"access": str(refresh.access_token), "refresh": str(refresh)}
 
     return tokens
-

@@ -4,14 +4,13 @@ from database.models import Friend_Request
 from util.base_converter import from_base52, to_base52
 
 class PublicPlayerSerializer(serializers.ModelSerializer):
+    friends = serializers.StringRelatedField(many=True, required=False)
+
     class Meta:
         model = Player
-        fields = '__all__'
+        fields = ('username', 'email', 'profile_pic', 'is_active', 'matches_played', 'matches_won', 'matches_lost', 'friends')
 
 class PlayerSerializer(serializers.ModelSerializer):
-    friends = serializers.StringRelatedField(many=True, required=False)
-    match_history = serializers.StringRelatedField(many=True, required=False)
-
     class Meta:
         model = Player
         fields = '__all__'
