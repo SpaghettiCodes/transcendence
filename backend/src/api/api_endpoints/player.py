@@ -24,6 +24,7 @@ class ViewPlayers(APIView):
 
     # for testing purposes only
     def get(self, request, format=None):
+        print(request.user)
         p_all = PublicPlayerSerializer(Player.objects.all(), many=True)
         return Response(p_all.data)
 
@@ -92,24 +93,6 @@ def createPlayer(request):
         )
 
     return Response(status=status.HTTP_201_CREATED)
-
-def getSpecificPlayer(player_username):
-    p = get_object_or_404(Player.objects, username=player_username)
-    serialized = PlayerSerializer(p)
-    return Response(serialized.data)
-
-def removeSpecificPlayer(player_username):
-    p = get_object_or_404(Player.objects, username=player_username)
-    p.delete()
-    return Response(status=status.HTTP_200_OK)
-
-@api_view(['DELETE', 'GET'])
-def SpecificPlayer(request, player_username):
-    match request.method:
-        case 'DELETE':
-            return removeSpecificPlayer(player_username)
-        case 'GET':
-            return getSpecificPlayer(player_username)
 
 @api_view(['GET'])
 def SpecificPlayerMatches(request, player_username):

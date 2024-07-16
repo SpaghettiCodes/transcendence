@@ -61,7 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-	'backend.middleware.AuthenticateJWTMiddleware',
+	# 'backend.middleware.AuthenticateJWTMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -70,7 +70,7 @@ ROOT_URLCONF = 'backend.urls'
 # https://medium.com/@poorva59/implementing-simple-jwt-authentication-in-django-rest-framework-3e54212f14da
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'backend.authentication.AuthenticateJWT',
     ),
 }
 
