@@ -33,7 +33,7 @@ video {
     padding: 20px;
 }
 #msg.gray-box {
-    background-color: lightgray;
+    background-color: #D5D5D5;
     padding: 20px;
     border-radius: 5px;
     height: calc(100vh - 160px);

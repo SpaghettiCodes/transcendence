@@ -18,23 +18,23 @@ export default function home(prop={}) {
 			</div>
 
 			<div id="content" class="row text-center">
-				<div class="col-md-4 mb-3" id="pongGame">
-					<button class="ui-btn btn-block"><span>Pong</span></button>
+				<div class="d-flex col-md-4 mb-3" id="pongGame">
+					<button class="flex-grow-1 ui-btn btn-block"><span>Pong</span></button>
 				</div>
-				<div class="col-md-4 mb-3" id="apongUsGame">
-				<button class="ui-btn btn-block"><span>APong Us</span></button>
+				<div class="d-flex col-md-4 mb-3" id="apongUsGame">
+				<button class="flex-grow-1 ui-btn btn-block"><span>APong Us</span></button>
 				</div>
-				<div class="col-md-4 mb-3" id="tournament">
-				<button class="ui-btn btn-block"><span>Tournament</span></button>
+				<div class="d-flex col-md-4 mb-3" id="tournament">
+				<button class="flex-grow-1 ui-btn btn-block"><span>Tournament</span></button>
 				</div>
-				<div class="col-md-4 mb-3">
-				<button class="ui-btn btn-block"><span>Language</span></button>
+				<div class="d-flex col-md-4 mb-3">
+				<button class="flex-grow-1 ui-btn btn-block"><span>Language</span></button>
 				</div>
-				<div class="col-md-4 mb-3">
-				<button class="ui-btn btn-block"><span>Profile</span></button>
+				<div class="d-flex col-md-4 mb-3">
+				<button class="flex-grow-1 ui-btn btn-block"><span>Profile</span></button>
 				</div>
-				<div class="col-md-4 mb-3">
-				<button class="ui-btn btn-block"><span>Friends....?</span></button>
+				<div class="d-flex col-md-4 mb-3">
+				<button class="flex-grow-1 ui-btn btn-block"><span>Friends....?</span></button>
 				</div>
 			</div> 
 		</div>
