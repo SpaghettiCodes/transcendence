@@ -3,6 +3,7 @@ body {
     padding: 0;
     overflow: hidden;
 }
+
 .video-container {
     position: fixed;
     top: 0;
@@ -12,6 +13,7 @@ body {
     z-index: -1;
     overflow: hidden;
 }
+
 video {
     min-width: 100%;
     min-height: 100%;
@@ -20,32 +22,27 @@ video {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
 .friend-list {
     background-color: darkgray; /* Slightly transparent background */
     border-radius: 5px;
     padding: 20px;
-    height: calc(100vh - 60px);
-    overflow-y: auto;
+	height: inherit;
+	overflow-y: auto;
 }
-.container-fluid {
-    padding: 20px;
+
+.profile-details {
+	flex-grow: 3 !important;
 }
+
 .friend-list-item {
     background-color: #f8f9fa;
     margin-bottom: 10px;
     border-radius: 5px;
     padding: 10px;
+	direction: ltr;
 }
+
 .friend-list-item:hover {
     background-color: #e9ecef;
-}
-.title {
-    margin-top: 20px; /* Adjust the top margin as needed */
-}
-.profile-info {
-    color: white;
-}
-.buttons-bottom {
-    position: absolute;
-    bottom: 30px;
 }

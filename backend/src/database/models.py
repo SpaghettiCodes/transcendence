@@ -7,19 +7,19 @@ import os
 
 # Create your models here.
 class Player(models.Model):
-    username = models.CharField(max_length=20, unique=True)
+    username = models.CharField(max_length=35, unique=True)
     password = models.CharField(max_length=256)
-    email = models.EmailField(max_length=100, unique=True)
-    profile_pic = models.ImageField(default="./firefly.png", blank=True)
+    email = models.EmailField(max_length=100, unique=True, blank=True, null=True)
+    profile_pic = models.ImageField(default="./firefly.png")
     date_joined = models.DateTimeField(auto_now_add=True)
 
     friends = models.ManyToManyField("Player", blank=True)
     is_active = models.BooleanField(default=False)
 
     # hmmm
-    matches_played = models.PositiveIntegerField(blank=True, default=0)
-    matches_won = models.PositiveIntegerField(blank=True, default=0)
-    matches_lost = models.PositiveIntegerField(blank=True, default=0)
+    matches_played = models.PositiveIntegerField(default=0)
+    matches_won = models.PositiveIntegerField(default=0)
+    matches_lost = models.PositiveIntegerField(default=0)
 
     def __str__(self) -> str:
         return f"User {self.username}"
