@@ -11,23 +11,49 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 
 from database.models import ChatRoom, Player, ChatMessage, InviteMessage, Match
-from ..serializer import ChatRoomSerializer, ChatMessageSerializer
+from ..serializer import ChatMessageSerializer, ChatRoomSerializer, ChatRoomIDSerializer
 
 from channels.layers import get_channel_layer
 from asgiref.sync import sync_to_async, async_to_sync
 
 from datetime import datetime
 
+from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample,  OpenApiParameter
+
 class Chat(APIView):
     parser_classes = [JSONParser]
     renderer_classes = [JSONRenderer]
 
+    @extend_schema(
+        summary="Create a new ChatRoom",
+        description="This API endpoint is used to create a new ChatRoom",
+        request=ChatRoomSerializer,
+        examples=[
+            OpenApiExample("Create a new chat room with no members", {
+                    "username": "owner_username",
+                    "title": "title_of_chatRoom"
+            }, request_only=True), OpenApiExample("Create a new chatroom with a few members", {
+                "username": "owner_username",
+                "title": "title_of_chatRoom",
+                "members": [
+                    "member_1",
+                    "member_2",
+                    "member_3"
+                ]
+            }, request_only=True)
+        ],
+        responses={
+            201: OpenApiResponse(ChatRoomIDSerializer, "ID of newly created Chatroom"),
+            404: None
+        },
+        methods=['POST']
+    )
     def post(self, request: Request, format = None):
         data = request.data
 
         owner_username = data["username"]
         owner = get_object_or_404(Player, username=owner_username)
-        chatroom_title = data["chat_title"]
+        chatroom_title = data["title"]
 
         new_chat = ChatRoom(owner=owner, title=chatroom_title)
         new_chat.save()
@@ -37,14 +63,85 @@ class Chat(APIView):
                 memberObject = Player.objects.get(username=member)
                 if memberObject != owner:
                     new_chat.members.add(memberObject)
+        new_chat.save()
 
+        serializer = ChatRoomIDSerializer(new_chat)
         return Response(
-            data={
-                "roomid": new_chat.roomid
-            },
+            data=serializer.data,
             status=status.HTTP_201_CREATED
         )
 
+@extend_schema(
+    summary="Gets the past messages of a ChatRoom",
+    description="This API endpoint gets the last 10 message, starting from the messageid given in the query string variable start_id. If start_id is not give, it returns the 10 latest message from the chatroom",
+    parameters=[
+        OpenApiParameter(
+            name="chat_id", 
+            description="The Chatroom's id", 
+            location='path'),
+        OpenApiParameter(
+            name="start_id",
+            description="The id of the message to start getting from",
+            location='query')
+        ],
+    methods=['GET'],
+    responses={
+        201: OpenApiResponse(
+            ChatMessageSerializer(), 
+            "The 10 latest messages, starting from {start_id}, sorted from earliest message to later messages",
+            [OpenApiExample("Example of list of message given, below are the 4 possible messages that can be sent, contact backend guys if we are missing examples", [
+                {
+                    "chatid": 4,
+                    "type": "normal",
+                    "posted": "2024-07-16T11:34:44.548Z",
+                    "sender": {
+                        "username": "sender_username",
+                    },
+                    "content": "content of messege sent",
+                },
+                {
+                    "chatid": 3,
+                    "type": "invite",
+                    "posted": "2024-07-12T11:34:44.548Z",
+                    "sender": {
+                        "username": "sender_username",
+                    },
+                    "content": "content of messege sent",
+                    "invite_details": {
+                        "status": 'done',
+                        "match": 'match_id'
+                    }
+                },
+                {
+                    "chatid": 2,
+                    "type": "invite",
+                    "posted": "2024-07-10T11:34:44.548Z",
+                    "sender": {
+                        "username": "sender_username",
+                    },
+                    "content": "content of messege sent",
+                    "invite_details": {
+                        "status": 'waiting',
+                        "match": 'match_id'
+                    }
+                },
+                {
+                    "chatid": 1,
+                    "type": "invite",
+                    "posted": "2024-07-09T11:34:44.548Z",
+                    "sender": {
+                        "username": "sender_username",
+                    },
+                    "content": "content of messege sent",
+                    "invite_details": {
+                        "status": 'expired',
+                    }
+                },
+            ])
+        ]),
+        401: None
+    }
+)
 @api_view(['GET'])
 def chatHistory(request: Request, chat_id):
     last_msgId = request.GET.get('start_id')
@@ -118,6 +215,36 @@ def createInvite(messageObject, match_type, ws_group_name):
     newInviteObject.save()
     return gameId
 
+@extend_schema(
+    summary="Sends a message to chat room",
+    description="API endpoint for users to send their message to the chat room to be saved",
+    request=ChatMessageSerializer,
+    parameters=[OpenApiParameter("chat_id", description='ID of the chatroom', location='path')],
+    examples=[
+        OpenApiExample(
+            "Send a message",
+            {
+                "sender": "sender_username",
+                "type": "message",
+                "content": "content of message"
+            }
+        ),
+        OpenApiExample(
+            "Send a game invite",
+            {
+                "sender": "sender_username",
+                "type": "invite",
+                "match_type": "pong | apong",
+                "message": "content of invite"
+            }
+        )
+    ],
+    responses={
+        200: OpenApiResponse(None, "Sends a Websocket Message to all connected clients information about the message, check md files for format"),
+        404: None
+    },
+    methods=['POST']
+)
 @api_view(["POST"])
 def chatPostingMessages(request: Request, chat_id):
     data = request.data

@@ -16,7 +16,10 @@ from django.core.files.images import ImageFile
 from django.conf import settings
 
 from django.db.utils import IntegrityError
-from ..serializer import PlayerSerializer, PublicPlayerSerializer, MatchSerializer, ChatRoomSerializer
+from ..serializer import PlayerSerializer, PublicPlayerSerializer
+from rest_framework.serializers import StringRelatedField
+
+from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample,  OpenApiParameter
 
 class ViewPlayers(APIView):
     parser_classes = [JSONParser]
@@ -28,18 +31,61 @@ class ViewPlayers(APIView):
         p_all = PublicPlayerSerializer(Player.objects.all(), many=True)
         return Response(p_all.data)
 
+@extend_schema(
+        summary="Login Endpoint",
+        description="API endpoint for users to log in",
+        request=StringRelatedField,
+        examples=[
+            OpenApiExample("Example of login details", {
+                "username": "username",
+                "password": "password"
+            }, request_only=True)
+        ],
+        responses={400: None,
+                   404: None,
+                   200: OpenApiResponse(
+                       StringRelatedField,
+                       "auth tokens to use the API",
+                       [
+                           OpenApiExample("Example of successful response", {
+                               "success": "login successfully",
+                               "data" : {
+                                   "access": "access_token",
+                                   "refresh": "refresh_token"
+                               }
+                           })
+                       ]
+                       )}
+)
 @api_view(['POST'])
 def login(request):
-    data = request.data
-    try:
-        username = data.get('username')
-        raw_password = data.get('password')
-    except FieldDoesNotExist:
+    data = request.data # son, this is a dict son
+
+    username = data.get('username')
+    raw_password = data.get('password')
+
+    if username is None:
         return Response(
-            {"Error": "username/password not given"},
+            {
+                "error": "missing details",
+                "reason": {
+                    "username": ["username not given"]
+                }
+            },
             status=status.HTTP_400_BAD_REQUEST
         )
-        
+
+    if raw_password is None:
+        return Response(
+            {
+                "error": "missing details",
+                "reason": {
+                    "password": ["password not given"]
+                }
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
     p = get_object_or_404(Player.objects, username=username)
 
     if p.verify_password(raw_password=raw_password):
@@ -47,12 +93,28 @@ def login(request):
         data = create_jwt_pair_for_user(p)
         response = Response()
 
-        response.data = {"Success" : "Login successfully", "data": data}
+        response.data = {"success" : "Login successfully", "data": data}
         return response
     else:
-        return Response({"Error": 'Password is incorrect'},
-                status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {
+                "error": "password is incorrect"
+            },
+            status=status.HTTP_400_BAD_REQUEST)
 
+@extend_schema(
+        summary="Register endpoint",
+        description="Allows user to sign up a new account",
+        request=StringRelatedField,
+        examples=[
+            OpenApiExample("Example of user signing up", {
+                'username': 'username',
+                'password': 'password'
+            }, request_only=True)
+        ],
+        responses={400: OpenApiResponse(None, "May have a list of reasons for failure"),
+                   200: None}
+)
 @api_view(['POST'])
 def createPlayer(request):
     for field in request.data.keys():
@@ -60,7 +122,7 @@ def createPlayer(request):
             Player._meta.get_field(field)
         except FieldDoesNotExist:
             return Response(
-                {"Error": f"Field '{field}' does not exist in player model"},
+                {"error": f"Field '{field}' does not exist in player model"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -80,11 +142,12 @@ def createPlayer(request):
         serializer.save()
     else:
         print(serializer.errors)
-        errorOfList = []
+        errorOfList = {}
         for field, errorList in serializer.errors.items():
+            fieldErrors = []
             for error in errorList:
-                message = f"{field}: {error.title()}"
-                errorOfList.append(message)
+                fieldErrors.append(error)
+            errorOfList[field] = fieldErrors
         return Response({
                 "error": "Failed to add player into Database",
                 "reason": errorOfList
@@ -93,21 +156,6 @@ def createPlayer(request):
         )
 
     return Response(status=status.HTTP_201_CREATED)
-
-@api_view(['GET'])
-def SpecificPlayerMatches(request, player_username):
-    p = get_object_or_404(Player.objects, username=player_username)
-    m = p.attacker.all() | p.defender.all()
-    m = m.order_by("time_played")
-    serialized = MatchSerializer(m, many=True)
-    return Response(serialized.data)
-
-@api_view(['GET'])
-def SpecificPlayerChats(request, player_username):
-    p = get_object_or_404(Player.objects, username=player_username)
-    c = (p.members.all() | p.owner.all()).distinct()
-    serialized = ChatRoomSerializer(c, many=True)
-    return Response(serialized.data)
 
 """
 test:

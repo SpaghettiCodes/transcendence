@@ -14,8 +14,8 @@ urlpatterns = [
     ## players
     path('player', player.ViewPlayers.as_view()),
     path('player/<player_username>', playerSpecific.SpecificPlayer),
-    path('player/<player_username>/match', player.SpecificPlayerMatches),
-    path('player/<player_username>/chat', player.SpecificPlayerChats),
+    path('player/<player_username>/match', playerSpecific.SpecificPlayerMatches),
+    path('player/<player_username>/chat', playerSpecific.SpecificPlayerChats),
 
     ## friends post - make request, get - get list, delete - remove a friend
     path('player/<player_username>/friends', friends.ViewFriends.as_view()),

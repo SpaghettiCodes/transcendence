@@ -428,7 +428,7 @@ export default function chat(prop={}) {
 
 			let payload = {
 				"username": name,
-				"chat_title": serverField.value,
+				"title": serverField.value,
 				"members": memberList
 			}
 

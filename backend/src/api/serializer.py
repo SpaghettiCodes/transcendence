@@ -4,7 +4,7 @@ from database.models import Friend_Request
 from util.base_converter import from_base52, to_base52
 
 class PublicPlayerSerializer(serializers.ModelSerializer):
-    friends = serializers.StringRelatedField(many=True, required=False)
+    friends = serializers.SlugRelatedField(queryset=Player, many=True, slug_field='username')
 
     class Meta:
         model = Player
@@ -52,6 +52,11 @@ class MatchSerializer(serializers.ModelSerializer):
             ret['result'] = MatchResultSerializer(instance.result).data
         return ret
 
+class MatchIDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Match
+        fields = ('matchid', )
+
 class TournamentRoundSerializer(serializers.ModelSerializer):
     # match = serializers.SlugRelatedField(queryset=Match, many=True, slug_field='matchid')
     match = MatchSerializer(many=True)
@@ -84,6 +89,21 @@ class TournamentSerializer(serializers.ModelSerializer):
         if ret['status'] == 'done':
             ret['result'] = TournamentResultSerializer(instance.result).data
         return ret
+
+class ChatRoomIDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChatRoom
+        fields = ('roomid', )
+
+class PublicChatRoomSerializer(serializers.ModelSerializer):
+    memberNo = serializers.SerializerMethodField()
+
+    def get_memberNo(self, obj):
+        return len(obj.members.all() + 1)
+
+    class Meta:
+        model = ChatRoom
+        fields = ('roomid', 'memberNo')
 
 class ChatRoomSerializer(serializers.ModelSerializer):
     owner = PublicPlayerSerializer()
@@ -127,6 +147,5 @@ class ChatMessageSerializer(serializers.ModelSerializer):
             ret['invite_details'] = InviteMessageSerializer(instance.invite_details).data
         return ret
 
-        
 class ImageSerializer(serializers.Serializer):
     image = serializers.ImageField()

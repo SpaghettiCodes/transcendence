@@ -13,7 +13,9 @@ class Player(models.Model):
     profile_pic = models.ImageField(default="./firefly.png")
     date_joined = models.DateTimeField(auto_now_add=True)
 
-    friends = models.ManyToManyField("Player", blank=True)
+    friends = models.ManyToManyField("Player", blank=True, related_name="friends_with")
+    blocked = models.ManyToManyField("Player", blank=True, related_name="blocked_by")
+
     is_active = models.BooleanField(default=False)
 
     # hmmm
@@ -41,7 +43,7 @@ class Player(models.Model):
     def remove_friend(self, player):
         if player in self.friends.all():
             self.friends.remove(player)
-            
+
     def won_match(self):
         self.matches_won += 1
 

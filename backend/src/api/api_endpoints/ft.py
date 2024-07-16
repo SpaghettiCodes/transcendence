@@ -4,6 +4,9 @@ from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 
+from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample,  OpenApiParameter
+from rest_framework.serializers import StringRelatedField
+
 import requests
 
 import os
@@ -13,9 +16,20 @@ CLIENT_SECRET = os.environ.get("42API_SECRET")
 REDIRECT_URI = os.environ.get("42API_URI")
 STATE = os.environ.get("42API_STATE")
 
-# its joever
-# Get cannot have body as data
-# POST method but im actually sending data
+@extend_schema(
+        summary='gets your 42 auth token',
+        description="Gets your 42 auth token, which can be used to call 42 api, must first have the code gotten from 42 api (read up on how to do 42 API oAuth)",
+        request=StringRelatedField,
+        examples=[
+            OpenApiExample("Example of Request", {
+                "code": "your 42 client code... or something, check main branch -> ft_login.js on steps"
+            })
+        ],
+        responses={401: None,
+                   200: OpenApiResponse(
+                       None, "the most important part returned here is your access token"
+                   )}
+)
 @api_view(['POST'])
 def get_ft_code(request):
     data = request.data
@@ -41,7 +55,18 @@ def get_ft_code(request):
         return Response(response.json())
     return Response(status=response.status_code)
 
-
+@extend_schema(
+        summary="Gets your 42 data",
+        description="On your behalf, gets your data from 42 API, must first have the auth code gotten from /api/42/auth",
+        request=StringRelatedField,
+        examples=[
+            OpenApiExample("Example of Request", {
+                "code": "y0uR_42_@uTh_t0K3n",
+            })
+        ],
+        responses=({401: None,
+                    200: OpenApiResponse(None, "Frankly speaking, i also forgor, check 42 docs")})
+)
 @api_view(['POST'])
 def get_ft_me(request):
     data = request.data
@@ -54,6 +79,19 @@ def get_ft_me(request):
         return Response(response.json())
     return Response(status=response.status_code)
 
+@extend_schema(
+        summary="Required data for 42 Authentication",
+        description="Gets data required to do 42 API authentication",
+        responses=({200: OpenApiResponse(
+            StringRelatedField, "Data required to do 42 API authentication", [
+                OpenApiExample("list of items returned", {
+                "clientuid": "abcedfg",
+                "redirecturi": "abcedfg",
+                "state": "abcdefg"
+                })
+            ]
+        )})
+)
 @api_view(['GET'])
 def get_ft_env(request):
     return Response({

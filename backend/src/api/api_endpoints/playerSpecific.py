@@ -5,10 +5,12 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from database.models import Player, Friend_Request
-from ..serializer import PlayerSerializer, MatchSerializer, FriendRequestSerializer
+from ..serializer import PlayerSerializer, MatchSerializer, FriendRequestSerializer, PublicChatRoomSerializer
 
 from django.core.exceptions import FieldDoesNotExist
 from django.core.files.images import ImageFile
+
+from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample,  OpenApiParameter
 
 def getSpecificPlayer(player_username):
     p = get_object_or_404(Player.objects, username=player_username)
@@ -69,6 +71,14 @@ def SpecificPlayer(request, player_username):
             return editSpecificPlayer(request, player_username)
 
 @api_view(['GET'])
+@extend_schema(
+    summary="Gets a specific player's match history",
+    responses={404: None, 401: None,
+               200: OpenApiResponse(
+                   MatchSerializer(many=True), "List of Matches the player participated in"
+               )}
+)
+@api_view(['GET'])
 def SpecificPlayerMatches(request, player_username):
     p = get_object_or_404(Player.objects, username=player_username)
     m = p.attacker.all() | p.defender.all()
@@ -76,60 +86,31 @@ def SpecificPlayerMatches(request, player_username):
     serialized = MatchSerializer(m, many=True)
     return Response(serialized.data)
 
+@extend_schema(
+    summary="Gets chatrooms where the user is part of",
+    responses={404: None, 401: None,
+               200: OpenApiResponse(PublicChatRoomSerializer(), "List of chatroom the user is in",
+                                    [
+                                        OpenApiExample("Example of list of chatroom the player is in", [
+                                            {
+                                                "roomid": 0,
+                                                "memberNo": 1,
+                                            },
+                                            {
+                                                "roomid": 1,
+                                                "memberNo": 2,
+                                            },
+                                            {
+                                                "roomid": 4,
+                                                "memberNo": 5,
+                                            },
+                                        ])
+                                    ]
+                                    )}
+)
 @api_view(['GET'])
-def DisplayFriends(request, player_username):
+def SpecificPlayerChats(request, player_username):
     p = get_object_or_404(Player.objects, username=player_username)
-    friends_obj = p.friends.all()
-    serialized = PlayerSerializer(friends_obj, many=True)
+    c = (p.members.all() | p.owner.all()).distinct()
+    serialized = PublicChatRoomSerializer(c, many=True)
     return Response(serialized.data)
-
-@api_view(['GET'])
-def DisplayFriendRequests(request, player_username):
-    p = get_object_or_404(Player.objects, username=player_username)
-    fr_list = FriendRequestSerializer(
-        Friend_Request.objects.filter(receiver=p.id), many=True)
-    return Response(fr_list.data)
-
-@api_view(['POST'])
-def AcceptFriendRequest(request, player_username):
-    try:
-        sender_username = request.data.get('sender') # man i think i should put sender username in the url
-    except FieldDoesNotExist:
-        return Response(
-            {"Error": "sender username not given"},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
-    try:
-        p_me = get_object_or_404(Player.objects, username=player_username)
-        p_sender = get_object_or_404(Player.objects, username=sender_username)
-        fr = Friend_Request.objects.get(sender=p_sender.id, receiver=p_me.id)
-        fr.accept()
-        return Response(status=status.HTTP_200_OK)
-    except:
-        return Response(
-            {"Error": "failed to accept friend request"},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
-@api_view(['POST'])
-def DeclineFriendRequest(request, player_username):
-    try:
-        sender_username = request.data.get('sender') # man i think i should put sender username in the url
-    except FieldDoesNotExist:
-        return Response(
-            {"Error": "sender username not given"},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    
-    try:
-        p_me = get_object_or_404(Player.objects, username=player_username)
-        p_sender = get_object_or_404(Player.objects, username=sender_username)
-        fr = Friend_Request.objects.get(sender=p_sender.id, receiver=p_me.id)
-        fr.decline()
-        return Response(status=status.HTTP_200_OK)
-    except:
-        return Response(
-            {"Error": "failed to decline friend request"},
-            status=status.HTTP_400_BAD_REQUEST
-        )
