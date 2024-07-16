@@ -1,3 +1,6 @@
+# depreciated, will remove in future revisions
+# its here JUST IN CASE we need it
+
 # from rest_framework_simplejwt.authentication import JWTAuthentication
 
 # from django.conf import settings
