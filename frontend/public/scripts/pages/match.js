@@ -4,7 +4,7 @@ export default function match(prop={}) {
 	console.log(prop)
 
 	let game_id = (prop["arguments"]) ? (prop["arguments"]["game_id"]) : undefined
-	let tournament_id = prop["arguments"]["tournament_id"]
+	let tournament_id = (prop["arguments"]) ? prop["arguments"]["tournament_id"] : undefined
 
 	let apiURI = (tournament_id) ? `tournament/${tournament_id}/match/${game_id}` : `match/${game_id}`
 
@@ -13,11 +13,11 @@ export default function match(prop={}) {
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
 	let prerender = () => {
-		if (game_id === undefined)
-		{
-			redirect("/match")
-			return false
-		}
+		// if (game_id === undefined)
+		// {
+		// 	redirect("/match")
+		// 	return false
+		// }
 		return true
 	}
 
@@ -309,11 +309,11 @@ export default function match(prop={}) {
 			}	
 		}
 
-		addEventListener("resize", (event) => {recalibratePixels()})
-		recalibratePixels()
+		// addEventListener("resize", (event) => {recalibratePixels()})
+		// recalibratePixels()
 
-		getGameData()
-		connectSocket()
+		// getGameData()
+		// connectSocket()
 
 		document.onkeydown = (e) => {
 			e = e || window.event

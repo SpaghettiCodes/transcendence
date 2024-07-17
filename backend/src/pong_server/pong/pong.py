@@ -23,7 +23,7 @@ class PongGame(Game):
 
         self.field = GameFrame()
 
-        self.maxScore = 1
+        self.maxScore = 1000 # PLEASE CHANGE LATER
 
         self.attackerid = None
         self.defenderid = None
@@ -110,6 +110,7 @@ class PongGame(Game):
             defender = await Player.objects.aget(username=self.defenderid)
         except ObjectDoesNotExist:
             print("Player does not exist, who were we playing against, ghosts?")
+            await matchObject.adelete()
             return
 
         attacker_score = int(self.field.attackerScore)
@@ -138,6 +139,9 @@ class PongGame(Game):
 
         if self.isForfeit():
             newResult.reason = 2
+        
+        if attacker_score == defender_score:
+            newResult.reason = 3
 
         await newResult.asave()
 

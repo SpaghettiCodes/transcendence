@@ -1,6 +1,6 @@
 import { redirect } from "../router.js"
 
-export default function game(prop={}) {
+export default function matchListing(prop={}) {
 	let sendMatchSocket = null
 	let data_received = true
 

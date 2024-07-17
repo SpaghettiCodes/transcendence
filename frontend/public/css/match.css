@@ -1,0 +1,77 @@
+.matchDetailsFrame {
+	flex-grow: 1;
+}
+
+.matchDetailsFrame * {
+	display: inline;
+	vertical-align: bottom;
+	font-size: 2vw;
+}
+
+.mainGameplayFrame {
+	display: flex;
+	justify-content: center;
+	box-sizing: border-box;
+	margin: 0px 50px;
+	margin-bottom: 50px !important;
+	flex-grow: 20;
+	flex-shrink: 1;
+}
+
+.mainGameplayFrame .mainField {
+	box-sizing: content-box;
+	border: 3px solid white;
+}
+
+.mainGameplayFrame * {
+	position: absolute;
+}
+
+.mainGameplayFrame .aRandomLine {
+	height: 100%;
+	left: calc(50% - 2.5px);
+	width: 5px;
+	opacity: 0.1;
+	background-image: linear-gradient(white 30%, black 30%, black 60%, white 60%);
+	background-repeat: repeat-y;
+	background-position: 0% 7%;
+	background-size: 100% 15%;
+}
+
+.mainGameplayFrame .matchScoreCount {
+	display: flex;
+	align-items: end;
+	height: 100%;
+	width: 50%;
+	color: white;
+	padding: 15px;
+	font-weight: bolder;
+	font-size: 25vh;
+	opacity: 0.1;
+}
+
+.mainGameplayFrame .matchScoreCount.firstHalf {
+	justify-content: start;
+}
+
+.mainGameplayFrame .matchScoreCount.secondHalf {
+	justify-content: end;
+	left: 50%;
+}
+
+.mainGameplayFrame .attacker {
+	background-color: blue;
+}
+
+.mainGameplayFrame .defender {
+	background-color: red;
+}
+
+.mainGameplayFrame .ball {
+	background-color: yellow;
+	border-radius: 25px;
+}
+
+.font-size-5vm {
+	font-size: 5vw;
+}

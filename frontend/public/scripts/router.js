@@ -12,7 +12,7 @@ import login from "./pages/login.js"
 import test from "./pages/test.js"
 import home from "./pages/home.js"
 import match from "./pages/match.js"
-import game from "./pages/matchListing.js"
+import matchListing from "./pages/matchListing.js"
 import chat from "./pages/chat.js"
 import tournamentList from "./pages/tournamentListing.js"
 import tournament from "./pages/tournament.js"
@@ -21,7 +21,7 @@ import profile from "./pages/profile.js"
 import matchmaking from "./pages/matchmaking.js"
 import msg from "./pages/msg.js"
 import friendlist from "./pages/friendlist.js"
-import tournamentlist from "./pages/tournamentlist.js"
+import newMatch from "./pages/newMatch.js"
 
 const routes = {
 	'/': landing,
@@ -30,8 +30,8 @@ const routes = {
 	'/login': login,
 	'/test': test,
 	'/home': home,
-	'/match': game,
-	'/match/<game_id>': match,
+	'/match': matchListing,
+	'/match/<game_id>': newMatch,
 	'/match/<game_id>/results': result,
 	'/chat': chat,
 	'/tournament': tournamentList,
@@ -40,6 +40,7 @@ const routes = {
 	'/matchmaking': matchmaking,
 	'/msg': msg,
 	'/friendlist': friendlist,
+	'/oldMatch': match,
 }
 
 let clean_up_function = () => {}

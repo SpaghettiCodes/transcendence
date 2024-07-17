@@ -6,15 +6,16 @@ import random
 from datetime import datetime
 
 class GameFrame(PongGameFrame):
+    # by default, this has a 15:7 aspect ratio
     def __init__(self, width=750, height=350) -> None:
         super().__init__(width, height)
 
         self.lastMadeFakeBall = datetime.now()
 
         # please change this later, i just need it to test
-        self.coolDownSec = 10
+        self.coolDownSec = 5
         self.fakeBallChance = 100
-        self.fakeBallMax = 100
+        self.fakeBallMax = 10
 
         self.fakeBalls: list[Ball] = []
 
@@ -78,7 +79,8 @@ class GameFrame(PongGameFrame):
 
         ballCoordinates = [ball_cord] + [fakeBall.get_json_coord() for fakeBall in self.fakeBalls]
         # have fun figuring out which is the real ball MUAHAHAHAHA
-        random.shuffle(ballCoordinates)
+        # mm nah animation looks like ass
+        # random.shuffle(ballCoordinates)
 
         return {
             "status": "update",

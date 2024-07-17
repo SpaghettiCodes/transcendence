@@ -262,7 +262,7 @@ export default function chat(prop={}) {
 					let messageBlock = undefined
 
 					switch (type) {
-						case ("normal"):
+						case ("message"):
 							messageBlock = makeMessageBox({
 								"sender": pastMessage["sender"]["username"],
 								"message": pastMessage["content"]

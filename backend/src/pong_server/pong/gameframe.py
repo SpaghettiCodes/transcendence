@@ -19,17 +19,17 @@ class GameFrame:
         self.ball = Ball(radius=self.ballRadius, speed=self.ballSpeed)
 
         self.paddleWidth = 10
-        self.paddleHeight = 100
+        self.paddleHeight = 75
         self.paddleOffset = 20
         self.paddleSpeed = 450
 
         self.attacker = Paddle(width=self.paddleWidth, height=self.paddleHeight, speed=self.paddleSpeed)
         self.defender = Paddle(width=self.paddleWidth, height=self.paddleHeight, speed=self.paddleSpeed)
 
-        self.goalWidth = 10
+        self.goalWidth = 1
 
         self.attackerGoal = scoreFrame(0, 0, width=self.goalWidth, height=self.height)
-        self.defenderGoal = scoreFrame(width - self.goalWidth, 0, width=self.goalWidth, height=self.height)
+        self.defenderGoal = scoreFrame(self.width - self.goalWidth, 0, width=self.goalWidth, height=self.height)
         self.attackerId = None
         self.defenderId = None
 

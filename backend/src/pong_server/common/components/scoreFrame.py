@@ -18,9 +18,9 @@ class scoreFrame(Component):
         ball_x = ball_coordinate[0]
         ball_y = ball_coordinate[1]
 
-        if (ball_x + ball_radius > self.x and 
-            ball_x - ball_radius < self.x + self.width and 
-            ball_y + ball_radius > self.y and 
-            ball_y - ball_radius < self.y + self.height):
+        if (ball_x + ball_radius >= self.x and 
+            ball_x - ball_radius <= self.x + self.width and 
+            ball_y + ball_radius >= self.y and 
+            ball_y - ball_radius <= self.y + self.height):
             return True
         return False

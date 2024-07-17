@@ -43,5 +43,5 @@ class Score(State):
 
     def nextState(self):
         if self.endGame:
-            return endGame(self.gameInstance)
-        return CountDown(Reset(self.previousState, self.gameInstance), 3, self.gameInstance)
+            return Reset(endGame(self.gameInstance), self.gameInstance)
+        return Reset(CountDown(self.previousState, 3, self.gameInstance), self.gameInstance)

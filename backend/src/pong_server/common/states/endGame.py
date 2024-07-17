@@ -4,7 +4,7 @@ import asyncio
 import math
 
 class endGame(State):
-    def __init__(self, gameInstance, durationUntilClose=1) -> None:
+    def __init__(self, gameInstance, durationUntilClose=3) -> None:
         super().__init__(gameInstance)
         self.duration = durationUntilClose
         self.durationLeft = durationUntilClose

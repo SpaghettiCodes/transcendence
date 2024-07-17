@@ -92,7 +92,7 @@ class Chat(APIView):
             [OpenApiExample("Example of list of message given, below are the 4 possible messages that can be sent, contact backend guys if we are missing examples", [
                 {
                     "chatid": 4,
-                    "type": "normal",
+                    "type": "message",
                     "posted": "2024-07-16T11:34:44.548Z",
                     "sender": {
                         "username": "sender_username",

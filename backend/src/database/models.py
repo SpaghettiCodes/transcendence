@@ -143,7 +143,8 @@ class MatchResult(models.Model):
     reason = models.SmallIntegerField(
         choices=(
             (1, "normal"),
-            (2, "player Forfeited")
+            (2, "player forfeited"),
+            (3, 'draw')
         ),
         default=1
     )
@@ -225,7 +226,7 @@ class ChatMessage(models.Model):
     )
     type = models.SmallIntegerField(
         choices=(
-            (1, "normal"),
+            (1, "message"),
             (2, "invite")
         ),
         default=1

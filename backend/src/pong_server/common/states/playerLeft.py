@@ -5,7 +5,7 @@ from .endGame import endGame
 from math import ceil
 
 class PlayerLeft(State):
-    def __init__(self, previousState, gameInstance, duration=5) -> None:
+    def __init__(self, previousState, gameInstance, duration=100) -> None:
         super().__init__(gameInstance)
         self.paused = True
         self.killTheGame = False

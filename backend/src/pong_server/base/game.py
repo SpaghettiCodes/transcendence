@@ -8,7 +8,7 @@ import json
 from ..base.state import State
 
 class Game(ABC):
-    FRAME_RATE = 1/60
+    FRAME_RATE = 1/240
 
     def __init__(self, gameid, removalFunction, subserver_id = None, hidden=False, expectedPlayers=[]) -> None:
         # initial positions and shit
