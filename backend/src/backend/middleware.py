@@ -64,12 +64,12 @@
 
 #         return None
 
-# """
+"""
 
-# {
-# "username":"e",
-# "password":"eee",
-# "email":"e@e.com"
-# }
+{
+"username":"e",
+"password":"eee",
+"email":"e@e.com"
+}
 
-# """
+"""

@@ -16,13 +16,43 @@ export function setRefreshToken(token) {
     localStorage.setItem("refreshToken", token)
 }
 
-// function handleLogin({ email, password }) {
-//   // Call login method in API
-//   // The server handler is responsible for setting user fingerprint cookie during this as well
-//   const { jwtToken, refreshToken } = await login({ email, password })
-//   setJwtToken(jwtToken)
-//   setRefreshToken(refreshToken)
+export function validate_update_token() {
+	const jwt_access_token = getJwtToken()
+	const jwt_refresh_token = getRefreshToken()
+	if (!getJwtToken() || !getRefreshToken()) {
+		window.location.href = 'http://localhost:8080/login';
+	}
 
-//   // If you like, you may redirect the user now
-//   Router.push("/some-url")
-// }
+	window.onload = async () => {
+		const response_verify = await fetch('http://localhost:8000/api/token/verify', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({'token' : `${jwt_access_token}`})
+		})
+		if (response_verify.ok) {
+			return true;
+		}
+		else if (response_verify.status == 401) {
+			console.log("access token invalid/expired, requesting new one using refresh token...")
+			const response_refresh = await fetch('http://localhost:8000/api/token/refresh', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({'refresh' : `${jwt_refresh_token}`})
+			})
+			if (response_refresh.ok) {
+				const result = await response_refresh.json();
+				setJwtToken(result.access)
+				console.log("access token refreshed using refresh token")
+				return true;
+			}
+			else {
+				console.log("access token invalid, refresh token not working, wallahi its over bijoever")
+				return false;
+			}
+		}
+	};
+}

@@ -22,6 +22,7 @@ import matchmaking from "./pages/matchmaking.js"
 import msg from "./pages/msg.js"
 import friendlist from "./pages/friendlist.js"
 import tournamentlist from "./pages/tournamentlist.js"
+import { validate_update_token } from "./jwt.js"
 
 const routes = {
 	'/': landing,
@@ -140,6 +141,8 @@ const navigate = (e, prop={}) => {
 	uri = '/' + uri.split("/").filter(Boolean).join('/')
 
 	history.replaceState(null, null, uri)
+
+	validate_update_token()
 
 	render_html(uri, prop)
 }
