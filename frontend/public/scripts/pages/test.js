@@ -1,5 +1,5 @@
 import { redirect } from "../router.js"
-import { getJwtToken, getRefreshToken,  } from "../jwt.js"
+import { getJwtToken, fetchMod } from "../jwt.js"
 
 export default function test(prop={}) {
 	// attach all pre-rendering code here (like idk, fetch request or something)
@@ -33,7 +33,7 @@ export default function test(prop={}) {
         form.addEventListener('submit', async function (e) {
             e.preventDefault();
             const formData = new FormData(form).entries()
-            const response = await fetch('http://localhost:8000/api/player/e', {
+            const response = await fetchMod('http://localhost:8000/api/player/e', {
                 method: 'GET',
                 headers: {
 					'Content-Type': 'application/json',

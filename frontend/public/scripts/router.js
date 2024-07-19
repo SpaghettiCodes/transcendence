@@ -142,7 +142,7 @@ const navigate = (e, prop={}) => {
 
 	history.replaceState(null, null, uri)
 
-	validate_update_token()
+	// validate_update_token()
 
 	render_html(uri, prop)
 }
