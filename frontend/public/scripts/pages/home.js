@@ -1,3 +1,4 @@
+import { redirect } from "../router.js"
 
 export default function home(prop={}) {
 	let prerender = () => {
@@ -27,13 +28,13 @@ export default function home(prop={}) {
 				<div class="col-md-4 mb-3" id="tournament">
 				<button class="ui-btn btn-block"><span>Tournament</span></button>
 				</div>
-				<div class="col-md-4 mb-3">
+				<div class="col-md-4 mb-3" id='language'>
 				<button class="ui-btn btn-block"><span>Language</span></button>
 				</div>
-				<div class="col-md-4 mb-3">
+				<div class="col-md-4 mb-3" id='profile'>
 				<button class="ui-btn btn-block"><span>Profile</span></button>
 				</div>
-				<div class="col-md-4 mb-3">
+				<div class="col-md-4 mb-3" id='friends'>
 				<button class="ui-btn btn-block"><span>Friends....?</span></button>
 				</div>
 			</div> 
@@ -50,11 +51,24 @@ export default function home(prop={}) {
 			alert('Entering APONG US game')
 		}
 
+		const	 go_profile = () => {
+			redirect("/profile")
+		}
+		const profile_button = document.getElementById("profile")
+		profile_button.addEventListener('click', go_profile)
+
+		const	 go_friends = () => {
+			redirect("/friendlist")
+		}
+		const friend_button = document.getElementById("friends")
+		friend_button.addEventListener('click', go_friends)
+
 		const pong_button = document.getElementById("pongGame")
 		pong_button.addEventListener('click', pongGame)
 		
 		const apongUs_button = document.getElementById("apongUsGame")
 		apongUs_button.addEventListener('click', ApongUsGame)
+
 	}
 
 	let cleanup = () => {
