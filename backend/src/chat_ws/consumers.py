@@ -1,7 +1,7 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from database.models import ChatRoom, ChatMessage, Player
 from asgiref.sync import sync_to_async
-from api.serializer import ChatRoomSerializer
+from api.serializer import ChatRoomSerializer, ChatMessageSerializer
 import datetime
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
@@ -57,6 +57,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             return await self.close()
 
         self.username = username
+        self.userObject = userObject
         self.registered = True
 
         await self.channel_layer.group_add(
@@ -78,8 +79,19 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
     async def message(self, event):
         if (self.registered):
+            data = event["text"]
+            if (data["command"] == "new_message"):
+                # check if sender is blocked
+                messageId = data["messageId"]
+                messageObj = await ChatMessage.objects.aget(chatid=messageId)
+                serializer = ChatMessageSerializer(
+                    playerObject=self.userObject
+                )
+                data.pop("messageId")
+                data["details"] = await sync_to_async(serializer.to_representation)(messageObj)
+
             try:
-                await self.send_json(event["text"])
+                await self.send_json(data)
             except Exception as e:
                 print(e.args[0])
 

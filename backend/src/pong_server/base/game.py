@@ -31,6 +31,7 @@ class Game(ABC):
         self.channel_layer = get_channel_layer()
 
         self.type = None
+        self.resultsUploadSuccessfully = False
 
     def setPlayed(self):
         self.played = True

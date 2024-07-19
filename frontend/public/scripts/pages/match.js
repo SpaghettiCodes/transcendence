@@ -1,6 +1,6 @@
 import { redirect } from "../router.js"
 
-export default function match(prop={}) {
+export default function oldMatch(prop={}) {
 	console.log(prop)
 
 	let game_id = (prop["arguments"]) ? (prop["arguments"]["game_id"]) : undefined

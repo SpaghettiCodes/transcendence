@@ -1,0 +1,210 @@
+.hide {
+	display: none;
+}
+
+.usernameDiv {
+	border: 1px solid black;
+	padding: 5px;
+	margin-bottom: 5px;
+}
+
+.usernameDiv * {
+	margin: 5px;
+}
+
+.usernameDiv .name_selection {
+	margin: 0px;
+}
+
+.newServerDiv {
+	display: grid;
+	height: 25vh;
+	grid-template-columns: 1fr 1fr;
+	border: 1px solid black;
+	margin-bottom: 5px;
+}
+
+.newServerDiv .left {
+	display: flex;
+	flex-direction: column;
+	border-right: 1px solid black;
+	margin: 0px;
+}
+
+.newServerDiv .left * {
+	margin: 5px;
+}
+
+.newServerDiv .right {
+	display: flex;
+	flex-direction: column;
+	margin: 0px;
+}
+
+.newServerDiv .right * {
+	margin: 5px;
+}
+
+.newServerDiv .memberList {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	flex-basis: 0;
+	border: 1px solid black;
+	overflow: auto;
+}
+
+.newServerDiv .memberList .memberBox {
+	display: flex;
+	border-bottom: 1px solid black;
+	margin: 0;
+	padding: 3px;
+}
+
+.existingServerDiv {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid black;
+	padding: 5px;
+	margin-bottom: 5px;
+}
+
+.existingServerDiv #serveridfield {
+	flex-grow: 1;
+	margin-bottom: 5px;
+}
+
+.existingServerDiv * {
+	margin: 5px;
+}
+
+
+.existingServerDiv .serverSelection {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	border: 1px solid black;
+	margin-bottom: 5px;
+	height: 25vh;
+	overflow: auto;
+}
+
+.existingServerDiv .serverSelection .serverDetailBlock {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid black;
+	max-height: 40%;
+	min-height: 95px;
+}
+
+.existingServerDiv .serverSelection .serverDetailBlock * {
+	margin: 5px;
+}
+
+.chat {
+	display: grid;
+	height: 80vh;
+	grid-template-columns: minmax(150px, 300px) 2fr;
+	grid-template-rows: 1fr;
+	margin: 10px 0;
+	border: 1px solid black;
+}
+
+.chat .left {
+	display: flex;
+	flex-direction: column;
+	margin: 10px 5px 10px 10px;
+}
+
+.chat .left .memberlabel {
+	margin: 10px 0;
+}
+
+.chat .memberbox {
+	display: flex;
+	flex-grow: 1;
+	flex-direction: column;
+	border: 1px solid black;
+	overflow: auto;
+}
+
+.chat .memberbox .memberlist {
+	padding-left: 5px;
+}
+
+.chat .right {
+	display: flex;
+	flex-direction: column;
+	margin: 10px 10px 10px 5px;
+}
+
+.chat .chatbox {
+	display: flex;
+	flex-direction: column-reverse;
+	flex-grow: 1;
+	flex-basis: 0;
+	border: 1px solid black;
+	overflow: auto;
+}
+
+.inputbox {
+	display: flex;
+	margin-top: 5px;
+}
+
+#inputfield {
+	flex-grow: 1;
+	margin-right: 5px;
+}
+
+.chatbox .errorbox {
+	display: flex;
+	flex-direction: column;
+	margin: 5px;
+	padding: 5px;
+	border: 1px solid black;
+}
+
+.chatbox .messagebox {
+	display: flex;
+	flex-direction: column;
+	margin: 5px;
+	padding: 5px;
+	border: 1px solid black;
+}
+
+.chatbox .messagebox .author {
+	display: flex;
+	flex-direction: column;
+	margin: 1px;
+	padding: 5px;
+	border: 1px solid black;
+}
+
+.chatbox .messagebox .message {
+	display: flex;
+	flex-direction: column;
+	margin: 1px;
+	padding: 5px;
+	border: 1px solid black;
+}
+
+.chatbox .errorbox * {
+	margin: 0;
+}
+.chatbox .messagebox * {
+	margin: 0;
+}
+
+.chatbox .invitebox {
+	display: flex;
+	flex-direction: column;
+	margin: 5px;
+	padding: 5px;
+	border: 1px solid black;
+}
+
+.chatbox .invitebox .message {
+	margin-bottom: 10px;
+	padding: 5px;
+	border: 1px solid black;
+}

@@ -19,7 +19,7 @@
 }
 
 .mainGameplayFrame .mainField {
-	box-sizing: content-box;
+	box-sizing: content-box !important;
 	border: 3px solid white;
 }
 
@@ -46,8 +46,8 @@
 	color: white;
 	padding: 15px;
 	font-weight: bolder;
-	font-size: 25vh;
-	opacity: 0.1;
+	font-size: 10vmin;
+	opacity: 0.05;
 }
 
 .mainGameplayFrame .matchScoreCount.firstHalf {

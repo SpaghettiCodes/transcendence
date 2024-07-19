@@ -4,21 +4,24 @@ from database.models import Friend_Request
 from util.base_converter import from_base52, to_base52
 
 class PublicPlayerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Player
+        fields = ('username', 'profile_pic', 'is_active')
+
+class PlayerSerializer(serializers.ModelSerializer):
     friends = serializers.SlugRelatedField(queryset=Player, many=True, slug_field='username')
 
     class Meta:
         model = Player
         fields = ('username', 'email', 'profile_pic', 'is_active', 'matches_played', 'matches_won', 'matches_lost', 'friends')
 
-class PlayerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Player
-        fields = '__all__'
-
 class FriendRequestSerializer(serializers.ModelSerializer):
+    sender = serializers.SlugRelatedField(queryset=Player, slug_field='username')
+    receiver = serializers.SlugRelatedField(queryset=Player, slug_field='username')
+
     class Meta:
         model = Friend_Request
-        fields = '__all__'
+        fields = ('sender', 'receiver')
 
 class MatchResultSerializer(serializers.ModelSerializer):
     attacker = PublicPlayerSerializer()
@@ -38,24 +41,23 @@ class MatchResultSerializer(serializers.ModelSerializer):
 
 class MatchSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
+
+    def get_type(self, obj):
+        return obj.get_type_display()
 
     def get_status(self, obj):
         return obj.get_status_display()
 
     class Meta:
         model = Match
-        fields = ('matchid', 'time_played', 'status')
+        fields = ('matchid', 'time_played', 'status', 'type')
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         if (ret['status'] == 'done'):
             ret['result'] = MatchResultSerializer(instance.result).data
         return ret
-
-class MatchIDSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Match
-        fields = ('matchid', )
 
 class TournamentRoundSerializer(serializers.ModelSerializer):
     # match = serializers.SlugRelatedField(queryset=Match, many=True, slug_field='matchid')
@@ -99,11 +101,11 @@ class PublicChatRoomSerializer(serializers.ModelSerializer):
     memberNo = serializers.SerializerMethodField()
 
     def get_memberNo(self, obj):
-        return len(obj.members.all() + 1)
+        return len(obj.members.all()) + (obj.owner != None)
 
     class Meta:
         model = ChatRoom
-        fields = ('roomid', 'memberNo')
+        fields = ('roomid', 'title', 'memberNo')
 
 class ChatRoomSerializer(serializers.ModelSerializer):
     owner = PublicPlayerSerializer()
@@ -131,6 +133,10 @@ class InviteMessageSerializer(serializers.ModelSerializer):
         return ret
 
 class ChatMessageSerializer(serializers.ModelSerializer):
+    def __init__(self, playerObject, instance=None, **kwargs):
+        super().__init__(instance, **kwargs)
+        self.player = playerObject
+
     sender = PublicPlayerSerializer()
     type = serializers.SerializerMethodField()
 
@@ -143,7 +149,12 @@ class ChatMessageSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
-        if ret["type"] == 'invite':
+
+        # check if sender is blocked
+        if instance.sender in self.player.blocked.all():
+            ret['type'] = 'blocked'
+            ret['content'] = 'You blocked this user and thus, cannot see the content of the message'
+        elif ret["type"] == 'invite':
             ret['invite_details'] = InviteMessageSerializer(instance.invite_details).data
         return ret
 

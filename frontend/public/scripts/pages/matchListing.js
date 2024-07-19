@@ -138,7 +138,7 @@ export default function matchListing(prop={}) {
 						<a href="/match/${game_id}">Join</a>
 					</div>
 					<div>
-						<a href="">Spectate</a>
+						<a href="/match/${game_id}/spectate">Spectate</a>
 					</div>
 				</div>
 				<hr>

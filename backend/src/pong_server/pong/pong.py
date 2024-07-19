@@ -143,6 +143,7 @@ class PongGame(Game):
         if attacker_score == defender_score:
             newResult.reason = 3
 
+        self.resultsUploadSuccessfully = True
         await newResult.asave()
 
 

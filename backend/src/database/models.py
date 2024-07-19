@@ -34,7 +34,19 @@ class Player(models.Model):
 
     def verify_password(self, raw_password):
         return pbkdf2_sha256.verify(raw_password, self.password)
-    
+
+    def block_player(self, player):
+        if not player in self.blocked.all():
+            self.blocked.add(player)
+            if player in self.friends.all():
+                self.friends.remove(player)
+            self.save()
+
+    def unblock_player(self, player):
+        if player in self.blocked.all():
+            self.blocked.remove(player)
+            self.save()
+
     def add_friend(self, player):
         if not player in self.friends.all():
             self.friends.add(player)
@@ -43,6 +55,11 @@ class Player(models.Model):
     def remove_friend(self, player):
         if player in self.friends.all():
             self.friends.remove(player)
+            self.save()
+
+        if self in player.friends.all():
+            player.friends.remove(self)
+            player.save()
 
     def won_match(self):
         self.matches_won += 1
@@ -86,11 +103,19 @@ class Friend_Request(models.Model):
 
     def decline(self):
         self.delete()
-    
+
 class Match(models.Model):
     id = models.BigAutoField(primary_key=True)
     matchid = models.CharField(max_length=8, unique=True, null=True, blank=True)
     time_played = models.DateTimeField(auto_now_add=True)
+
+    type = models.SmallIntegerField(
+        choices=(
+            (1, "pong"),
+            (2, "apong")
+        ),
+        default=1
+    )
 
     status = models.SmallIntegerField(
         choices=(
@@ -206,12 +231,13 @@ class ChatRoom(models.Model):
     owner = models.ForeignKey(
         Player,
         on_delete=models.PROTECT,
+        null=True,
         related_name="owner"
-    )
+    ) # if owner is null, means its system that built it
     title = models.CharField(max_length=50)
     members = models.ManyToManyField(
         Player,
-        related_name="members",
+        related_name="member_of",
     )
 
 class ChatMessage(models.Model):

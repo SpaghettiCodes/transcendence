@@ -87,7 +87,7 @@ class Chat(APIView):
     methods=['GET'],
     responses={
         201: OpenApiResponse(
-            ChatMessageSerializer(), 
+            # ChatMessageSerializer(), 
             "The 10 latest messages, starting from {start_id}, sorted from earliest message to later messages",
             [OpenApiExample("Example of list of message given, below are the 4 possible messages that can be sent, contact backend guys if we are missing examples", [
                 {
@@ -145,7 +145,17 @@ class Chat(APIView):
 @api_view(['GET'])
 def chatHistory(request: Request, chat_id):
     last_msgId = request.GET.get('start_id')
-    chatObj = ChatRoom.objects.get(roomid=chat_id)
+    maxMsgCount = 10 # change this later
+
+    # TEMP, PLEASE REMEMBER TO REMOVE, WE ARE NOT PUTTING PEOPLE ID IN URLS
+    username = request.GET.get('user')
+
+    userObj = get_object_or_404(Player, username=username)
+    chatObj = get_object_or_404(ChatRoom, roomid=chat_id)
+
+    if (userObj not in chatObj.members.all() and userObj != chatObj.owner):
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
     if (not last_msgId):
         chatMsgObj = ChatMessage.objects.filter(room=chatObj).order_by('-chatid') # get everything
     else:
@@ -154,13 +164,15 @@ def chatHistory(request: Request, chat_id):
             chatid__lt=last_msgId
         ).order_by('-chatid') # get everything AFTER the last message id
 
-    # grab the 10 latest messages
-    chatMsgObj = chatMsgObj[:10]
-    if (chatMsgObj.exists()):
-        serialized = ChatMessageSerializer(chatMsgObj, many=True)
-        return Response(data={"history": serialized.data})
-    else:
-        return Response(data={"history": []})
+    # grab the {maxMsgCount} latest messages
+    firstFewMsg = chatMsgObj[:maxMsgCount]
+    remainder = chatMsgObj[maxMsgCount:]
+    serialized = ChatMessageSerializer(
+        playerObject=userObj,
+        instance=firstFewMsg,
+        many=True
+    )
+    return Response(data={"history": serialized.data, 'haveMore': remainder.exists()})
 
 def createInvite(messageObject, match_type, ws_group_name):
     from pong_server.server import PongServer
@@ -168,14 +180,12 @@ def createInvite(messageObject, match_type, ws_group_name):
 
     def customRemovalFunction(gameInstance: PongGame, InviteObject: InviteMessage):
         async def removalFunc():
-            if not gameInstance.matchPlayed():
-                InviteObject.match = None # remove match
-                InviteObject.status = 3 # set to expired
-
             await PongServer.createRemovalFunction(gameInstance.gameid)()
 
-            if gameInstance.matchPlayed():
-                InviteObject.status = 2
+            InviteObject.status = 2
+            if not gameInstance.matchPlayed() or not gameInstance.resultsUploadSuccessfully:
+                InviteObject.match = None # remove match
+                InviteObject.status = 3 # set to expired
 
             await InviteObject.asave()
 
@@ -186,7 +196,8 @@ def createInvite(messageObject, match_type, ws_group_name):
                 "text" : {
                     "command": "update_match",
                     "chatid": await sync_to_async(msgid)(),
-                    "status": InviteObject.get_status_display()
+                    "status": InviteObject.get_status_display(),
+                    'matchid': gameInstance.gameid
                 }
             })
         return removalFunc
@@ -215,36 +226,6 @@ def createInvite(messageObject, match_type, ws_group_name):
     newInviteObject.save()
     return gameId
 
-@extend_schema(
-    summary="Sends a message to chat room",
-    description="API endpoint for users to send their message to the chat room to be saved",
-    request=ChatMessageSerializer,
-    parameters=[OpenApiParameter("chat_id", description='ID of the chatroom', location='path')],
-    examples=[
-        OpenApiExample(
-            "Send a message",
-            {
-                "sender": "sender_username",
-                "type": "message",
-                "content": "content of message"
-            }
-        ),
-        OpenApiExample(
-            "Send a game invite",
-            {
-                "sender": "sender_username",
-                "type": "invite",
-                "match_type": "pong | apong",
-                "message": "content of invite"
-            }
-        )
-    ],
-    responses={
-        200: OpenApiResponse(None, "Sends a Websocket Message to all connected clients information about the message, check md files for format"),
-        404: None
-    },
-    methods=['POST']
-)
 @api_view(["POST"])
 def chatPostingMessages(request: Request, chat_id):
     data = request.data
@@ -267,26 +248,14 @@ def chatPostingMessages(request: Request, chat_id):
     if data['type'] == 'invite':
         newMessage.type = 2
         newMessage.save()
-        gameid = createInvite(newMessage, data["match_type"], group_name)
+        createInvite(newMessage, data["match_type"], group_name)
 
-    if data['type'] == 'message':
-        async_to_sync ( channel_layer.group_send ) (group_name, {
-            "type": "message",
-            "text": {
-                "command": "new_message",
-                **data
-            }
-        })
-    elif data['type'] == 'invite':
-        async_to_sync ( channel_layer.group_send ) (group_name, {
-            "type": "message",
-            "text": {
-                "command": "new_invite",
-                "chatid": newMessage.chatid,
-                "sender": data["sender"],
-                "gameid": gameid,
-                "status": "waiting"
-            }
-        })
+    async_to_sync ( channel_layer.group_send ) (group_name, {
+        "type": "message",
+        "text": {
+            "command": "new_message",
+            'messageId': newMessage.chatid
+        }
+    })
 
     return Response(status=status.HTTP_200_OK)

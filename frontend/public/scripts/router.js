@@ -11,17 +11,17 @@ import ftlogin from "./pages/ft_login.js"
 import login from "./pages/login.js"
 import test from "./pages/test.js"
 import home from "./pages/home.js"
-import match from "./pages/match.js"
 import matchListing from "./pages/matchListing.js"
-import chat from "./pages/chat.js"
+import testChat from "./pages/testChat.js"
 import tournamentList from "./pages/tournamentListing.js"
 import tournament from "./pages/tournament.js"
 import result from "./pages/result.js"
 import profile from "./pages/profile.js"
 import matchmaking from "./pages/matchmaking.js"
-import msg from "./pages/msg.js"
+import chat from "./pages/chat/chat.js"
 import friendlist from "./pages/friendlist.js"
-import newMatch from "./pages/newMatch.js"
+import match from "./pages/newMatch.js"
+import oldMatch from "./pages/match.js"
 
 const routes = {
 	'/': landing,
@@ -31,16 +31,17 @@ const routes = {
 	'/test': test,
 	'/home': home,
 	'/match': matchListing,
-	'/match/<game_id>': newMatch,
+	'/match/<game_id>': match,
+	'/match/<game_id>/spectate': match,
 	'/match/<game_id>/results': result,
 	'/chat': chat,
 	'/tournament': tournamentList,
 	'/tournament/<tournament_id>': tournament,
 	'/profile': profile,
 	'/matchmaking': matchmaking,
-	'/msg': msg,
-	'/friendlist': friendlist,
-	'/oldMatch': match,
+	'/friends': friendlist,
+	'/oldMatch': oldMatch,
+	'/testChat': testChat,
 }
 
 let clean_up_function = () => {}

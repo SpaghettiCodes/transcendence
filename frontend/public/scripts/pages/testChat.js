@@ -1,7 +1,7 @@
 import { redirect } from "../router.js"
 
 // this is merely a placeholder as i cook up a chat system
-export default function chat(prop={}) {
+export default function testChat(prop={}) {
 	let websocket = undefined
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
@@ -13,9 +13,7 @@ export default function chat(prop={}) {
 	// return the html code here
 	let render_code = () => {
 		return `
-			<div>
-				<h1>Test ChatRoom</h1>
-
+			<div class='d-flex overflow-scroll bg-white'>
 				<div class="settings">
 					<div class="usernameDiv">
 						<h2 id="nameBig" class="hide"></h2>
@@ -166,8 +164,8 @@ export default function chat(prop={}) {
 			let messagediv = document.createElement("div")
 			authordiv.setAttribute("class", "author")
 			messagediv.setAttribute("class", "message")
-			authordiv.innerHTML = data["sender"]
-			messagediv.innerHTML = data["message"]
+			authordiv.innerHTML = data["sender"]['username']
+			messagediv.innerHTML = data['content']
 			newDiv.appendChild(authordiv)
 			newDiv.appendChild(messagediv)
 
@@ -175,15 +173,15 @@ export default function chat(prop={}) {
 		}
 
 		const makeInviteBox = (data) => {
-			let gameData = data["gameid"]
-			let sender = data["sender"]
+			let sender_details = data["sender"]
+			let invite_details = data["invite_details"]
 			let chatId = data["chatid"]
-			console.log(gameData)
-			console.log(sender)
 
 			let newDiv = document.createElement("div")
 			newDiv.setAttribute("class", "invitebox")
 			newDiv.setAttribute("id", `msg-${chatId}`)
+
+			let sender = sender_details["username"]
 
 			let messageDiv = document.createElement("div")
 			messageDiv.setAttribute("class", "message")
@@ -192,16 +190,17 @@ export default function chat(prop={}) {
 			let button = document.createElement("button")
 			button.setAttribute("id", `msg-button-${chatId}`)
 
-			let status = data["status"]
+			let status = invite_details["status"]
+			let matchId = invite_details["match"]
 			if (status === "waiting") {
 				button.innerText = "Join Match"
 				button.onclick = () => {
-					redirect(`/match/${gameData}`)
+					redirect(`/match/${matchId}`)
 				}
 			} else if (status === "done") {
 				button.innerText = "Match Results"
 				button.onclick = () => {
-					redirect(`/match/${gameData}/results`)
+					redirect(`/match/${matchId}/results`)
 				}
 			} else if (status === "expired") {
 				button.innerText = "Unavailable"
@@ -221,7 +220,7 @@ export default function chat(prop={}) {
 			if (status === "waiting") {
 				inviteButton.innerText = "Join Match"
 				inviteButton.onclick = () => {
-					redirect(`/match/${gameData}`)
+					redirect(`/match/${gameData}`) // Lol, Lmao even
 				}
 			} else if (status === "done") {
 				inviteButton.innerText = "Match Results"
@@ -237,9 +236,9 @@ export default function chat(prop={}) {
 		const getPreviousMessages = async () => {
 			let url = undefined
 			if (lastmsgid === undefined)
-				url = `http://localhost:8000/api/chat/${roomid}/history`
+				url = `http://localhost:8000/api/chat/${roomid}/history?user=${name}`
 			else
-				url = `http://localhost:8000/api/chat/${roomid}/history?start_id=${lastmsgid}`
+				url = `http://localhost:8000/api/chat/${roomid}/history?start_id=${lastmsgid}&user=${name}`
 
 			try {
 				const response = await fetch(url)
@@ -263,18 +262,10 @@ export default function chat(prop={}) {
 
 					switch (type) {
 						case ("message"):
-							messageBlock = makeMessageBox({
-								"sender": pastMessage["sender"]["username"],
-								"message": pastMessage["content"]
-							})
+							messageBlock = makeMessageBox(pastMessage)
 							break
 						case ("invite"):
-							messageBlock = makeInviteBox({
-								"chatid": pastMessage["chatid"],
-								"gameid": pastMessage["invite_details"]["match"],
-								"sender": pastMessage["sender"]["username"],
-								"status": pastMessage["invite_details"]["status"]
-							})
+							messageBlock = makeInviteBox(pastMessage)
 							break
 					}
 
@@ -352,11 +343,14 @@ export default function chat(prop={}) {
 						messageScreen.prepend(newDiv)
 						break
 					case "new_message":
-						newDiv = makeMessageBox(data)
-						messageScreen.prepend(newDiv)
-						break
-					case "new_invite":
-						newDiv = makeInviteBox(data)
+						let messageDetails = data["details"]
+						console.log(messageDetails)
+
+						if (messageDetails["type"] === "message") {
+							newDiv = makeMessageBox(messageDetails)
+						} else if (messageDetails["type"] === "invite") {
+							newDiv = makeInviteBox(messageDetails)
+						}
 						messageScreen.prepend(newDiv)
 						break
 					case "update_match":

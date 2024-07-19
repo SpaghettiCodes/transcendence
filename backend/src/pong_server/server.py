@@ -106,14 +106,12 @@ class PongServer:
         return res
 
     @classmethod
-    def getNewServerID(cls):
-        # go and fuck yourself
-        # server_id = "".join(random.choices(cls.ran_letter, k=8))
-        # while server_id in subserver.keys():
-        #     server_id = "".join(random.choices(cls.ran_letter, k=8))
+    def getNewServerID(cls, type):
+        typeId = 1
+        if type == 'apong':
+            typeId = 2
 
-        # newMatch = await sync_to_async(Match.objects.create)()
-        newMatch = Match.objects.create()
+        newMatch = Match.objects.create(type=typeId)
         matchId = newMatch.id
         displayId = to_base52(matchId)
         newMatch.matchid = displayId
@@ -134,7 +132,7 @@ class PongServer:
             cls.servers[subserver_id] = dict()
         subserver = cls.servers[subserver_id]
 
-        server_id = cls.getNewServerID()
+        server_id = cls.getNewServerID(type)
 
         if removalFunction is None:
             removalFunction = cls.createRemovalFunction(server_id, subserver_id)
@@ -144,6 +142,8 @@ class PongServer:
         elif type == "apong":
             subserver[server_id] = APongUsGame(server_id, removalFunction, subserver_id, hidden, expectedPlayers)
         else:
+            print("Well that type does NOT exist")
+            Match.objects.get(matchid=server_id).delete()
             return None
 
         if not hidden:

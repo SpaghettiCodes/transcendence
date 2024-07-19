@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from .api_endpoints import ft, match, player, playerSpecific, friends, hello, chat, result, tournament, friend_reqs, error_page
+from .api_endpoints import friendRequest, ft, match, player, playerSpecific, friends, hello, chat, result, tournament, error_page, playerBlock
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 urlpatterns = [
@@ -17,12 +17,17 @@ urlpatterns = [
     path('player/<player_username>/match', playerSpecific.SpecificPlayerMatches),
     path('player/<player_username>/chat', playerSpecific.SpecificPlayerChats),
 
-    ## friends post - make request, get - get list, delete - remove a friend
+    ## friends 
+    # get - get list of friends, delete - remove a friend
     path('player/<player_username>/friends', friends.ViewFriends.as_view()),
+    # post - make request, get - get sent and received list, delete - remove a request
+    path('player/<player_username>/friends/request', friendRequest.ViewFriendRequest.as_view()),
 
-    # HEADS UP, accepting a friend reqeust just post to the target's friends api endpoint
-    # we then check if the friend request exists, if it does, we accept it 
-    # if it doesnt, we create one
+    # get direct chats
+    path('player/<player_username>/chat/<player2_username>', friends.getDirectMessageChatRoom),
+
+    ## blocking people
+    path('player/<player_username>/blocked', playerBlock.ViewBlocked.as_view()),
 
     ## matches
     path('match', match.MatchView.as_view()),

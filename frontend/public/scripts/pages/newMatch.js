@@ -1,9 +1,10 @@
 import { redirect } from "../router.js"
 
-export default function newMatch(prop={}) {
+export default function match(prop={}) {
 	// API
 	let game_id = (prop["arguments"]) ? (prop["arguments"]["game_id"]) : undefined
 	let tournament_id = (prop["arguments"]) ? prop["arguments"]["tournament_id"] : undefined
+	let spectating = (prop["arguments"]) ? prop["arguments"]["spectate"] ? true : false : false
 	let apiURI = (tournament_id) ? `tournament/${tournament_id}/match/${game_id}` : `match/${game_id}`
 
 	// TEMP, REPLACE WITH JWT LATER
@@ -33,7 +34,7 @@ export default function newMatch(prop={}) {
 					<div class="matchScoreCount firstHalf" id="attackerScoreBoard">0</div>
 					<div class="matchScoreCount secondHalf" id="defenderScoreBoard">0</div>
 					<div class="d-flex align-items-center justify-content-center text-center text-white fw-bold w-100 h-100" id="messageBoard">
-						Match Messages Goes Here
+						Please wait as we fetch the data...
 					</div>
 					<div id="gameComponent"></div>
 				</div>
@@ -220,8 +221,8 @@ export default function newMatch(prop={}) {
 
 			let alpha = Math.min(widthAlpha, heightAlpha)
 
-			let newWidth = (serverFieldWidth * alpha) - alpha
-			let newHeight = (serverFieldHeight * alpha) - alpha
+			let newWidth = (serverFieldWidth * alpha)
+			let newHeight = (serverFieldHeight * alpha)
 
 			let oldFieldWidth = mainField.offsetWidth
 			let oldFieldHeight = mainField.offsetHeight
@@ -229,8 +230,11 @@ export default function newMatch(prop={}) {
 			mainField.style.width = `${newWidth}px`
 			mainField.style.height = `${newHeight}px`
 
-			fieldWidth = mainField.offsetWidth
-			fieldHeight = mainField.offsetHeight
+			console.log("Hello")
+			let mainFieldBorder = +getComputedStyle(mainField).borderWidth.slice(0, -2)
+
+			fieldWidth = mainField.offsetWidth - 2 * (mainFieldBorder)
+			fieldHeight = mainField.offsetHeight - 2 * (mainFieldBorder)
 
 			let paddles = document.getElementsByClassName("paddle")
 			for (let paddle of paddles) {
@@ -349,7 +353,7 @@ export default function newMatch(prop={}) {
 		}
 
 		const updateMessageBoard = (message, size) => {
-			messageBoard.style.fontSize = `${size}vw`
+			messageBoard.style.fontSize = `${size}vmin`
 			messageBoard.innerText = message
 		}
 
@@ -382,8 +386,13 @@ export default function newMatch(prop={}) {
 			pongSocket = new WebSocket(`ws://localhost:8000/${apiURI}`)
 	
 			pongSocket.onopen = function(e) {
+				let commandToSend = 'join'
+				if (spectating) {
+					commandToSend = 'watch'
+				}
+
 				sendMessage({
-					'command': 'join',
+					'command': commandToSend,
 					'username': player_id, // fuck gotta figure out how to do this now wohoo
 				})
 			}
@@ -414,6 +423,7 @@ export default function newMatch(prop={}) {
 						document.getElementById("defenderNameField").innerText = 'Finding Player'
 						break
 					case "error":
+						errorMessage(data["message"])
 						break
 					case "pause":
 						let message = data["message"]
@@ -433,7 +443,7 @@ export default function newMatch(prop={}) {
 						break
 					case "end":
 						let gameLifetime = data["lifetime"]
-						updateMessageBoard(`Game Ended\nYou will be ejected in ${gameLifetime}`)
+						updateMessageBoard(`Game Ended\nYou will be ejected in ${gameLifetime}`, 5)
 						break
 					case "redirect":
 						history.back()
@@ -449,7 +459,7 @@ export default function newMatch(prop={}) {
 			}
 	
 			pongSocket.onerror = (e) => {
-				console.log("bro left")
+				errorMessage("Unable to connect to Server")
 			}	
 		}
 

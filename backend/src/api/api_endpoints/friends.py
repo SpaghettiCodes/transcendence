@@ -4,59 +4,18 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.decorators import api_view
 
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import FieldDoesNotExist
 
-from database.models import Player, Friend_Request
-from ..serializer import PlayerSerializer, PublicPlayerSerializer
+from database.models import Player, ChatRoom
+from ..serializer import PublicPlayerSerializer, PublicChatRoomSerializer
 
 class ViewFriends(APIView):
     parser_classes = [JSONParser]
     renderer_classes = [JSONRenderer]
-
-    """
-    A wants to be friends with B
-
-    A sends API to /api/B/friends
-
-    B accepts
-
-    B send API to /api/A/friends
-    """
-
-    # add friend // accept friend request
-    def post(self, request: Request, player_username, format=None):
-        try:
-            sender_username = request.data.get('sender') # man i think i should put sender username in the url
-        except FieldDoesNotExist:
-            return Response(
-                {"Error": "sender username not given"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        if sender_username == player_username:
-            # y u try to be friends with urself
-            return Response(
-                {"Error": "you are already friends with yourself"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        p_receiver = get_object_or_404(Player.objects, username=player_username)
-        p_sender = get_object_or_404(Player.objects, username=sender_username)
-
-        # check if receiver once sent a friend req to 
-        existingFriendRequest = p_sender.friend_request_receiver.all().filter(sender=p_receiver)
-        if existingFriendRequest.exists():
-            existingFriendRequest = existingFriendRequest.get()
-            existingFriendRequest.accept()
-            return Response(status=status.HTTP_202_ACCEPTED)
-
-        newFriendRequest = Friend_Request.objects.create(
-            sender=p_sender,
-            receiver=p_receiver
-        )
-        return Response(status=status.HTTP_201_CREATED)
 
     # get list of friends
     def get(self, request: Request, player_username, format=None):
@@ -65,35 +24,50 @@ class ViewFriends(APIView):
         serialized = PublicPlayerSerializer(friends_obj, many=True)
         return Response(serialized.data)
 
-    """
-    A wants to remove // reject B
-
-    A sends DELETE api call to /api/B/friends
-    """
-    # remove friend // reject friend request
+    # remove friend
     def delete(self, request: Request, player_username, format=None):
         try:
-            sender_username = request.data.get('sender') # man i think i should put sender username in the url
+            target_username = request.data.get('target')
         except FieldDoesNotExist:
             return Response(
                 {"Error": "sender username not given"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        if (sender_username == player_username):
+        if (target_username == player_username):
             return Response(
                 {"Error": "cant unfriend yourself"},
                 status.HTTP_400_BAD_REQUEST
             )
 
-        p_receiver = get_object_or_404(Player.objects, username=sender_username)
-        p_sender = get_object_or_404(Player.objects, username=player_username)
+        p_target = get_object_or_404(Player.objects, username=target_username)
+        p_player = get_object_or_404(Player.objects, username=player_username)
 
-        # reject the friend request
-        existingFriendRequest = p_receiver.friend_request_receiver.all().filter(sender=p_sender)
-        if existingFriendRequest.exists():
-            existingFriendRequest = existingFriendRequest.get()
-            existingFriendRequest.decline()
-
-        p_receiver.remove_friend(p_sender)
+        p_player.remove_friend(p_target)
         return Response(status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def getDirectMessageChatRoom(request: Request, player_username, player2_username):
+    if player_username == player2_username:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    p1 = get_object_or_404(Player, username=player_username)
+    p2 = get_object_or_404(Player, username=player2_username)
+
+    memberSet = [p1, p2]
+    chatrooms = ChatRoom.objects.annotate(
+        members_count=Count('members', filter=Q(members__in=memberSet))
+    ).filter(
+        members_count=2
+    )
+
+    if (not chatrooms.exists()):
+        chatroom = ChatRoom.objects.create(
+            title="Direct Message",
+        )
+        chatroom.members.add(*memberSet)
+    else:
+        chatroom = chatrooms.get()
+
+    serializer = PublicChatRoomSerializer(chatroom)
+    return Response(serializer.data)
