@@ -270,7 +270,7 @@ class InviteMessage(models.Model):
         default=1
     )
 
-    match = models.ForeignKey(
+    match = models.OneToOneField(
         Match,
         on_delete=models.CASCADE,
         related_name="invite_match",

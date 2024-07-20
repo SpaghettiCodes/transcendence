@@ -9,7 +9,9 @@ export default function result(prop={}) {
 
 	// return the html code here
 	let render_code = () => {
-		return ``
+		return `<div class='bg-black'>
+		
+		</div>`
 	}
 
 	// attach all event listeners here (or do anything that needs to be done AFTER attaching the html code)
@@ -20,4 +22,4 @@ export default function result(prop={}) {
 	}
 
 	return [prerender, render_code, postrender, cleanup]
-}
+} 

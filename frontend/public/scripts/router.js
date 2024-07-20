@@ -31,9 +31,9 @@ const routes = {
 	'/test': test,
 	'/home': home,
 	'/match': matchListing,
-	'/match/<game_id>': match,
 	'/match/<game_id>/spectate': match,
 	'/match/<game_id>/results': result,
+	'/match/<game_id>': match,
 	'/chat': chat,
 	'/tournament': tournamentList,
 	'/tournament/<tournament_id>': tournament,
@@ -117,7 +117,7 @@ const get_renderer = (uri, prop) => {
 	console.log("Bringing you to " + found_uri)
 	console.log("With the props " + JSON.stringify(prop))
 
-	return routes[with_arguments[0]]
+	return routes[found_uri]
 }
 
 const render_html = (which, prop={}) => {

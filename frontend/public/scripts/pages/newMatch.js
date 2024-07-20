@@ -74,17 +74,20 @@ export default function match(prop={}) {
 
 		let scores = {}
 
-		const getGameData = () => {
-			fetch (
-				`http://localhost:8000/api/${apiURI}`,
-				{
-					method: "GET",
-				}
-			).then( (value) => {
+		const getGameData = async () => {
+			try {
+				let value = await fetch (
+					`http://localhost:8000/api/${apiURI}`,
+					{
+						method: "GET",
+					}
+				)
+
 				if (!value.ok)
 					throw value
-				return value.json()
-			}).then( (data) => {
+
+				let data = await value.json()
+				console.log(data)
 				matchStarted = data["started"]
 				if (matchStarted)
 				{
@@ -115,14 +118,15 @@ export default function match(prop={}) {
 					serverVentWidth = settings["vent"]["width"]
 
 				fixFieldDimensions()
-			}).catch( (reason) => {
-				console.log(reason)
+			} catch (reason) {
 				if (reason.status == 404) {
-					errorMessage("Game not found")
+					redirect('/error')
 				} else {
 					errorMessage("Yeah idk also ¯\\_(ツ)_/¯")
 				}
-			})
+				throw reason
+			}
+
 		}
 
 		const errorMessage = (msg) => {
@@ -398,7 +402,7 @@ export default function match(prop={}) {
 			}
 	
 			pongSocket.onerror = function(e) {
-				console.log("player left prematurely")
+				console.log("Uh oh")
 			}
 	
 			pongSocket.onmessage = function(e) {
@@ -479,9 +483,17 @@ export default function match(prop={}) {
 			}
 		}
 
-		getGameData()
-		connectSocket()
-		window.addEventListener("resize", fixFieldDimensions)
+		getGameData().then(
+			(value) => {
+				connectSocket()
+				window.addEventListener("resize", fixFieldDimensions)
+				fixDimensions = fixFieldDimensions
+			}
+		).catch(
+			(error) => {
+				console.log("well that did not work out")
+			}
+		)
 	}
 
 	let cleanup = () => {

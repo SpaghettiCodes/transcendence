@@ -4,11 +4,12 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from database.models import Player, Friend_Request
+from database.models import Player, Friend_Request, Match
 from ..serializer import PlayerSerializer, MatchSerializer, FriendRequestSerializer, PublicChatRoomSerializer
 
 from django.core.exceptions import FieldDoesNotExist
 from django.core.files.images import ImageFile
+from django.db.models import Q
 
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample,  OpenApiParameter
 
@@ -78,10 +79,9 @@ def SpecificPlayer(request, player_username):
                    MatchSerializer(many=True), "List of Matches the player participated in"
                )}
 )
-@api_view(['GET'])
 def SpecificPlayerMatches(request, player_username):
     p = get_object_or_404(Player.objects, username=player_username)
-    m = p.attacker.all() | p.defender.all()
+    m = Match.objects.filter(Q(result__attacker=p) | Q(result__defender=p))
     m = m.order_by("time_played")
     serialized = MatchSerializer(m, many=True)
     return Response(serialized.data)

@@ -41,7 +41,16 @@ export default function chat(prop={}) {
 							<div class="d-flex flex-row text-input-box">
 								<textarea class="form-control" rows="1" placeholder="Type your message here..." id="dataEnter"></textarea>
 								<button type="button" class="btn btn-dark mx-2 disabled" id="sendMessageButton">Send</button>
-							</div>
+								<button type="button" class="btn btn-dark d-flex disabled" id="inviteForMatchButton">
+									<div class='px-2'>
+										Invite
+									</div>
+									<select class='rounded bg-black border-black text-white' id="inviteForMatchType">
+										<option value="pong">Pong</option>
+										<option value="apong">APong Us</option>
+									</select>
+								</button>
+								</div>
 						</div>
 					</div>
 				</div>
@@ -62,6 +71,8 @@ export default function chat(prop={}) {
 		const friendList = document.getElementById("friend-list-items")
 		const chatContentField = document.getElementById("chatContentField")
 		const sendMessageButton = document.getElementById('sendMessageButton')
+		const sendInviteButton = document.getElementById('inviteForMatchButton')
+		const typeSelectionField = document.getElementById('inviteForMatchType')
 
 		let lastMSGID = undefined
 		let currentlyViewingChatID = undefined
@@ -69,6 +80,7 @@ export default function chat(prop={}) {
 		let loadingNewMessages = false
 		let gotAllMessages = false
 
+		let loadingNewChatroom = false
 		// <div class="friend-list-item">
 		// 	Friend 1
 		// </div>
@@ -87,8 +99,9 @@ export default function chat(prop={}) {
 						newFriendDiv.setAttribute('class', 'friend-list-item')
 
 						newFriendDiv.innerText = friendUsername
-						newFriendDiv.onclick = () => {
-							connectToNewChatroom(username, friendUsername)
+						newFriendDiv.onclick = async () => {
+							await connectToNewChatroom(username, friendUsername)
+							newFriendDiv.setAttribute('id', 'friendMsgActivated')
 						}
 						friendList.append(newFriendDiv)
 					}
@@ -96,17 +109,22 @@ export default function chat(prop={}) {
 			)
 		}
 
-		const connectToNewChatroom = (player_username, target_username) => {
-			console.log('connect new room')
-			resetChatVariables()
-			sendMessageButton.classList.add('disabled')
-			getChatRoomData(`http://localhost:8000/api/player/${player_username}/chat/${target_username}`).then(
-				(value) => {
-					connectToWebsocket(`ws://localhost:8000/chat/${value}`)
-					// enable sending message
-					sendMessageButton.classList.remove('disabled')
-				}
-			)
+		const connectToNewChatroom = async (player_username, target_username) => {
+			if (!loadingNewChatroom) {
+				loadingNewChatroom = true
+				resetChatVariables()
+
+				// disable sending messages
+				sendMessageButton.classList.add('disabled')
+				sendInviteButton.classList.add('disabled')
+
+				let chatID = await getChatRoomData(`http://localhost:8000/api/player/${player_username}/chat/${target_username}`)
+				connectToWebsocket(`ws://localhost:8000/chat/${chatID}`)
+
+				// reenable sending message
+				sendMessageButton.classList.remove('disabled')
+				sendInviteButton.classList.remove('disabled')
+			}
 		}
 
 		const getPreviousMessages = async (chatID) => {
@@ -197,6 +215,10 @@ export default function chat(prop={}) {
 			gotAllMessages = false
 			if (websocket)
 				websocket.close()
+
+			let activatedButton = document.getElementById('friendMsgActivated')
+			if (activatedButton)
+				activatedButton.removeAttribute('id')
 		}
 
 		const connectToWebsocket = (url) => {
@@ -207,6 +229,8 @@ export default function chat(prop={}) {
 					'command': 'join',
 					'username': username
 				})
+
+				loadingNewChatroom = false
 			}
 
 			websocket.onerror = (e) => {
@@ -232,8 +256,8 @@ export default function chat(prop={}) {
 						chatContentField.prepend(messageBlock.mainDiv)
 						break
 					case "update_match":
-						let { chatid, status, matchid } = data['chatid']
-						messageDiv.setPlayButtonStatus(messageDiv.getStatusButton(chatid), status, matchid)
+						let { chatid, status, matchid } = data
+						messageDiv.setPlayButtonStatus(messageDiv.getContentDiv(chatid), messageDiv.getStatusButton(chatid), status, matchid)
 						break
 					case "details":
 						break
@@ -241,6 +265,30 @@ export default function chat(prop={}) {
 			}
 
 			websocket.onclose = (data) => {
+			}
+		}
+
+		sendInviteButton.onclick = async () => {
+			let payload = {
+				'type': 'invite',
+				'sender': username,
+				'message': 'do we really need a message?',
+				'match_type': typeSelectionField.value
+			}
+
+			try {
+				await fetch(
+					`http://localhost:8000/api/chat/${currentlyViewingChatID}`,
+					{
+						method: "POST",
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(payload)
+					}
+				)
+			} catch (e) {
+				console.log(e)
 			}
 		}
 
@@ -279,44 +327,27 @@ export default function chat(prop={}) {
 			chatContentField.scrollTo(0, 0)
 		}
 
-		chatContentField.addEventListener("scroll", (event) => {
-			event.preventDefault();
-			event.stopPropagation();
-			event.stopImmediatePropagation();
+		typeSelectionField.addEventListener('click', (event) => {
+			event.stopPropagation()
+			event.stopImmediatePropagation()
+		})
 
+		chatContentField.addEventListener("scroll", (event) => {
 			if (!loadingNewMessages) {
-				console.log(chatContentField.scrollTop)
 				let threshold = 10
 				let scrollMax = chatContentField.scrollHeight - chatContentField.clientHeight // magic
-				let scrollValue = chatContentField.scrollTop * -1 // negative since upside down
 
 				// cant be scrolled
 				if (!scrollMax) {
 					return
 				}
 
-				if ((scrollMax - scrollValue) < threshold) {
-					// chatContentField.classList.remove('overflow-y-scroll')
-					// chatContentField.style.overflow = 'hidden'
+				let scrollValue = chatContentField.scrollTop * -1 // negative since upside down
+
+				if (!(scrollMax - scrollValue)) {
 					loadingNewMessages = true
-					let newMsg = getPreviousMessages(currentlyViewingChatID).then(
-						(value) => {
-							if (newMsg > 0) {
-								let totalMsg = chatContentField.childElementCount
-								// this shit works when it feels like it, do not ask me, i also dk why is this the case
-								// long given up on trying to fix this
-								chatContentField.childNodes[totalMsg - newMsg].lastChild.scrollIntoView()
-							}
-
-							// potential fix to stupid scrollbar jumping around
-							// one issue - the box is now jumping left n right
-							// also, no smooth scrolling
-							// i am going to jump off the building
-							// chatContentField.style.overflow = ''
-							// chatContentField.classList.add('overflow-y-scroll')
-
-							loadingNewMessages = false
-						}
+					getPreviousMessages(currentlyViewingChatID).then(
+						(value) => { loadingNewMessages = false }
 					)
 				}
 			}

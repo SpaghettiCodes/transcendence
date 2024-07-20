@@ -129,7 +129,7 @@ class InviteMessageSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         if ret['status'] != 'expired':
-            ret['match'] = instance.match.matchid
+            ret['match'] = MatchSerializer(instance.match).data
         return ret
 
 class ChatMessageSerializer(serializers.ModelSerializer):
@@ -154,7 +154,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
         if instance.sender in self.player.blocked.all():
             ret['type'] = 'blocked'
             ret['content'] = 'You blocked this user and thus, cannot see the content of the message'
-        elif ret["type"] == 'invite':
+        elif instance.get_type_display() == 'invite':
             ret['invite_details'] = InviteMessageSerializer(instance.invite_details).data
         return ret
 
