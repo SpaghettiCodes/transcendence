@@ -77,9 +77,10 @@
 
 .mainGameplayFrame .ball {
 	background-image: url('/image/amogus.webp');
-	background-size: 100% 100%;
+	background-size: contain;
+	background-repeat: no-repeat;
 	background-position: center;
-	border-radius: 25%;
+	border-radius: 100%;
 	border: 1px solid white;
 }
 
