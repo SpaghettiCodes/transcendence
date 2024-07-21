@@ -15,7 +15,7 @@ import login from "./pages/login.js"
 import test from "./pages/test.js"
 import home from "./pages/home.js"
 import matchListing from "./pages/matchListing.js"
-import tournamentList from "./pages/oldTournamentListing.js"
+import tournamentListing from "./pages/tournamentList.js"
 import tournament from "./pages/tournament.js"
 import result from "./pages/result/result.js"
 import profile from "./pages/profile.js"
@@ -36,7 +36,7 @@ const routes = {
 	'/match/<game_id>/results': result,
 	'/match/<game_id>': match,
 	'/chat': chat,
-	'/tournament': tournamentList,
+	'/tournament': tournamentListing,
 	'/tournament/<tournament_id>': tournament,
 	'/profile': profile,
 	'/matchmaking': matchmaking,

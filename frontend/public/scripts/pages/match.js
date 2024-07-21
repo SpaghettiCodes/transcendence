@@ -23,7 +23,7 @@ export default function match(prop={}) {
 	let render_code = () => {
 		return `
 		<div class="matchContent d-flex flex-column bg-black" id="matchContent">
-			<div class="matchDetailsFrame d-flex align-items-end text-white" id="matchDetailsFrame">
+			<div class="matchDetailsFrame d-flex align-items-end flex-grow-1  text-white" id="matchDetailsFrame">
 				<h1 class="flex-grow-1 text-center" id="attackerNameField">Name</h1>
 				<h1>VS</h1>
 				<h1 class="flex-grow-1 text-center" id="defenderNameField">Name</h1>

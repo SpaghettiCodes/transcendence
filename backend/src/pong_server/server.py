@@ -78,6 +78,17 @@ class PongServer:
         return True
 
     @classmethod
+    def dismatchMaking(cls, type='pong'):
+        if type == "pong":
+            cls.pongQueue -= 1
+        elif type == "apong":
+            cls.apongQueue += 1
+        else:
+            return False
+
+        return True
+
+    @classmethod
     async def join_player(cls, username, gameid, subserver_id=None):
         if cls.servers.get(subserver_id) is None:
             return (False, "That tournament no longer Exist")

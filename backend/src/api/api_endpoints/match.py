@@ -55,12 +55,9 @@ class MatchView(APIView):
 
             server_id = PongServer.random_matchmake(type)
             if server_id is not None:
-                if type == "pong":
-                    PongServer.pongQueue -= 1
-                elif type == "apong":
-                    PongServer.apongQueue -= 1
                 break
 
+        PongServer.dismatchMaking(type)
         if server_id == None:
             return Response(status=status.HTTP_408_REQUEST_TIMEOUT)
 

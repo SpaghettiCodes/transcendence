@@ -10,7 +10,7 @@ export default function home(prop={}) {
 		<div class="text-center mb-5">
             <h1 class="header-font">APONG US</h1>
         </div>
-        <div id="content" class="row text-center">
+        <div id="content" class="row width-80 text-center">
             <div class="col-md-4 mb-3" id="pongGame">${createButton('Pong', 'flex-grow-1 ui-btn btn-block')}</div>
             <div class="col-md-4 mb-3" id="apongUsGame">${createButton('APong Us', 'flex-grow-1 ui-btn btn-block')}</div>
             <div class="col-md-4 mb-3" id="tournament">${createButton('Tournament', 'flex-grow-1 ui-btn btn-block')}</div>
