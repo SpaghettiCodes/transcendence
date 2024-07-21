@@ -37,10 +37,16 @@ export default function template(prop={}) {
                         </div>
                     </div>
                 </div>
-                <div class="chartBox">
-                    <canvas id="myChart1"></canvas>
-                    <canvas id="myChart2"></canvas>
-                    <canvas id="myChart3"></canvas>
+                <div class="chartArea">
+                    <div class="chartBox">
+                        <canvas id="myChart1"></canvas>
+                    </div>
+                    <div class="chartBox">
+                        <canvas id="myChart2"></canvas>
+                    </div>
+                    <div class="chartBox">
+                        <canvas id="myChart3"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -78,21 +84,25 @@ export default function template(prop={}) {
                 const ratio = ((data.datasets[0].data[1] / (data.datasets[0].data[1] + data.datasets[0].data[0])) * 100).toFixed(0);
                 ctx.save();
                 ctx.font = 'bold 25px sans-serif';
-                ctx.fillStyle = 'gray';
+                ctx.fillStyle = 'lightgray';
                 ctx.textAlign = 'center';
                 ctx.fillText('Pong', xCenter, 60)
                 ctx.translate(xCenter, yCenter);
                 ctx.font = 'bold 25px sans-serif';
-                ctx.fillStyle = 'gray';
+                ctx.fillStyle = 'lightgray';
                 ctx.textBaseline = 'bottom';
                 ctx.textAlign = 'center';
                 ctx.fillText('Won', 0, 0 - 5)
                 ctx.font = 'bold 30px sans-serif';
-                ctx.fillStyle = 'gray';
+                ctx.fillStyle = 'lightgray';
                 ctx.textBaseline = 'top';
                 ctx.textAlign = 'center';
                 ctx.fillText(`${ratio}%`, 0, 0);
                 ctx.restore();
+                ctx.font = 'bold 25px sans-serif';
+                ctx.fillStyle = 'lightgray';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${(data.datasets[0].data[1] + data.datasets[0].data[0])} Games`, xCenter, yCenter + 140)
             }
         };
         const config1 = {
@@ -108,7 +118,7 @@ export default function template(prop={}) {
                     }
                 }
             },
-            plugins: [ratio1]
+            plugins: [ratio1],
         };
         const myChart1 = new Chart(
             document.getElementById('myChart1'),
@@ -140,21 +150,25 @@ export default function template(prop={}) {
                 const ratio = ((data.datasets[0].data[1] / (data.datasets[0].data[1] + data.datasets[0].data[0])) * 100).toFixed(0);
                 ctx.save();
                 ctx.font = 'bold 25px sans-serif';
-                ctx.fillStyle = 'gray';
+                ctx.fillStyle = 'lightgray';
                 ctx.textAlign = 'center';
                 ctx.fillText('APong', xCenter, 60)
                 ctx.translate(xCenter, yCenter);
                 ctx.font = 'bold 25px sans-serif';
-                ctx.fillStyle = 'gray';
+                ctx.fillStyle = 'lightgray';
                 ctx.textBaseline = 'bottom';
                 ctx.textAlign = 'center';
                 ctx.fillText('Won', 0, 0 - 5)
                 ctx.font = 'bold 30px sans-serif';
-                ctx.fillStyle = 'gray';
+                ctx.fillStyle = 'lightgray';
                 ctx.textBaseline = 'top';
                 ctx.textAlign = 'center';
                 ctx.fillText(`${ratio}%`, 0, 0);
                 ctx.restore();
+                ctx.font = 'bold 25px sans-serif';
+                ctx.fillStyle = 'lightgray';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${(data.datasets[0].data[1] + data.datasets[0].data[0])} Games`, xCenter, yCenter + 140)
             }
         };
         const config2 = {
@@ -202,21 +216,25 @@ export default function template(prop={}) {
                 const ratio = ((data.datasets[0].data[1] / (data.datasets[0].data[1] + data.datasets[0].data[0])) * 100).toFixed(0);
                 ctx.save();
                 ctx.font = 'bold 25px sans-serif';
-                ctx.fillStyle = 'gray';
+                ctx.fillStyle = 'lightgray';
                 ctx.textAlign = 'center';
                 ctx.fillText('Tournament', xCenter, 60)
                 ctx.translate(xCenter, yCenter);
                 ctx.font = 'bold 25px sans-serif';
-                ctx.fillStyle = 'gray';
+                ctx.fillStyle = 'lightgray';
                 ctx.textBaseline = 'bottom';
                 ctx.textAlign = 'center';
                 ctx.fillText('Won', 0, 0 - 5)
                 ctx.font = 'bold 30px sans-serif';
-                ctx.fillStyle = 'gray';
+                ctx.fillStyle = 'lightgray';
                 ctx.textBaseline = 'top';
                 ctx.textAlign = 'center';
                 ctx.fillText(`${ratio}%`, 0, 0);
                 ctx.restore();
+                ctx.font = 'bold 25px sans-serif';
+                ctx.fillStyle = 'lightgray';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${(data.datasets[0].data[1] + data.datasets[0].data[0])} Games`, xCenter, yCenter + 140)
             }
         };
         const config3 = {

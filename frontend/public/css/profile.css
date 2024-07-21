@@ -26,11 +26,16 @@ video {
     grid-column-end: 3;
     padding: 20px;
 }
-.chartBox {
+.chartArea {
     grid-column-start: 1;
     grid-column-end: 3;
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: 300px 300px 300px;
+    width: 950px;
+    border-radius: 1000px;
+    background-color: rgba(52, 58, 64, 0.85);
+}
+.chartBox {
     width: 350px;
 }
 .profile-pic {
