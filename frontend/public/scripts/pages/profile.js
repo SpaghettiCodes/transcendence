@@ -28,8 +28,7 @@ export default function template(prop={}) {
                 <div class="chartBox">
 	            	<canvas id="myChart"></canvas>
                 </div>
-                <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
-                <script type="text/javascript">
+                <script>
                     const data = {
                         labels: ['Losses', 'Wins'],
                         datasets: [{
@@ -64,7 +63,7 @@ export default function template(prop={}) {
                             ctx.fillStyle = 'gray';
                             ctx.textBaseline = 'top';
                             ctx.textAlign = 'center';
-                            ctx.fillText(\`\${ratio}%\`, 0, 0);
+                            ctx.fillText(\`\$\{ratio\}\%\`, 0, 0);
                             ctx.restore();
                         }
                     };
