@@ -68,8 +68,11 @@
 }
 
 .mainGameplayFrame .ball {
-	background-color: yellow;
+	background-image: url('/image/amogus.webp');
+	background-size: 100% 100%;
+	background-position: center;
 	border-radius: 25px;
+	border: 1px solid white;
 }
 
 .font-size-5vm {

@@ -12,16 +12,14 @@ import login from "./pages/login.js"
 import test from "./pages/test.js"
 import home from "./pages/home.js"
 import matchListing from "./pages/matchListing.js"
-import testChat from "./pages/testChat.js"
 import tournamentList from "./pages/tournamentListing.js"
 import tournament from "./pages/tournament.js"
-import result from "./pages/result.js"
+import result from "./pages/result/result.js"
 import profile from "./pages/profile.js"
 import matchmaking from "./pages/matchmaking.js"
 import chat from "./pages/chat/chat.js"
 import friendlist from "./pages/friendlist.js"
 import match from "./pages/newMatch.js"
-import oldMatch from "./pages/match.js"
 
 const routes = {
 	'/': landing,
@@ -40,8 +38,6 @@ const routes = {
 	'/profile': profile,
 	'/matchmaking': matchmaking,
 	'/friends': friendlist,
-	'/oldMatch': oldMatch,
-	'/testChat': testChat,
 }
 
 let clean_up_function = () => {}

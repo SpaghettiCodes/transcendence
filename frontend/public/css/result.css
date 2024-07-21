@@ -1,0 +1,42 @@
+.resultDiv {
+	font-size: 2vmin;
+}
+
+.resultDiv .profilePic {
+	aspect-ratio: 1;
+	width: 5em;
+	margin: 5px;
+	background-position: top;
+	background-size: cover;
+	background-repeat: no-repeat;
+}
+
+.resultDiv .flex-grow-2 {
+	flex-grow: 2;
+}
+
+.resultDiv .statusDiv {
+	padding-top: 5vh;
+	font-size: 7em;
+}
+
+.resultDiv .scoreDiv {
+	font-size: 7em;
+}
+
+.resultDiv .usernameDiv {
+	font-size: 3em;
+}
+
+.resultDiv .resultBtn {
+	padding: 20px 50px;
+}
+
+.resultDiv .redirectMessage {
+	font-size: 5em;
+	padding-bottom: 10vh;
+}
+
+.resultDiv .watchPrompt {
+	font-size: 0.25em;
+}

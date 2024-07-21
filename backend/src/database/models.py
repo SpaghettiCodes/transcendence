@@ -168,7 +168,7 @@ class MatchResult(models.Model):
     reason = models.SmallIntegerField(
         choices=(
             (1, "normal"),
-            (2, "player forfeited"),
+            (2, "forfeited"),
             (3, 'draw')
         ),
         default=1

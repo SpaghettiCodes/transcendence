@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>test</title>
+    <style>
+      .chartBox {
+        width: 500px;
+        padding: 20px;
+        border-radius: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chartBox">
+        <canvas id="myChart"></canvas>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
+        <script>
+        // setup
+        const data = {
+        labels: ['Losses', 'Wins'],
+        datasets: [{
+            data: [3, 5],
+            backgroundColor: [
+                'rgba(255, 26, 104, 0.2)',
+                'rgba(54, 162, 235, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 26, 104, 1)',
+                'rgba(54, 162, 235, 1)'
+            ],
+            borderWidth: 1,
+            cutout: '60%'
+        }]
+        };
+
+        const ratio = {
+            id: 'ratio',
+            beforeDatasetsDraw(chart, args, plugins) {
+                const { data, ctx } = chart;
+
+                const xCenter = chart.getDatasetMeta(0).data[0].x;
+                const yCenter = chart.getDatasetMeta(0).data[0].y;
+                const ratio = (data.datasets[0].data[1] / data.datasets[0].data[0]).toFixed(1);
+
+                ctx.save();
+
+                const textWidth = ctx.measureText('W/L: ').width;
+                ctx.translate(xCenter, yCenter);
+
+                ctx.font = 'bold 65px sans-serif';
+                ctx.fillStyle = 'gray';
+                ctx.textBaseline = 'bottom';
+                ctx.textAlign = 'center';
+                ctx.fillText('W/L', 0, 0 - 5)
+
+                ctx.font = 'bold 80px sans-serif';
+                ctx.fillStyle = 'gray';
+                ctx.textBaseline = 'top';
+                ctx.textAlign = 'center';
+                ctx.fillText(ratio, 0, 0);
+
+                ctx.restore();
+            }
+        };
+
+        // config
+        const config = {
+        type: 'doughnut',
+        data,
+        options: {
+            layout: {
+                padding: 70,
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                }
+            }
+        },
+        plugins: [ratio]
+        };
+
+        // render init block
+        const myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+        );
+
+        // Instantly assign Chart.js version
+        const chartVersion = document.getElementById('chartVersion');
+        chartVersion.innerText = Chart.version;
+        </script>
+    </div>
+
+  </body>
+</html>
