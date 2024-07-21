@@ -125,7 +125,6 @@ export default function chat(prop={}) {
 		}
 
 		const getPreviousMessages = async (chatID, resetChat=false) => {
-			console.log('get prev msg')
 			let url = undefined
 			let didWeGetAllMessagesBefore = gotAllMessages
 			if (lastMSGID === undefined)
@@ -143,8 +142,6 @@ export default function chat(prop={}) {
 
 				const messageList = data["history"]
 				const haveMore =  data["haveMore"]
-
-				console.log(data)
 
 				if (resetChat) {
 					resetChatContent()
