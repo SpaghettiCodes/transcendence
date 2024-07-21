@@ -1,4 +1,5 @@
 import { redirect } from "../router.js"
+import { createButton, createInput } from "../components/elements.js"
 
 // env var, remove when done
 // note to self: DO NOT, PUSH, TO GITHUB
@@ -9,30 +10,23 @@ export default function landing(prop={}) {
 	}
 
 	let render_code = () => {
-		return `
-		<div class="container-fluid d-flex flex-column min-vh-100 justify-content-center align-items-center text-white">
-			<div class="text-center mb-5">
-				<h1 class="header-font">APONG US</h1>
-			</div>
-        <div class="video-container">
-            <video autoplay muted loop id="bg-video">
-                <source src="/video/among_us.mp4" type="video/mp4">
-                Your browser does not support HTML5 video.
-            </video>
+		return`
+		<div class="text-center mb-3">
+            <h1 class="header-font">APONG US</h1>
         </div>
-		<div class="d-flex flex-column align-items-center lowered">
+        <div class="d-flex flex-column align-items-center lowered">
             <div class="mb-3 mt-3">
-                <label for="email" class="form-label">ID:</label>
-                <input type="username" class="form-control" id="email" placeholder="Crewmate id" name="email">
+                <label for="username" class="form-label">ID:</label>
+                ${createInput('', 'username', 'username', 'Crewmate ID')}
                 <label for="pwd" class="form-label">Password:</label>
-                <input type="password" class="form-control" id="pwd" placeholder="Crewmate Password" name="pswd">
+                ${createInput('', 'password', 'pwd', 'Crewmate Password')}
             </div>
             <div>
-                <button type="submit" class="btn btn-outline-light">Login</button> 
-                <button type="submit" class="btn btn-outline-light">Sign up</button>
+                ${createButton('Login', 'btn-outline-light')}
+                ${createButton('Sign up', 'btn-outline-light')}
             </div>
             <div class="mb-3 mt-3">
-                <button type="button" class="btn btn-outline-light btn-sm">Login via 42</button>
+                ${createButton('Login via 42', 'btn-outline-light btn-sm')}
             </div>
         </div>
 		`

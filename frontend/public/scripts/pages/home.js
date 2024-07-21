@@ -1,3 +1,4 @@
+import { createButton } from "../components/elements.js"
 
 export default function home(prop={}) {
 	let prerender = () => {
@@ -6,38 +7,17 @@ export default function home(prop={}) {
 
 	let render_code = () => {
 		return `
-		<div class="container-fluid d-flex flex-column min-vh-100 justify-content-center align-items-center text-white">
-			<div class="video-container">
-				<video autoplay muted loop id="bg-video">
-					<source src="video/among_us.mp4" type="video/mp4">
-					Your browser does not support HTML5 video.
-				</video>
-			</div>
-			<div class="text-center mb-5">
-				<h1 class="header-font">APONG US</h1>
-			</div>
-
-			<div id="content" class="row text-center">
-				<div class="d-flex col-md-4 mb-3" id="pongGame">
-					<button class="flex-grow-1 ui-btn btn-block"><span>Pong</span></button>
-				</div>
-				<div class="d-flex col-md-4 mb-3" id="apongUsGame">
-				<button class="flex-grow-1 ui-btn btn-block"><span>APong Us</span></button>
-				</div>
-				<div class="d-flex col-md-4 mb-3" id="tournament">
-				<button class="flex-grow-1 ui-btn btn-block"><span>Tournament</span></button>
-				</div>
-				<div class="d-flex col-md-4 mb-3">
-				<button class="flex-grow-1 ui-btn btn-block"><span>Language</span></button>
-				</div>
-				<div class="d-flex col-md-4 mb-3">
-				<button class="flex-grow-1 ui-btn btn-block"><span>Profile</span></button>
-				</div>
-				<div class="d-flex col-md-4 mb-3">
-				<button class="flex-grow-1 ui-btn btn-block"><span>Friends....?</span></button>
-				</div>
-			</div> 
-		</div>
+		<div class="text-center mb-5">
+            <h1 class="header-font">APONG US</h1>
+        </div>
+        <div id="content" class="row text-center">
+            <div class="col-md-4 mb-3" id="pongGame">${createButton('Pong', 'flex-grow-1 ui-btn btn-block')}</div>
+            <div class="col-md-4 mb-3" id="apongUsGame">${createButton('APong Us', 'flex-grow-1 ui-btn btn-block')}</div>
+            <div class="col-md-4 mb-3" id="tournament">${createButton('Tournament', 'flex-grow-1 ui-btn btn-block')}</div>
+            <div class="col-md-4 mb-3" id="language">${createButton('Language', 'flex-grow-1 ui-btn btn-block')}</div>
+            <div class="col-md-4 mb-3" id="profile">${createButton('Profile', 'flex-grow-1 ui-btn btn-block')}</div>
+            <div class="col-md-4 mb-3" id="friends">${createButton('Friends....?', 'flex-grow-1 ui-btn btn-block')}</div>
+        </div>
 		`
 	}
 

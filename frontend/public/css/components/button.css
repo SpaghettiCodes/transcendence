@@ -10,9 +10,10 @@
     --hover-btn-color: #7241FF;
     --default-btn-color: #fff;
     --font-size: 30px;
-    /* 👆 this field should not be empty */
     --font-weight: 600;
     --font-family: Menlo,Roboto Mono,monospace;
+    --btn-width: 90%;
+    --btn-height: 100px;
 }
 
 /* button settings 👆 */
@@ -32,6 +33,8 @@
     box-shadow: var(--btn-shadow);
     border-radius: 10px;
     border: 2px solid #2A2B3A;
+    width: var(--btn-width); /* Ensure buttons have the same width */
+    height: var(--btn-height); /* Ensure buttons have the same height */
 }
 
 .ui-btn span {
@@ -53,7 +56,6 @@
     background: var(--btn-default-bg);
     box-shadow: 0px 0px 10px 0px rgba(119, 68, 255, 0.70);
     border: 2px solid #7241FF;
-    ;
 }
 
 .ui-btn:hover span, .ui-btn:focus span {
@@ -66,95 +68,75 @@
 
 @keyframes chitchat {
     0% {
-    content: "#";
+        content: "#";
     }
-
     5% {
-    content: ".";
+        content: ".";
     }
-
     10% {
-    content: "^{";
+        content: "^{";
     }
-
     15% {
-    content: "-!";
+        content: "-!";
     }
-
     20% {
-    content: "#$_";
+        content: "#$_";
     }
-
     25% {
-    content: "№:0";
+        content: "№:0";
     }
-
     30% {
-    content: "#{+.";
+        content: "#{+.";
     }
-
     35% {
-    content: "@}-?";
+        content: "@}-?";
     }
-
     40% {
-    content: "?{4@%";
+        content: "?{4@%";
     }
-
     45% {
-    content: "=.,^!";
+        content: "=.,^!";
     }
-
     50% {
-    content: "?2@%";
+        content: "?2@%";
     }
-
     55% {
-    content: "\;1}]";
+        content: "\;1}]";
     }
-
     60% {
-    content: "?{%:%";
-    right: 0;
+        content: "?{%:%";
+        right: 0;
     }
-
     65% {
-    content: "|{f[4";
-    right: 0;
+        content: "|{f[4";
+        right: 0;
     }
-
     70% {
-    content: "{4%0%";
-    right: 0;
+        content: "{4%0%";
+        right: 0;
     }
-
     75% {
-    content: "'1_0<";
-    right: 0;
+        content: "'1_0<";
+        right: 0;
     }
-
     80% {
-    content: "{0%";
-    right: 0;
+        content: "{0%";
+        right: 0;   
     }
-
     85% {
-    content: "]>'";
-    right: 0;
+        content: "]>'";
+        right: 0;
     }
-
     90% {
-    content: "4";
-    right: 0;
+        content: "4";
+        right: 0;
     }
-
     95% {
-    content: "2";
-    right: 0;
+        content: "2";
+        right: 0;
     }
-
     100% {
-    content: "";
-    right: 0;
+        content: "";
+        right: 0;
     }
 }

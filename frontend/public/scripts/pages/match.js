@@ -1,319 +1,365 @@
 import { redirect } from "../router.js"
 
-export default function oldMatch(prop={}) {
-	console.log(prop)
-
+export default function match(prop={}) {
+	// API
 	let game_id = (prop["arguments"]) ? (prop["arguments"]["game_id"]) : undefined
 	let tournament_id = (prop["arguments"]) ? prop["arguments"]["tournament_id"] : undefined
-
+	let spectating = (prop["arguments"]) ? prop["arguments"]["spectate"] ? true : false : false
 	let apiURI = (tournament_id) ? `tournament/${tournament_id}/match/${game_id}` : `match/${game_id}`
 
+	// TEMP, REPLACE WITH JWT LATER
 	let player_id = localStorage.getItem("username") || "default"
+
+	let fixDimensions = undefined
 	let pongSocket = undefined
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
 	let prerender = () => {
-		// if (game_id === undefined)
-		// {
-		// 	redirect("/match")
-		// 	return false
-		// }
-		return true
+		return true // return true to continue to render_code
+		// return false to abort (usually used with redirect)
 	}
 
 	// return the html code here
 	let render_code = () => {
 		return `
-		<div>
-			<div>
-				<h1>Game ID: ${game_id || "nope nothing"}</h1>
+		<div class="matchContent d-flex flex-column bg-black" id="matchContent">
+			<div class="matchDetailsFrame d-flex align-items-end text-white" id="matchDetailsFrame">
+				<h1 class="flex-grow-1 text-center" id="attackerNameField">Name</h1>
+				<h1>VS</h1>
+				<h1 class="flex-grow-1 text-center" id="defenderNameField">Name</h1>
 			</div>
-			<div id="details">Loading...</div>
-			<div id="score"></div>
-			<div id="canvasDiv">
-			<canvas id="gameWindow"></canvas>
+			<div class="mainGameplayFrame" id="mainGameplayFrame">
+				<div class="mainField" id="mainField">
+					<div class="aRandomLine"></div>
+					<div class="matchScoreCount firstHalf" id="attackerScoreBoard">0</div>
+					<div class="matchScoreCount secondHalf" id="defenderScoreBoard">0</div>
+					<div id="gameComponent"></div>
+					<div class="d-flex align-items-center justify-content-center text-center text-white fw-bold w-100 h-100" id="messageBoard">
+						Please wait as we fetch the data...
+					</div>
+				</div>
 			</div>
 		</div>
+		<div class="text-danger fw-bold text-center font-size-5vm" id="errorBoard"></div>
 		`
 	}
 
 	// attach all event listeners here (or do anything that needs to be done AFTER attaching the html code)
 	let postrender = () => {
-		const canvas = document.getElementById("gameWindow")
-		const ctx = canvas.getContext("2d")
+		const mainGameplayFrame = document.getElementById("mainGameplayFrame")
+		const mainField = document.getElementById("mainField")
+		const gameComponent = document.getElementById("gameComponent")
+		const messageBoard = document.getElementById("messageBoard")
 
-		let waitingInterval = undefined	
+		let matchStarted = false
 
-		let ballRadius = undefined
-		let paddleWidth = undefined
-		let paddleHeight = undefined
-		let ventWidth = undefined
+		// these are fixed and should be taken from API calling /match/<id>
+		let serverFieldWidth = undefined
+		let serverFieldHeight = undefined
+		let serverAspectRatio = undefined
+
+		let serverPaddleHeight = undefined
+		let serverPaddleWidth = undefined
+
+		let serverBallRadius = undefined
+
+		let serverVentWidth = undefined
+
+		// playing field dimensions, CAN AND WILL CHANGE
+		let fieldHeight = undefined
+		let fieldWidth = undefined
 
 		let attacker = undefined
 		let defender = undefined
 
 		let scores = {}
 
-		const detailDiv = document.getElementById("details")
-		const scoreDiv = document.getElementById("score")
+		const getGameData = async () => {
+			try {
+				let value = await fetch (
+					`http://localhost:8000/api/${apiURI}`,
+					{
+						method: "GET",
+					}
+				)
 
-		const getGameData = () => {
-			fetch (
-				`http://localhost:8000/api/${apiURI}`,
-				{
-					method: "GET",
-				}
-			).then( (value) => {
-				detailDiv.innerHTML = ''
-				return value.json()
-			}).then( (data) => {
-				if (data["started"])
+				if (!value.ok)
+					throw value
+
+				let data = await value.json()
+				console.log(data)
+				matchStarted = data["started"]
+				if (matchStarted)
 				{
 					attacker = data["sides"]["attacker"]
 					defender = data["sides"]["defender"]
-					detailDiv.innerHTML = `${attacker} vs ${defender}`
+
+					document.getElementById("attackerNameField").innerText = attacker
+					document.getElementById("defenderNameField").innerText = defender
+
+					// no idea where to put score first sooo
 					scores[attacker] = data["score"]["attacker"]
 					scores[defender] = data["score"]["defender"]
 
-					rerenderScoreDiv()
+					updateScoreBoard()
 				}
 
 				let settings = data["settings"]
 
-				ballRadius = settings["ball"]["radius"],
-				paddleWidth = settings["paddle"]["width"],
-				paddleHeight = settings["paddle"]["height"]
+				serverFieldWidth = settings["width"]
+				serverFieldHeight = settings["height"]
+				serverAspectRatio = serverFieldWidth / serverFieldHeight
+
+				serverBallRadius = settings["ball"]["radius"],
+				serverPaddleWidth = settings["paddle"]["width"],
+				serverPaddleHeight = settings["paddle"]["height"]
 
 				if (settings["vent"])
-					ventWidth = settings["vent"]["width"]
-			})
+					serverVentWidth = settings["vent"]["width"]
+
+				fixFieldDimensions()
+			} catch (reason) {
+				if (reason.status == 404) {
+					redirect('/error')
+				} else {
+					errorMessage("Yeah idk also ¯\\_(ツ)_/¯")
+				}
+				throw reason
+			}
+
 		}
 
-		const rerenderScoreDiv = () => {
-			scoreDiv.innerHTML = `${scores[attacker]} - ${scores[defender]}`
+		const errorMessage = (msg) => {
+			document.getElementById("matchContent").removeAttribute('class')
+			document.getElementById("matchContent").style.display = 'none'
+			mainField.style.display = 'none'
+			document.getElementById("errorBoard").innerText = msg
 		}
 
-		// why does my ball looks so blury
-		// this is cuz of the devicePixelRatio property
-		// https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio
-		// which is basically the size of one CSS pixel : size of one physical pixel
-		// sometimes its not 1, which causes the picture to be blurry
-		// you will need to scale your canvas size in accordance to this
+		const fixPaddleDimensions = ({
+			paddleElement,
+			oldWidth,
+			oldHeight,
+			oldFieldWidth,
+			oldFieldHeight,
+			newFieldWidth,
+			newFieldHeight
+		}) => {
+			let paddleWidthRatio = oldWidth / oldFieldWidth
+			let paddleHeightRatio = oldHeight / oldFieldHeight
 
-		let recalibratePixels = () => {
-			// set display size in css pixel
-			var h_size = 350
-			var w_size = 750
-			canvas.style.height = h_size + "px"
-			canvas.style.width = w_size + "px"
+			let newPaddleWidth = newFieldWidth * paddleWidthRatio
+			let newPaddleHeight = newFieldHeight * paddleHeightRatio
 
-			// set actual size in memory (scaled to account for extra pixel density)
-			var scale = window.devicePixelRatio
-			canvas.width = w_size * scale
-			canvas.height = h_size * scale
+			paddleElement.style.width = `${newPaddleWidth}px`
+			paddleElement.style.height = `${newPaddleHeight}px`
 
-			// normalize coordinate system to use CSS pixels
-			ctx.scale(scale, scale)
+			return {
+				"newPaddleWidth": newPaddleWidth,
+				"newPaddleHeight": newPaddleHeight
+			}
 		}
 
-		let drawWaitingPlayer = () => {
-			ctx.fillStyle = "#000000"
-			ctx.font = '20px sans-serif'
-			ctx.textBaseline = "middle"
-			ctx.textAlign = "center"
-
-			let text = "Waiting for opponent..."
-			waitingInterval = setInterval(() => {
-				ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-				ctx.fillText(text , 115, 25, ctx.canvas.width)
-			}, 100)
+		const updateScoreBoard = () => {
+			document.getElementById("attackerScoreBoard").innerText = scores[attacker]
+			document.getElementById("defenderScoreBoard").innerText = scores[defender]
 		}
 
-		const drawScore = (scorer) => {
-			ctx.fillStyle = "#000000"
-			ctx.font = '20px sans-serif'
-			ctx.textBaseline = "middle"
-			ctx.textAlign = "center"
+		const fixPaddlePosition = ({
+			paddleElement, 
+			oldx,
+			oldy,
+			oldFieldWidth,
+			oldFieldHeight,
+			newFieldWidth,
+			newFieldHeight
+		}) => {
+			let xRatio = oldx / oldFieldWidth
+			let yRatio = oldy / oldFieldHeight
 
-			let text = `${scorer} Scored`
-			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-			ctx.fillText(text , 115, 25, ctx.canvas.width)
+			paddleElement.style.top = `${newFieldHeight * yRatio}px`
+			paddleElement.style.left = `${newFieldWidth * xRatio}px`
 		}
 
-		let showError = (message) => {
-			const errorDiv = document.getElementById("canvasDiv")
+		const fixBallDimensions = ({
+			ballElement,
+			oldRadius,
+			oldFieldHeight,
+			newFieldHeight
+		}) => {
+			let ballRatio = oldRadius / oldFieldHeight
 
-			errorDiv.innerHTML = `<h1>${message}</h1>`
+			let newballRadius = newFieldHeight * ballRatio
+			let newballDiameter = newballRadius * 2
+
+			ballElement.style.width = `${newballDiameter}px`
+			ballElement.style.height = `${newballDiameter}px`
+
+			return newballRadius
 		}
 
-		let drawStage = (data) => {
-			// clear canvas
-			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-			let { balls, vents, attacker, defender } = data
+		const fixBallPosition = ({
+			ballElement,
+			oldx,
+			oldy,
+			oldFieldWidth,
+			oldFieldHeight,
+			newFieldWidth,
+			newFieldHeight
+		}) => {
+			let xRatio = oldx / oldFieldWidth
+			let yRatio = oldy / oldFieldHeight
 
-			balls.forEach(ball => {
-				drawBall(ball["x"], ball["y"], ballRadius)
-			});
-			drawPaddle(attacker["x"], attacker["y"], paddleWidth, paddleHeight, "#00FF80")
-			drawPaddle(defender["x"], defender["y"], paddleWidth, paddleHeight, "#D99FFF")
+			let ballRadius = +ballElement.style.height.slice(0, -2) / 2
 
-			// temp, will make proper check, eventually yes
-			if (vents) {
-				vents.forEach(vent => {
-					drawVents(vent["x"], vent["y"], ventWidth)
+			ballElement.style.top = `${newFieldHeight * yRatio - ballRadius}px`
+			ballElement.style.left = `${newFieldWidth * xRatio - ballRadius}px`
+		}
+
+		const fixFieldDimensions = () => {
+			let windowWidth = mainGameplayFrame.offsetWidth
+			let windowHeight = mainGameplayFrame.offsetHeight
+
+			let widthAlpha = windowWidth / serverFieldWidth
+			let heightAlpha = windowHeight / serverFieldHeight
+
+			let alpha = Math.min(widthAlpha, heightAlpha)
+
+			let newWidth = (serverFieldWidth * alpha)
+			let newHeight = (serverFieldHeight * alpha)
+
+			let oldFieldWidth = mainField.offsetWidth
+			let oldFieldHeight = mainField.offsetHeight
+
+			mainField.style.width = `${newWidth}px`
+			mainField.style.height = `${newHeight}px`
+
+			console.log("Hello")
+			let mainFieldBorder = +getComputedStyle(mainField).borderWidth.slice(0, -2)
+
+			fieldWidth = mainField.offsetWidth - 2 * (mainFieldBorder)
+			fieldHeight = mainField.offsetHeight - 2 * (mainFieldBorder)
+
+			let paddles = document.getElementsByClassName("paddle")
+			for (let paddle of paddles) {
+				fixPaddleDimensions({
+					"paddleElement": paddle,
+					"oldWidth": serverPaddleWidth,
+					"oldHeight": serverPaddleHeight,
+					"oldFieldWidth": serverFieldWidth,
+					"oldFieldHeight": serverFieldHeight,
+					"newFieldWidth": fieldWidth,
+					"newFieldHeight": fieldHeight
+				})
+
+				fixPaddlePosition({
+					"paddleElement": paddle,
+					"oldx": +paddle.style.left.slice(0, -2),
+					"oldy": +paddle.style.top.slice(0, -2),
+					"oldFieldWidth": oldFieldWidth,
+					"oldFieldHeight": oldFieldHeight,
+					"newFieldWidth": fieldWidth,
+					"newFieldHeight": fieldHeight
+				})
+			}
+
+			let balls = document.getElementsByClassName("ball")
+			for (let ball of balls) {
+
+				fixBallDimensions({
+					"ballElement": ball,
+					"oldRadius": serverBallRadius,
+					"oldFieldHeight": serverFieldHeight,
+					"newFieldHeight": fieldHeight
+				})
+
+				let ballRadius = +ball.style.height.slice(0, -2) / 2
+
+				fixBallPosition({
+					"ballElement": ball,
+					"oldx": +ball.style.left.slice(0, -2) + ballRadius,
+					"oldy": +ball.style.top.slice(0, -2) + ballRadius,
+					"oldFieldWidth": oldFieldWidth,
+					"oldFieldHeight": oldFieldHeight,
+					"newFieldWidth": fieldWidth,
+					"newFieldHeight": fieldHeight
 				})
 			}
 		}
 
-		let drawVents = (x, y, width, color="#707070") => {
-			ctx.beginPath()
-			ctx.rect(x, y, width, 5)
-			ctx.fillStyle = color
-			ctx.fill()
-			ctx.closePath()
+		const setMinDimensions = () => {
+			let minimumBearableHeight = minimumBearableWidth / serverAspectRatio
+			mainField.style.minWidth = `${minimumBearableWidth}px`
+			mainField.style.minHeight = `${minimumBearableHeight}px`
 		}
 
-		let drawBall = (x, y, radius) => {
-			ctx.fillStyle = "#000000"
-			ctx.beginPath();
-			ctx.arc(x, y, radius, 0, Math.PI * 2);
-			ctx.fill()
-			ctx.closePath() 
+		const makePaddle = (newx, newy, id) => {
+			let newPaddle = document.createElement("div")
+			newPaddle.setAttribute("class", `paddle ${id}`)
+
+			fixPaddleDimensions({
+				"paddleElement": newPaddle,
+				"oldWidth": serverPaddleWidth,
+				"oldHeight": serverPaddleHeight,
+				"oldFieldWidth": serverFieldWidth,
+				"oldFieldHeight": serverFieldHeight,
+				"newFieldWidth": fieldWidth,
+				"newFieldHeight": fieldHeight
+			})
+
+			fixPaddlePosition({
+				"paddleElement": newPaddle,
+				"oldx": newx,
+				"oldy": newy,
+				"oldFieldWidth": serverFieldWidth,
+				"oldFieldHeight": serverFieldHeight,
+				"newFieldWidth": fieldWidth,
+				"newFieldHeight": fieldHeight
+			})
+
+			gameComponent.appendChild(newPaddle)
 		}
 
-		// the coordinates of the paddle is at the upper left corner
-		let drawPaddle = (x, y, width, height, color="#000000") => {
-			ctx.beginPath()
-			ctx.rect(x, y, width, height)
-			ctx.fillStyle = color
-			ctx.fill()
-			ctx.closePath()
-		}
+		const makeBall = (newx, newy) => {
+			let newBall = document.createElement("div")
+			newBall.setAttribute("class", "ball")
 
-		const drawGamePaused = (msg) => {
-			ctx.fillStyle = "#000000"
-			ctx.font = '20px sans-serif'
-			ctx.textBaseline = "middle"
-			ctx.textAlign = "center"
+			fixBallDimensions({
+				"ballElement": newBall,
+				"oldRadius": serverBallRadius,
+				"oldFieldHeight": serverFieldHeight,
+				"newFieldHeight": fieldHeight
+			})
 
-			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-			ctx.fillText(msg , 115, 25, ctx.canvas.width)
-		}
+			fixBallPosition({
+				"ballElement": newBall,
+				"oldx": newx,
+				"oldy": newy,
+				"oldFieldWidth": serverFieldWidth,
+				"oldFieldHeight": serverFieldHeight,
+				"newFieldWidth": fieldWidth,
+				"newFieldHeight": fieldHeight
+			})
 
-		const drawNumber = (number) => {
-			ctx.fillStyle = "#000000"
-			ctx.font = '20px sans-serif'
-			ctx.textBaseline = "middle"
-			ctx.textAlign = "center"
-
-			let text = `${number}`
-			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-			ctx.fillText(text , 115, 25, ctx.canvas.width)
+			gameComponent.appendChild(newBall)
 		}
 
 		const processFrame = (data) => {
-			drawStage(data)
-		}
+			gameComponent.innerHTML = ''
+			messageBoard.innerHTML = ''
+			let {balls, attacker, defender} = data
+			makePaddle(attacker["x"], attacker["y"], "attacker")
+			makePaddle(defender["x"], defender["y"], "defender")
 
-		const updateScore = (scorer) => {
-			++scores[scorer]
-			rerenderScoreDiv()
-		}
-
-		const sendMessage = (data) => {
-			pongSocket.send(JSON.stringify(data))
-		}
-
-		const drawEnd = (durationLeft, winner) => {
-			ctx.fillStyle = "#000000"
-			ctx.font = '20px sans-serif'
-			ctx.textBaseline = "middle"
-			ctx.textAlign = "center"
-
-			let text = `Player ${winner} wins!`
-			let text2 = `This match will close in ${durationLeft} seconds`
-			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-			ctx.fillText(text , 115, 25, ctx.canvas.width)
-			ctx.fillText(text2, 115, 50, ctx.canvas.width)
-		}
-
-		const connectSocket = () => {
-			pongSocket = new WebSocket(`ws://localhost:8000/${apiURI}`)
-	
-			pongSocket.onopen = function(e) {
-				sendMessage({
-					'command': 'join',
-					'username': player_id, // fuck gotta figure out how to do this now wohoo
-				})
+			for (let ball of balls) {
+				makeBall(ball["x"], ball["y"])
 			}
-	
-			pongSocket.onerror = function(e) {
-				console.log("player left prematurely")
-			}
-	
-			pongSocket.onmessage = function(e) {
-				const data = JSON.parse(e.data)
-				const status = data["status"]
-	
-				switch (status)
-				{
-					case "update":
-						processFrame(data)
-						break
-					case "joined":
-						// do something here
-						break
-					case "start":
-						console.log("starting...")
-						if (waitingInterval)
-							clearInterval(waitingInterval)
-						getGameData()
-						break
-					case "wait":
-						drawWaitingPlayer()
-						break
-					case "error":
-						let message = data["message"]
-						showError(message)
-						break
-					case "pause":
-						drawGamePaused(data["message"])
-						break
-					case "countdown":
-						drawNumber(data["value"])
-						break
-					case "score":
-						drawScore(data["scorer"])
-						if (data["update"])
-							updateScore(data["scorer"])
-						break
-					case "end":
-						drawEnd(data["lifetime"], data["winner"])
-						break
-					case "redirect":
-						history.back()
-						// redirect("/match")
-						break
-					default:
-						console.log("unrecognizable message")
-						break
-				}
-			}
-	
-			pongSocket.onclose = function(e) {
-				console.error('Chat socket close unexpectedly');
-			}
-	
-			pongSocket.onerror = (e) => {
-				console.log("bro left")
-			}	
 		}
 
-		// addEventListener("resize", (event) => {recalibratePixels()})
-		// recalibratePixels()
-
-		// getGameData()
-		// connectSocket()
+		const updateMessageBoard = (message, size) => {
+			messageBoard.style.fontSize = `${size}vmin`
+			messageBoard.innerText = message
+		}
 
 		document.onkeydown = (e) => {
 			e = e || window.event
@@ -336,6 +382,91 @@ export default function oldMatch(prop={}) {
 			}
 		}
 
+		const sendMessage = (data) => {
+			pongSocket.send(JSON.stringify(data))
+		}
+
+		const connectSocket = () => {
+			pongSocket = new WebSocket(`ws://localhost:8000/${apiURI}`)
+	
+			pongSocket.onopen = function(e) {
+				let commandToSend = 'join'
+				if (spectating) {
+					commandToSend = 'watch'
+				}
+
+				sendMessage({
+					'command': commandToSend,
+					'username': player_id, // fuck gotta figure out how to do this now wohoo
+				})
+			}
+	
+			pongSocket.onerror = function(e) {
+				console.log("Uh oh")
+			}
+	
+			pongSocket.onmessage = function(e) {
+				const data = JSON.parse(e.data)
+				const status = data["status"]
+
+				// default message board size = 2.5vw
+
+				switch (status)
+				{
+					case "update":
+						processFrame(data)
+						break
+					case "joined":
+						break
+					case "start":
+						getGameData()
+						break
+					case "wait":
+						updateMessageBoard("Waiting for players...", 5)
+						document.getElementById("attackerNameField").innerText = 'Finding Player'
+						document.getElementById("defenderNameField").innerText = 'Finding Player'
+						break
+					case "error":
+						errorMessage(data["message"])
+						break
+					case "pause":
+						let message = data["message"]
+						updateMessageBoard(`Game Paused\n${message}`, 5)
+						break
+					case "countdown":
+						let timeRemaining = data["value"]
+						updateMessageBoard(timeRemaining, 10)
+						break
+					case "score":
+						let whoScored  = data["scorer"]
+						if (data["update"]) {
+							++scores[whoScored]
+							updateScoreBoard()
+						}
+						updateMessageBoard(`${whoScored} Scored`, 5)
+						break
+					case "end":
+						let gameLifetime = data["lifetime"]
+						updateMessageBoard(`Game Ended\nYou will be ejected in ${gameLifetime}`, 5)
+						break
+					case "redirect":
+						history.back()
+						break
+					default:
+						console.log("unrecognizable message")
+						break
+				}
+			}
+	
+			pongSocket.onclose = function(e) {
+				console.error('Chat socket close unexpectedly');
+			}
+	
+			pongSocket.onerror = (e) => {
+				errorMessage("Unable to connect to Server")
+			}	
+		}
+
 		document.onkeyup = (e) => {
 			e = e || window.event
 
@@ -351,13 +482,27 @@ export default function oldMatch(prop={}) {
 					break;
 			}
 		}
+
+		getGameData().then(
+			(value) => {
+				connectSocket()
+				window.addEventListener("resize", fixFieldDimensions)
+				fixDimensions = fixFieldDimensions
+			}
+		).catch(
+			(error) => {
+				console.log("well that did not work out")
+			}
+		)
 	}
 
 	let cleanup = () => {
 		if (pongSocket)
 			pongSocket.close()
 
-		// uhhh should work
+		if (fixDimensions)
+			window.removeEventListener("resize", fixDimensions)
+
 		document.onkeydown = () => {}
 		document.onkeyup = () => {}
 	}

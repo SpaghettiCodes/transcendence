@@ -14,7 +14,7 @@ class GameFrame:
         self.width = width
         self.height = height
 
-        self.ballRadius = 7
+        self.ballRadius = 20
         self.ballSpeed = 350
         self.ball = Ball(radius=self.ballRadius, speed=self.ballSpeed)
 

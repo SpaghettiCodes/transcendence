@@ -1,80 +1,63 @@
-.video-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    overflow: hidden;
-}
-
-video {
-    min-width: 100%;
-    min-height: 100%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-#msg .friend-list {
-    background-color: darkgray;
-    border-radius: 5px;
+.friend-list {
+	background-color: darkgray;
+	border-radius: 5px;
 	min-width: 265px;
 	width: 265px;
-    overflow-y: auto;
+	overflow-y: auto;
 }
 
-#msg .friend-list-item {
-    background-color: #f8f9fa;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    padding: 10px;
+.friend-list-item {
+	background-color: #f8f9fa;
+	color: black;
+	margin-bottom: 10px;
+	border-radius: 5px;
+	padding: 10px;
 	transition: background-color 0.25s ease-in-out;
 }
 
-#msg .friend-list-item#friendMsgActivated {
-    background-color: rgba(248, 249, 250, 0.342);
+.friend-list-item#friendMsgActivated {
+	background-color: rgba(248, 249, 250, 0.342);
 }
 
-#msg .friend-list-item:hover {
+.friend-list-item:hover {
 	cursor: pointer;
 	background-color: rgba(248, 249, 250, 0.342);
 }
 
-#msg .chat-content-field {
+.chat-content-field {
 	background-color: rgb(213, 213, 213, 0.5);
-    /* overflow-y: auto; */
+	/* overflow-y: auto; */
 }
 
-#msg .chat-content-field > * {
+.chat-content-field > * {
+	color: black;
 	margin-top: 10px;
 	padding: 10px;
 }
 
-#msg .chat-content-field > *:last-child {
+.chat-content-field > *:last-child {
 	margin-top: 0px;
 }
 
-#msg .chat-content-field .eofBox {
+.chat-content-field .eofBox {
 	background-color: rgba(213, 213, 213, 0.11);
 	font-weight: bold;
 	text-align: center;
 }
 
-#msg .chat-content-field .messageBox {
+.chat-content-field .messageBox {
 	display: flex;
 	background-color: white;
 }
 
-#msg .chat-content-field .errorBox {
+.chat-content-field .errorBox {
 	background-color:rgb(146, 26, 26);
 	font-weight: bold;
 	text-align: center;
 	color: white;
 }
 
-#msg .chat-content-field .messageBox .ImageHolder{
+.chat-content-field .messageBox .ImageHolder{
 	min-height: 50px;
 	min-width: 50px;
 	height: 50px;
@@ -86,16 +69,16 @@ video {
 	background-repeat: no-repeat;
 }
 
-#msg .chat-content-field .messageBox .content{
+.chat-content-field .messageBox .content{
 	flex-grow: 1;
 	padding-left: 15px;
 }
 
-#msg .chat-content-field .messageBox .content .inviteContent{
+.chat-content-field .messageBox .content .inviteContent{
 	font-weight: bold;
 }
 
-#msg .chat-content-field .messageBox .content .playerID{
+.chat-content-field .messageBox .content .playerID{
 	font-weight: bold;
 }
 

@@ -3,6 +3,8 @@ import messageDiv from "./components/messageDiv.js"
 import errorDiv from "./components/errorDiv.js"
 import endOfChatDiv from "./components/endOfChatDiv.js"
 
+import { createButton, createInput } from "../../components/elements.js"
+
 export default function chat(prop={}) {
 	let websocket = undefined
 
@@ -15,44 +17,34 @@ export default function chat(prop={}) {
 	// return the html code here
 	let render_code = () => {
 		return `
-		<div id="msg">
-			<div class="video-container">
-			<video autoplay muted loop id="bg-video">
-				<source src="video/among_us.mp4" type="video/mp4">
-				Your browser does not support HTML5 video.
-			</video>
+		<h1 class="title">SMS</h1>
+		<div class="d-flex flex-grow-1 align-self-stretch overflow-hidden" id='contentDiv'>
+			<div class="d-flex flex-column friend-list p-2">
+				<h4>Colleagues</h4>
+				<div class="input-group mb-3">
+					${createInput("form-control rounded", "search", "search", "Colleaguess' ID")}
+					${createButton('Search', 'btn btn-dark', 'button')}
+				</div>
+				<div dir="rtl" class="d-flex flex-column flex-grow-1 overflow-y-auto" style="padding-left:5px;" id="friend-list-items">
+				</div>
 			</div>
-			<div class="d-flex flex-column justify-content-center vh-100 p-3">
-				<h1 class="title">SMS</h1>
-				<div class="d-flex flex-grow-1 overflow-hidden" id='contentDiv'>
-					<div class="d-flex flex-column friend-list">
-						<h4>Colleagues</h4>
-						<div class="input-group mb-3">
-							<input type="search" class="form-control rounded" placeholder="Colleagues' ID"/>
-							<button type="button" class="btn btn-dark" data-mdb-ripple-init>Search</button>
+			<div class="d-flex flex-column flex-grow-1 px-2">
+				<div class="chat-content-field d-flex flex-column-reverse flex-grow-1 p-2 mb-2 overflow-y-scroll rounded" id="chatContentField">
+				</div>
+				<div class="text-input-box">
+					<div class="d-flex flex-row text-input-box">
+						<textarea class="form-control" rows="1" placeholder="Type your message here..." id="dataEnter"></textarea>
+						<button type="button" class="btn btn-dark mx-2 disabled" id="sendMessageButton">Send</button>
+						<button type="button" class="btn btn-dark d-flex disabled" id="inviteForMatchButton">
+							<div class='px-2'>
+								Invite
+							</div>
+							<select class='rounded bg-black border-black text-white' id="inviteForMatchType">
+								<option value="pong">Pong</option>
+								<option value="apong">APong Us</option>
+							</select>
+						</button>
 						</div>
-						<div dir="rtl" class="d-flex flex-column flex-grow-1 overflow-y-auto" style="padding-left:5px;" id="friend-list-items">
-						</div>
-					</div>
-					<div class="d-flex flex-column flex-grow-1 px-2">
-						<div class="chat-content-field d-flex flex-column-reverse flex-grow-1 p-2 mb-2 overflow-y-scroll rounded" id="chatContentField">
-						</div>
-						<div class="text-input-box">
-							<div class="d-flex flex-row text-input-box">
-								<textarea class="form-control" rows="1" placeholder="Type your message here..." id="dataEnter"></textarea>
-								<button type="button" class="btn btn-dark mx-2 disabled" id="sendMessageButton">Send</button>
-								<button type="button" class="btn btn-dark d-flex disabled" id="inviteForMatchButton">
-									<div class='px-2'>
-										Invite
-									</div>
-									<select class='rounded bg-black border-black text-white' id="inviteForMatchType">
-										<option value="pong">Pong</option>
-										<option value="apong">APong Us</option>
-									</select>
-								</button>
-								</div>
-						</div>
-					</div>
 				</div>
 			</div>
 		</div>
@@ -91,7 +83,11 @@ export default function chat(prop={}) {
 				{
 					method: "GET",
 				}
-			).then((value) => value.json()).then(
+			).then((value) => {
+				if (!value.ok)
+					throw value
+				return value.json()
+			}).then(
 				(data) => {
 					for (let friend of data) {
 						let newFriendDiv = document.createElement("div")
@@ -106,7 +102,7 @@ export default function chat(prop={}) {
 						friendList.append(newFriendDiv)
 					}
 				}
-			)
+			).catch((value) => console.error(value))
 		}
 
 		const connectToNewChatroom = async (player_username, target_username) => {

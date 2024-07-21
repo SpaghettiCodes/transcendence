@@ -1,56 +1,66 @@
 import { redirect } from "../router.js"
+import { generateProfileInfo } from "../components/generateProfileInfo.js";
+import { generateList } from "../components/generateList.js";
+import { createButton } from "../components/elements.js";
 
 export default function template(prop={}) {
 	// attach all pre-rendering code here (like idk, fetch request or something)
-	let prerender = () => {
-		return true // return true to continue to render_code
-		// return false to abort (usually used with redirect)
-	}
+    let prerender = async () => {
+        try {
+            const response = await fetch('/api/profile'); //change to the correct endpoint
+            if (!response.ok)
+                throw new Error('Network response was not ok ' + response.statusText);
+            const data = await response.json();
+            prop.data = data; // Store the fetched data in the prop object
+            return true; // Return true to continue to render_code
+        } catch (error) {
+            console.error('Fetch error:', error);
+            return false; // Return false to abort rendering
+        }
+    };
+
 
 	// return the html code here
 	let render_code = () => {
+        const { profile = 
+                    { 
+                        image: 'bocchi.jpeg', 
+                        username: 'Username', 
+                        gamesPlayed: 3, 
+                        gamesWon: 2, 
+                        winLostRatio: 1.5 
+                    }, 
+                matchHistory = 
+                    [
+                        { match: 'Match 1', result: 'Win' }, 
+                        { match: 'Match 2', result: 'Loss' }, 
+                        { match: 'Match 3', result: 'Win' }
+                    ] 
+            } = prop.data || {};
+            
 		return `
-        <div class="video-container">
-            <video autoplay muted loop id="bg-video">
-                <source src="video/among_us.mp4" type="video/mp4">
-                Your browser does not support HTML5 video.
-            </video>
-        </div>
         <div class="container text-white text-center">
             <h1 class="title">Employee Infos</h1>
         </div>
         <div class="container lowered text-white">
             <div class="profile p-4">
-                <div class="profile-info">
-                    <img src="bocchi.jpeg" alt="Profile Picture" class="profile-pic">
-                    <h2 class="mt-3">Username</h2>
-                    <div class="game-stats">
-                        <p>Games Played: 3</p>
-                        <p>Games Won: 2</p>
-                        <p>Win/Lost Ratio: 1.5</p>
-                    </div>
-                </div>
+                ${generateProfileInfo(profile)}  
                 <div class="col-md-8 match-history ">
                     <h3>Match History</h3>
                     <div class="tab-content mt-3" id="matchHistoryTabContent">
                         <div class="tab-pane fade show active" id="recent" role="tabpanel" aria-labelledby="recent-tab">
                             <ul class="list-group">
-                                <li class="list-group-item">Match 1: Win</li>
-                                <li class="list-group-item">Match 2: Loss</li>
-                                <li class="list-group-item">Match 3: Win</li>
+                            ${generateList(matchHistory, match => `<li class="list-group-item">${match.match}: ${match.result}</li>`)}
                             </ul>
                         </div>
                     </div>
-                </div>
-                <div>
-
                 </div>
             </div>
         </div>
 
         <div class="bottom-left-buttons">
-            <button type="button" class="btn btn-secondary">Change Profile Pic</button>
-            <button type="button" class="btn btn-secondary">Change Email</button>
+            ${createButton('Change Profile Pic', 'btn btn-secondary', 'button')}
+            ${createButton('Change Email', 'btn btn-secondary', 'button')}
         </div>
     `
 	}

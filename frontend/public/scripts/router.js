@@ -4,6 +4,9 @@
 // https://dev.to/rohanbagchi/how-to-write-a-vanillajs-router-hk3
 
 let mainDoc = document.getElementById("main")
+let videoContainer = document.getElementById('mainContainer')
+
+
 import "./jwt.js"
 import landing from "./pages/landing.js"
 import fourofour from "./pages/404.js"
@@ -12,14 +15,14 @@ import login from "./pages/login.js"
 import test from "./pages/test.js"
 import home from "./pages/home.js"
 import matchListing from "./pages/matchListing.js"
-import tournamentList from "./pages/tournamentListing.js"
+import tournamentList from "./pages/oldTournamentListing.js"
 import tournament from "./pages/tournament.js"
 import result from "./pages/result/result.js"
 import profile from "./pages/profile.js"
 import matchmaking from "./pages/matchmaking.js"
 import chat from "./pages/chat/chat.js"
-import friendlist from "./pages/friendlist.js"
-import match from "./pages/newMatch.js"
+import friendlist from "./pages/friendList.js"
+import match from "./pages/match.js"
 
 const routes = {
 	'/': landing,
@@ -37,7 +40,7 @@ const routes = {
 	'/tournament/<tournament_id>': tournament,
 	'/profile': profile,
 	'/matchmaking': matchmaking,
-	'/colleagues': friendlist,
+	'/friends': friendlist,
 }
 
 let clean_up_function = () => {}
@@ -125,7 +128,10 @@ const render_html = (which, prop={}) => {
 	clean_up_function = cleanup
 	if (prerender())
 	{
-		mainDoc.innerHTML = render_code()
+		if (to_render === routes['/error'])
+			mainDoc.innerHTML = render_code()
+		else
+			videoContainer.innerHTML = render_code()
 		postrender()
 	}
 }
