@@ -24,6 +24,12 @@ video {
     flex: 1;
     padding: 20px;
 }
+.chartBox {
+    width: 500px;
+    padding: 20px;
+    border-radius: 20px;
+    z-index: 5;
+}
 .profile-pic {
     max-width: 150px;
     max-height: 150px;
