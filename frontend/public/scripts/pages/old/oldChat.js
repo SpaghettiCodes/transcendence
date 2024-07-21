@@ -1,4 +1,4 @@
-import { redirect } from "../router.js"
+import { redirect } from "../../router.js"
 
 // this is merely a placeholder as i cook up a chat system
 export default function testChat(prop={}) {

@@ -1,4 +1,4 @@
-import { redirect } from "../router.js"
+import { redirect } from "../../router.js"
 
 export default function tournamentList(prop={}) {
 	// attach all pre-rendering code here (like idk, fetch request or something)

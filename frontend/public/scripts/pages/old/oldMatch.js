@@ -1,4 +1,4 @@
-import { redirect } from "../router.js"
+import { redirect } from "../../router.js"
 
 export default function oldMatch(prop={}) {
 	console.log(prop)
