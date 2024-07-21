@@ -1,3 +1,18 @@
 .width-80 {
 	width: 80%;
 }
+
+.reappearing-point5 {
+	animation: disappearing-frame 0.5s ;
+}
+
+
+.reappearing-3 {
+	animation: disappearing-frame 3s ;
+}
+
+
+@keyframes disappearing-frame {
+	from {opacity: 0;}
+	to {opacity: 1;}
+}

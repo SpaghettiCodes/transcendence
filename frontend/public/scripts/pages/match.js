@@ -1,4 +1,4 @@
-import { redirect } from "../router.js"
+import { redirect, redirect_without_history } from "../router.js"
 
 export default function match(prop={}) {
 	// API
@@ -450,7 +450,7 @@ export default function match(prop={}) {
 						updateMessageBoard(`Game Ended\nYou will be ejected in ${gameLifetime}`, 5)
 						break
 					case "redirect":
-						history.back()
+						redirect_without_history(`/match/${game_id}/results`)
 						break
 					default:
 						console.log("unrecognizable message")

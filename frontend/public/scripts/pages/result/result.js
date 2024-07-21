@@ -13,13 +13,7 @@ export default function result(prop={}) {
 	// return the html code here
 	let render_code = () => {
 		return `
-		<div class="video-container">
-			<video autoplay muted loop id="bg-video">
-				<source src="/video/among_us.mp4" type="video/mp4">
-				Your browser does not support HTML5 video.
-			</video>
-		</div>
-		<div class='resultDiv d-flex flex-column vh-100 text-white'>
+		<div class='resultDiv align-self-stretch d-flex flex-column vh-100 text-white'>
 			<div class='statusDiv text-center flex-grow-1 fw-bold' id='statusDiv'>RESULTS</div>
 			<div class='d-flex' id='playerScoreField'>
 					<div class='scoreDiv text-center flex-grow-1' id='attackerScoreDiv'></div>

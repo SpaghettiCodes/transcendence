@@ -156,6 +156,11 @@ export const redirect = (uri, prop={}) => {
 	history.pushState(null, null, uri)
 }
 
+export const redirect_without_history = (uri, prop={}) => {
+	clean_up_function()
+	render_html(uri, prop)
+}
+
 // catch all links and change their default behavior
 // to just use render_html instead of reloading the webpage
 // https://www.sitepoint.com/javascript-event-delegation-is-easier-than-you-think/

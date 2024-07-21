@@ -7,6 +7,7 @@ import { createButton, createInput } from "../../components/elements.js"
 
 export default function chat(prop={}) {
 	let websocket = undefined
+	let resizeHandler = undefined
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
 	let prerender = () => {
@@ -29,7 +30,7 @@ export default function chat(prop={}) {
 				</div>
 			</div>
 			<div class="d-flex flex-column flex-grow-1 px-2">
-				<div class="chat-content-field d-flex flex-column-reverse flex-grow-1 p-2 mb-2 overflow-y-scroll rounded" id="chatContentField">
+				<div class="chat-content-field d-flex flex-column-reverse flex-grow-1 p-2 mb-2 overflow-y-auto rounded" id="chatContentField">
 				</div>
 				<div class="text-input-box">
 					<div class="d-flex flex-row text-input-box">
@@ -123,7 +124,7 @@ export default function chat(prop={}) {
 			}
 		}
 
-		const getPreviousMessages = async (chatID) => {
+		const getPreviousMessages = async (chatID, resetChat=false) => {
 			console.log('get prev msg')
 			let url = undefined
 			let didWeGetAllMessagesBefore = gotAllMessages
@@ -144,6 +145,10 @@ export default function chat(prop={}) {
 				const haveMore =  data["haveMore"]
 
 				console.log(data)
+
+				if (resetChat) {
+					resetChatContent()
+				}
 
 				if (!messageList.length) {
 					gotAllMessages = true
@@ -193,7 +198,11 @@ export default function chat(prop={}) {
 				let roomid = data['roomid']
 
 				currentlyViewingChatID = roomid
-				await getPreviousMessages(roomid)
+
+				let messageGotten = await getPreviousMessages(roomid, true)
+				while (chatContentField.clientHeight >= chatContentField.scrollHeight && messageGotten) {
+					messageGotten = await getPreviousMessages(roomid)
+				}
 				return roomid
 			} catch (e) {
 				console.log('uh oh poopy')
@@ -205,8 +214,11 @@ export default function chat(prop={}) {
 			websocket.send(JSON.stringify(data))
 		}
 
-		const resetChatVariables = () => {
+		const resetChatContent = () => {
 			chatContentField.innerHTML = ''
+		}
+
+		const resetChatVariables = () => {
 			lastMSGID = undefined
 			gotAllMessages = false
 			if (websocket)
@@ -340,7 +352,7 @@ export default function chat(prop={}) {
 
 				let scrollValue = chatContentField.scrollTop * -1 // negative since upside down
 
-				if (!(scrollMax - scrollValue)) {
+				if ((scrollMax - scrollValue) < 10) {
 					loadingNewMessages = true
 					getPreviousMessages(currentlyViewingChatID).then(
 						(value) => { loadingNewMessages = false }
@@ -348,6 +360,17 @@ export default function chat(prop={}) {
 				}
 			}
 		})
+
+		resizeHandler = async () => {
+			// _yes_, currentlyViewingChatId can be 0
+			if (chatContentField.clientHeight >= chatContentField.scrollHeight && currentlyViewingChatID !== undefined) {
+				let messageGotten = await getPreviousMessages(currentlyViewingChatID)
+				while (chatContentField.clientHeight >= chatContentField.scrollHeight && messageGotten) {
+					messageGotten = await getPreviousMessages(currentlyViewingChatID)
+				}
+			}
+		}
+		window.addEventListener('resize', resizeHandler)
 
 		getFriendList()
 
