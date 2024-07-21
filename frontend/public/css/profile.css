@@ -16,25 +16,30 @@ video {
     transform: translate(-50%, -50%);
 }
 .profile {
-    display: flex;
-    flex-wrap: wrap;
     margin-left: 100px;
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 20px;
 }
 .profile-info {
-    flex: 1;
+    grid-column-start: 1;
+    grid-column-end: 3;
     padding: 20px;
 }
 .chartBox {
-    width: 500px;
-    padding: 20px;
-    border-radius: 20px
+    grid-column-start: 1;
+    grid-column-end: 3;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    width: 350px;
 }
 .profile-pic {
     max-width: 150px;
     max-height: 150px;
 }
 .match-history {
-    flex: 2;
+    grid-column-start: 1;
+    grid-column-end: 3;
     padding: 20px;
     background-color: #343a40; /* Dark background color */
     color: #f8f9fa; /* Light text color */
