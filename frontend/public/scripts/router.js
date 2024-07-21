@@ -37,7 +37,7 @@ const routes = {
 	'/tournament/<tournament_id>': tournament,
 	'/profile': profile,
 	'/matchmaking': matchmaking,
-	'/friends': friendlist,
+	'/colleagues': friendlist,
 }
 
 let clean_up_function = () => {}
@@ -45,6 +45,8 @@ let clean_up_function = () => {}
 const get_renderer = (uri, prop) => {
 	console.log(uri)
 
+	// remove query string
+	uri = uri.split('?')[0]
 	// direct match
 	if (uri in routes)
 		return routes[uri]

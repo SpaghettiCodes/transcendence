@@ -25,16 +25,16 @@
 }
 
 .resultDiv .usernameDiv {
+	margin-right: 5vw;
 	font-size: 3em;
 }
 
 .resultDiv .resultBtn {
-	padding: 20px 50px;
+	padding: 2vh 4vw;
 }
 
 .resultDiv .redirectMessage {
 	font-size: 5em;
-	padding-bottom: 10vh;
 }
 
 .resultDiv .watchPrompt {
