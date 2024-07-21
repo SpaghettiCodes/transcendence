@@ -16,10 +16,10 @@ export default function landing(prop={}) {
         </div>
         <div class="d-flex flex-column align-items-center lowered">
             <div class="mb-3 mt-3">
-                <label for="username" class="form-label">ID:</label>
-                ${createInput('', 'username', 'username', 'Crewmate ID')}
+                <label for="email" class="form-label">ID:</label>
+                ${createInput('form-control', 'username', 'email', 'email', 'Crewmate ID')}
                 <label for="pwd" class="form-label">Password:</label>
-                ${createInput('', 'password', 'pwd', 'Crewmate Password')}
+                ${createInput('form-control', 'password', 'pwd', 'pswd' ,'Crewmate Password')}
             </div>
             <div>
                 ${createButton('Login', 'btn-outline-light')}
