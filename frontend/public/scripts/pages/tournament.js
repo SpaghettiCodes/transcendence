@@ -24,8 +24,8 @@ export default function tournament(prop={}) {
 		<div class="container-fluid text-white text-center">
 			<h1 class="title">Tournament</h1>
 		</div>
-		<div class="container-fluid d-flex flex-row align-self-stretch overflow-y-hidden flex-grow-1 gap-3 px-5">
-			<div class='d-flex flex-row flex-grow-1 flex-shrink-1' id="tournament">
+		<div class="container-fluid d-flex flex-row align-self-stretch overflow-y-hidden flex-grow-1 gap-3 px-5 tournamentContents">
+			<div class='d-flex flex-row flex-grow-1 flex-shrink-1 tournamentProgress' id="tournament">
 				<ul class="round round-1">
 					<li class="spacer">&nbsp;</li>
 					

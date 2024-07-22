@@ -1,69 +1,67 @@
-.round{
+.tournamentContents .tournamentProgress .round{
 	display:flex;
 	flex-direction:column;
 	justify-content:center;
-	/* width:200px; */
 	list-style:none;
 	padding:0;
 }
 
-.round {
+.tournamentContents .tournamentProgress .round {
 	flex-grow: 1;
 }
 
-.round .spacer{ flex-grow:1; }
-
-.round .spacer:first-child,
-
-.round .spacer:last-child{ flex-grow:.5; }
-
-.round .game-spacer{
+.tournamentContents .tournamentProgress .round .spacer { 
 	flex-grow:1;
 }
 
-li.game{
+.tournamentContents .tournamentProgress .round .spacer:first-child,
+.tournamentContents .tournamentProgress .round .spacer:last-child { 
+	flex-grow:.5; 
+}
+
+.tournamentContents .tournamentProgress .round .game-spacer {
+	flex-grow:1;
+}
+
+.tournamentContents .tournamentProgress li.game {
 	padding-left:20px;  
 }
 
-li.game.winner{
+.tournamentContents .tournamentProgress li.game.winner {
 	font-weight:bold;
 }
-li.game span{
+
+.tournamentContents .tournamentProgress li.game span {
 	float:right;
 	margin-right:5px;
 }
 
-li.game-top{ border-bottom:1px solid #aaa; }
+.tournamentContents .tournamentProgress li.game-top {
+	border-bottom:1px solid #aaa;
+}
 
-li.game-spacer{ 
+.tournamentContents .tournamentProgress li.game-spacer { 
 	border-right:1px solid #aaa;
 	min-height:40px;
 }
 
-li.game-bottom{ 
+.tournamentContents .tournamentProgress li.game-bottom { 
 	border-top:1px solid #aaa;
 }
 
-.player-list {
+.tournamentContents .player-list {
 	background-color: darkgray;
 	padding: 20px;
 	overflow-y: auto;
+	min-width: 20vw;
+	max-width: 20vw;
+	width: 20vw;
 }
 
-.player-list-item {
+.tournamentContents .player-list .player-list-item {
 	color: black;
 	background-color: #f8f9fa;
 	margin-bottom: 10px;
 	border-radius: 5px;
 	padding: 10px;
-}
-
-.col-md-9 {
-	float: left; 
-}
-
-.playerList {
-	min-width: 20vw;
-	max-width: 20vw;
-	width: 20vw;
 }
