@@ -11,16 +11,16 @@
 }
 
 .tournamentContents .tournamentProgress .round .spacer { 
-	flex-grow:1;
+	flex-grow: 1;
 }
 
 .tournamentContents .tournamentProgress .round .spacer:first-child,
 .tournamentContents .tournamentProgress .round .spacer:last-child { 
-	flex-grow:.5; 
+	flex-grow: .5;
 }
 
 .tournamentContents .tournamentProgress .round .game-spacer {
-	flex-grow:1;
+	flex-grow: 1;
 }
 
 .tournamentContents .tournamentProgress li.game {
@@ -54,7 +54,7 @@
 	padding: 20px;
 	overflow-y: auto;
 	min-width: 20vw;
-	max-width: 20vw;
+	max-width: 350px;
 	width: 20vw;
 }
 

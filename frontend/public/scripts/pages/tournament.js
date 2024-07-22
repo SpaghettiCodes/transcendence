@@ -24,8 +24,8 @@ export default function tournament(prop={}) {
 		<div class="container-fluid text-white text-center">
 			<h1 class="title">Tournament</h1>
 		</div>
-		<div class="container-fluid d-flex flex-row align-self-stretch overflow-y-hidden flex-grow-1 gap-3 px-5 tournamentContents">
-			<div class='d-flex flex-row flex-grow-1 flex-shrink-1 tournamentProgress' id="tournament">
+		<div class="row container-fluid d-flex flex-row justify-content-center align-self-center overflow-y-auto flex-grow-1 gap-3 px-5 tournamentContents">
+			<div class='col-sm d-flex flex-row flex-grow-1 flex-shrink-1 tournamentProgress' id="tournament">
 				<ul class="round round-1">
 					<li class="spacer">&nbsp;</li>
 					
@@ -85,7 +85,7 @@ export default function tournament(prop={}) {
 					<li class="spacer">&nbsp;</li>
 				</ul>
 			</div>
-			<div class="player-list rounded d-flex flex-column align-items-stretch flex-grow-1 flex-shrink-1 playerList overflow-y-hidden">
+			<div class="col-sm player-list rounded d-flex flex-column align-items-stretch flex-grow-1 overflow-y-hidden">
 				<h4>Players</h4>
 				<br>
 				<div class='d-flex flex-column overflow-y-auto'>
