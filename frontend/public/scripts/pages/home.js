@@ -1,4 +1,5 @@
 import { createButton } from "../components/elements.js"
+import { redirect } from "../router.js"
 
 export default function home(prop={}) {
 	let prerender = () => {
@@ -29,6 +30,21 @@ export default function home(prop={}) {
 		const	ApongUsGame = async () => {
 			alert('Entering APONG US game')
 		}
+
+		const	 go_profile = async () => {
+			console.log("clicked");
+			redirect("/profile")
+		}
+
+		const	 go_friends = async () => {
+			redirect("/friendlist")
+		}
+
+		const profile_button = document.getElementById("profile")
+		profile_button.addEventListener('click', go_profile)
+
+		const friend_button = document.getElementById("friends")
+		friend_button.addEventListener('click', go_friends)
 
 		const pong_button = document.getElementById("pongGame")
 		pong_button.addEventListener('click', pongGame)
