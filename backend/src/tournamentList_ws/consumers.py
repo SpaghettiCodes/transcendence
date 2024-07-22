@@ -7,6 +7,8 @@ from tournament_server.manager import TournamentManager
 
 tournament_list_newslatter = "tournament_list_newsletter"
 
+# NOTE - WILL BE DEPRECIATED IN FUTURE PUSHES DUE TO SEEING NO USAGE
+
 class TournamentListConsumer(AsyncJsonWebsocketConsumer):
     # called when client connects to websocket
     async def connect(self):

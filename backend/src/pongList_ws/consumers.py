@@ -7,6 +7,8 @@ from pong_server.server import PongServer
 
 match_list_newsletter = "match_list_newsletter"
 
+# NOTE - WILL BE DEPRECIATED IN FUTURE PUSHES DUE TO SEEING NO USAGE
+
 class PongListConsumer(AsyncJsonWebsocketConsumer):
     # called when client connects to websocket
     async def connect(self):
