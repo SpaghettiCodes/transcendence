@@ -23,187 +23,156 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
-        body {
-            background-image: url("background.jpg");
-            background-repeat: no-repeat;
-            background-size: cover;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        main{
+            display:flex;
+            flex-direction:row;
             color: white;
+            padding-top: 120px;
+            padding-left: 80px;
         }
-        .title {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
+        .round{
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            width:200px;
+            list-style:none;
+            padding:0;
         }
-        .tournament {
-            position: relative;
-            width: 80%;
-            max-width: 800px;
-            height: 500px;
-            margin: auto;
+        .round .spacer{ flex-grow:1; }
+        .round .spacer:first-child,
+        .round .spacer:last-child{ flex-grow:.5; }
+
+        .round .game-spacer{
+            flex-grow:1;
         }
-        .box {
-            width: 100px;
-            height: 100px;
-            background-color: rgba(128, 128, 128, 1);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: absolute;
+        body{
+            font-family:sans-serif;
+            font-size:medium;
+            padding:10px;
+            line-height:1.4em;
+        }
+
+        li.game{
+            padding-left:20px;  
+        }
+
+        li.game.winner{
+            font-weight:bold;
+        }
+        li.game span{
+            float:right;
+            margin-right:5px;
+        }
+
+        li.game-top{ border-bottom:1px solid #aaa; }
+
+        li.game-spacer{ 
+            border-right:1px solid #aaa;
+            min-height:40px;
+        }
+
+        li.game-bottom{ 
+            border-top:1px solid #aaa;
+        }
+        .player-list {
+            background-color: darkgray;
+            padding: 20px;
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+        }
+        .player-list-item {
+            color: black;
+            background-color: #f8f9fa;
+            margin-bottom: 10px;
             border-radius: 5px;
+            padding: 10px;
         }
-        .corner-top-left {
-            top: 0;
-            left: 0;
-        }
-        .corner-top-right {
-            top: 0;
-            right: 0;
-        }
-        .corner-bottom-left {
-            bottom: 0;
-            left: 0;
-        }
-        .corner-bottom-right {
-            bottom: 0;
-            right: 0;
-        }
-        .final-left {
-            top: 50%;
-            left: 25%;
-            transform: translateY(-50%);
-        }
-        .final-right {
-            top: 50%;
-            right: 25%;
-            transform: translateY(-50%);
-        }
-        .center {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        .line {
-            position: absolute;
-            background-color: rgba(255, 255, 255, 1);
-            z-index: -1;
-        }
-        .line.horizontal {
-            height: 4px;
-            width: 50%;
-        }
-        .line.vertical {
-            width: 4px;
-            height: 40%;
-        }
-        .line.top-left-to-bottom-left {
-            top: 2cm;
-            left: 5.5%;
-            height: 80%;
-            width: 4px;
-        }
-        .line.top-right-to-bottom-right {
-            top: 2cm;
-            right: 5.5%;
-            height: 80%;
-            width: 4px;
-        }
-        .line.bottom-left-to-final-left {
-            top: 50%;
-            right: 2cm;
-            left: 3cm;
-            width: 50%;
-            height: 4px;
-        }
-        .line.bottom-right-to-final-right {
-            top: 50%;
-            right: 6%;
-            width: 25%;
-            height: 4px;
-        }
-        .line.final-left-to-center {
-            top: 50%;
-            left: 6%;
-            width: 20%;
-            height: 4px;
-        }
-        .line.final-right-to-center {
-            top: 50%;
-            height: 4px;
-        }
-        .middle-left {
-            top: 42%;
-            left: 0;
-        }
-        .middle-right {
-            top: 42%;
-            right: 0;
-        }
-        .center-up {
-            top: 20%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        .line.center-to-winner {
-            top: 2cm;
-            left: 50%;
-            height: 40%;
-            width: 4px;
+        .col-md-9 {
+            float: left; 
         }
     </style>
 </head>
 <body id="tournament">
+<body>
     <div class="video-container">
         <video autoplay muted loop id="bg-video">
             <source src="video/among_us.mp4" type="video/mp4">
             Your browser does not support HTML5 video.
         </video>
     </div>
-    <h1 class="title">Tournament Mode</h1>
-    <div class="tournament">
-        <div class="box corner-top-left text-black display: flex-column">
-            Player 1
-            <div class="btn btn-dark">Ready</div>
+    <div class="container text-white text-center">
+        <h1 class="title">Tournament</h1>
+    </div>
+    <div class="column">
+        <div class="col-md-9">
+            <main id="tournament">
+                <ul class="round round-1">
+                <li class="spacer">&nbsp;</li>
+                
+                <li class="game game-top winner">Player 1</li>
+                <li class="game game-spacer">&nbsp;</li>
+                <li class="game game-bottom ">Player 2</li>
+            
+                <li class="spacer">&nbsp;</li>
+                
+                <li class="game game-top winner">Player 3</li>
+                <li class="game game-spacer">&nbsp;</li>
+                <li class="game game-bottom ">Player 4</li>
+            
+                <li class="spacer">&nbsp;</li>
+                
+                <li class="game game-top winner">Player 5</li>
+                <li class="game game-spacer">&nbsp;</li>
+                <li class="game game-bottom ">Player 6</li>
+            
+                <li class="spacer">&nbsp;</li>
+                
+                <li class="game game-top winner">Player 7</li>
+                <li class="game game-spacer">&nbsp;</li>
+                <li class="game game-bottom ">Player 8</li>
+            
+                <li class="spacer">&nbsp;</li>
+                </ul>
+                <ul class="round round-2">
+                <li class="spacer">&nbsp;</li>
+                
+                <li class="game game-top winner">Player 1</li>
+                <li class="game game-spacer">&nbsp;</li>
+                <li class="game game-bottom ">Player 4</li>
+            
+                <li class="spacer">&nbsp;</li>
+                
+                <li class="game game-top winner">Player 5</li>
+                <li class="game game-spacer">&nbsp;</li>
+                <li class="game game-bottom ">Player 7</li>
+            
+                <li class="spacer">&nbsp;</li>
+                </ul>
+                <ul class="round round-3">
+                <li class="spacer">&nbsp;</li>
+                
+                <li class="game game-top winner">Player 1</li>
+                <li class="game game-spacer">&nbsp;</li>
+                <li class="game game-bottom ">Player 5</li>
+            
+                <li class="spacer">&nbsp;</li>
+                </ul>
+            </main>
         </div>
-        <div class="box middle-left text-black">Player 1</br>vs</br>Player 3</div>
-        <div class="box corner-top-right text-black display: flex-column">
-            Player 2
-            <div class="btn btn-dark">Ready</div>
+        <div class="row">
+                <div class="player-list">
+                    <h4>Players</h4>
+                    <br>
+                    <div class="player-list-item">Player 1</div>
+                    <div class="player-list-item">Player 2</div>
+                    <div class="player-list-item">Player 3</div>
+                    <div class="player-list-item">Player 4</div>
+                    <div class="player-list-item">Player 5</div>
+                    <div class="player-list-item">Player 6</div>
+                    <div class="player-list-item">Player 7</div>
+                    <div class="player-list-item">Player 8</div>
+                </div>
         </div>
-        <div class="box corner-bottom-left text-black display: flex-column">
-            Player 3
-            <div class="btn btn-dark">Ready</div>
-        </div>
-        <div class="box middle-right text-black">Player 2</br>vs</br>Player 4</div>
-        <div class="box corner-bottom-right text-black display: flex-column">
-            Player 4
-            <div class="btn btn-dark">Ready</div>
-        </div>        
-        <div class="box final-left text-black display: flex-column">
-            Finalist 1
-            <div class="btn btn-dark">Ready</div>
-        </div>
-        <div class="box final-right text-black display: flex-column">
-            Finalist 2
-            <div class="btn btn-dark">Ready</div>
-        </div>
-        <div class="box center text-black">Finalist 1<br>vs<br>Finalist 2</div>
-        
-        <div class="box center-up text-black">Winner</div>
-        
-        <!-- Lines connecting the boxes -->
-        <div class="line top-left-to-bottom-left"></div>
-        <div class="line top-right-to-bottom-right"></div>
-        <div class="line bottom-left-to-final-left"></div>
-        <div class="line bottom-right-to-final-right"></div>
-        <div class="line final-left-to-center"></div>
-        <div class="line final-right-to-center"></div>
-        <div class="line center-to-winner"></div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
