@@ -1,3 +1,4 @@
+import { fetchMod } from "../../jwt.js"
 import { redirect } from "../../router.js"
 import playerDetailsDiv from "./components/playerDiv.js"
 
@@ -81,7 +82,7 @@ export default function result(prop={}) {
 
 		const getGameResult = async () => {
 			try {
-				let response = await fetch(
+				let response = await fetchMod(
 					`http://localhost:8000/api/match/${game_id}/result`,
 					{
 						method: "GET",

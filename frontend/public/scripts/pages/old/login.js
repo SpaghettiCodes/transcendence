@@ -1,6 +1,6 @@
-import { redirect } from "../router.js"
-import "../jwt.js"
-import { setJwtToken, setRefreshToken } from "../jwt.js"
+import { redirect } from "../../router.js"
+import "../../jwt.js"
+import { setJwtToken, setRefreshToken } from "../../jwt.js"
 
 export default function login(prop={}) {
     // attach all pre-rendering code here (like idk, fetch request or something)

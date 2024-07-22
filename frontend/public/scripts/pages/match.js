@@ -1,3 +1,4 @@
+import { fetchMod } from "../jwt.js"
 import { redirect, redirect_without_history } from "../router.js"
 
 export default function match(prop={}) {
@@ -76,7 +77,7 @@ export default function match(prop={}) {
 
 		const getGameData = async () => {
 			try {
-				let value = await fetch (
+				let value = await fetchMod (
 					`http://localhost:8000/api/${apiURI}`,
 					{
 						method: "GET",

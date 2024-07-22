@@ -82,177 +82,23 @@ export default function template(prop={}) {
 
 	// attach all event listeners here (or do anything that needs to be done AFTER attaching the html code)
 	let postrender = () => {
-        async function register_test() {
-            const url = "http://localhost:8000/api/register";
-            const response = await fetch(url, {
-                method: "POST",
-                body: {
-                    "username": "test",
-                    "password": "testtest",
-                },
-                headers: {
-                    "Content-Type": "application/json",
-                  }
-            })
-        }
+		let yourName = undefined
+
         async function player_test() {
-            const url = "http://localhost:8000/api/player/test";
-            const response = await fetch(url);
+            const response = await fetch("http://localhost:8000/api/me");
             const json = await response.json();
             console.log(json);
+			yourName = json.username
             document.getElementById("username").innerHTML = json.username;
             document.getElementById("stats").innerHTML = `<p>Games Played: ${json.matches_played}</p>
                         <p>Games Won: ${json.matches_won}</p>
                         <p>Win/Lost Ratio: 1.5</p>`
-            document.getElementById("pfp").src = `http://localhost:8000/api${json.profile_pic}`;     
-            let raw = `[
-                {
-                    "matchid": "aaaabB",
-                    "time_played": "2024-07-20T14:21:44.774438Z",
-                    "status": "done",
-                    "type": "pong",
-                    "result": {
-                        "attacker": {
-                            "username": "2",
-                            "profile_pic": "/media/firefly.png",
-                            "is_active": true
-                        },
-                        "defender": {
-                            "username": "1",
-                            "profile_pic": "/media/firefly.png",
-                            "is_active": true
-                        },
-                        "attacker_score": 1,
-                        "defender_score": 0,
-                        "winner": "2",
-                        "loser": "1",
-                        "reason": "normal"
-                    }
-                },
-                {
-                    "matchid": "aaaabL",
-                    "time_played": "2024-07-20T16:17:17.642469Z",
-                    "status": "done",
-                    "type": "apong",
-                    "result": {
-                        "attacker": {
-                            "username": "2",
-                            "profile_pic": "/media/firefly.png",
-                            "is_active": true
-                        },
-                        "defender": {
-                            "username": "1",
-                            "profile_pic": "/media/firefly.png",
-                            "is_active": true
-                        },
-                        "attacker_score": 1,
-                        "defender_score": 0,
-                        "winner": "2",
-                        "loser": "1",
-                        "reason": "normal"
-                    }
-                },
-                {
-                    "matchid": "aaaabS",
-                    "time_played": "2024-07-20T16:38:21.075138Z",
-                    "status": "done",
-                    "type": "pong",
-                    "result": {
-                        "attacker": {
-                            "username": "2",
-                            "profile_pic": "/media/firefly.png",
-                            "is_active": true
-                        },
-                        "defender": {
-                            "username": "1",
-                            "profile_pic": "/media/firefly.png",
-                            "is_active": true
-                        },
-                        "attacker_score": 1,
-                        "defender_score": 1,
-                        "winner": "1",
-                        "loser": "2",
-                        "reason": "draw"
-                    }
-                },
-                {
-                    "matchid": "aaaabT",
-                    "time_played": "2024-07-20T16:41:45.170125Z",
-                    "status": "done",
-                    "type": "pong",
-                    "result": {
-                        "attacker": {
-                            "username": "1",
-                            "profile_pic": "/media/firefly.png",
-                            "is_active": true
-                        },
-                        "defender": {
-                            "username": "2",
-                            "profile_pic": "/media/firefly.png",
-                            "is_active": true
-                        },
-                        "attacker_score": 0,
-                        "defender_score": 1,
-                        "winner": "2",
-                        "loser": "1",
-                        "reason": "normal"
-                    }
-                },
-                {
-                    "matchid": "aaaabU",
-                    "time_played": "2024-07-20T16:47:57.357135Z",
-                    "status": "done",
-                    "type": "pong",
-                    "result": {
-                        "attacker": {
-                            "username": "1",
-                            "profile_pic": "/media/firefly.png",
-                            "is_active": true
-                        },
-                        "defender": {
-                            "username": "2",
-                            "profile_pic": "/media/firefly.png",
-                            "is_active": true
-                        },
-                        "attacker_score": 1,
-                        "defender_score": 0,
-                        "winner": "1",
-                        "loser": "2",
-                        "reason": "normal"
-                    }
-                },
-                {
-                    "matchid": "aaaabV",
-                    "time_played": "2024-07-20T16:49:11.657927Z",
-                    "status": "done",
-                    "type": "pong",
-                    "result": {
-                        "attacker": {
-                            "username": "1",
-                            "profile_pic": "/media/firefly.png",
-                            "is_active": true
-                        },
-                        "defender": {
-                            "username": "2",
-                            "profile_pic": "/media/firefly.png",
-                            "is_active": true
-                        },
-                        "attacker_score": 0,
-                        "defender_score": 2,
-                        "winner": "2",
-                        "loser": "1",
-                        "reason": "normal"
-                    }
-                }
-            ]`
-            let MHTemp = JSON.parse(raw);
-            console.log(MHTemp);
+            document.getElementById("pfp").src = `http://localhost:8000/api${json.profile_pic}`;
             let matchHistory = [];
             MHTemp.forEach(match => {
                 let matchDiv = `<li class="list-group-item">${match.result.attacker.username} vs ${match.result.defender.username} - ${match.result.winner} WON</li>`;
                 matchHistory.push(matchDiv);
             });
-
             let mhArray = matchHistory.slice(0, 5).join('');
             document.getElementById("mh").innerHTML = mhArray;
         }
@@ -282,7 +128,7 @@ export default function template(prop={}) {
             const formData = new FormData();
             formData.append("profile_pic", file);
         
-            const url = "http://localhost:8000/api/player/test";
+            const url = `http://localhost:8000/api/player/${yourName}`;
             const response = await fetch(url, {
                 method: "PATCH",
                 body: formData,
@@ -294,7 +140,7 @@ export default function template(prop={}) {
         document.getElementById("email_button").addEventListener("click", async () => {
             const newEmail = prompt("Enter new email:");
             if (newEmail) {
-                const url = "http://localhost:8000/api/player/test";
+                const url = `http://localhost:8000/api/player/${yourName}`;
                 const response = await fetch(url, {
                     method: "PATCH",
                     body: JSON.stringify({

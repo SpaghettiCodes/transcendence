@@ -4,6 +4,7 @@ import errorDiv from "./components/errorDiv.js"
 import endOfChatDiv from "./components/endOfChatDiv.js"
 
 import { createButton, createInput } from "../../components/elements.js"
+import { fetchMod } from "../../jwt.js"
 
 export default function chat(prop={}) {
 	let websocket = undefined
@@ -79,7 +80,7 @@ export default function chat(prop={}) {
 		// </div>
 
 		const getFriendList = () => {
-			fetch(
+			fetchMod(
 				`http://localhost:8000/api/player/${username}/friends`,
 				{
 					method: "GET",
@@ -128,12 +129,12 @@ export default function chat(prop={}) {
 			let url = undefined
 			let didWeGetAllMessagesBefore = gotAllMessages
 			if (lastMSGID === undefined)
-				url = `http://localhost:8000/api/chat/${chatID}/history?user=${username}` // IMPORTANT, CHANGE, WE ARE NOT PUTTING USERNAME IN QUERY STRINGS
+				url = `http://localhost:8000/api/chat/${chatID}/history`
 			else
-				url = `http://localhost:8000/api/chat/${chatID}/history?start_id=${lastMSGID}&user=${username}`
+				url = `http://localhost:8000/api/chat/${chatID}/history?start_id=${lastMSGID}`
 
 			try {
-				const response = await fetch(url)
+				const response = await fetchMod(url)
 
 				if (!response.ok)
 					throw response
@@ -181,7 +182,7 @@ export default function chat(prop={}) {
 
 		const getChatRoomData = async (url) => {
 			try {
-				let results = await fetch(
+				let results = await fetchMod(
 					url, {
 						method: "GET",
 					}
@@ -282,7 +283,7 @@ export default function chat(prop={}) {
 			}
 
 			try {
-				await fetch(
+				await fetchMod(
 					`http://localhost:8000/api/chat/${currentlyViewingChatID}`,
 					{
 						method: "POST",
@@ -313,7 +314,7 @@ export default function chat(prop={}) {
 			}
 
 			try {
-				await fetch(
+				await fetchMod(
 					`http://localhost:8000/api/chat/${currentlyViewingChatID}`,
 					{
 						method: "POST",
