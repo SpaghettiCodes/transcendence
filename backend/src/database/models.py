@@ -112,10 +112,11 @@ class Two_Factor_Authentication(models.Model):
     def generate_code(self):
         new_code = int(''.join(["{}".format(randint(0, 9)) for num in range(0, 6)]))
         self.code = new_code
-        self.save
+        self.save()
 
     def verify_code(self, code):
-        if code == self.code:
+        print(self.code)
+        if int(code) == self.code:
             return True
         else:
             return False
