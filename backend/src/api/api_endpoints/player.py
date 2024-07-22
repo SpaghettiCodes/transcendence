@@ -9,7 +9,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 
 from django.middleware import csrf
-from database.models import Player
+from database.models import Player, Two_Factor_Authentication
 from ..token import create_jwt_pair_for_user
 from django.core.exceptions import FieldDoesNotExist
 from django.core.files.images import ImageFile
@@ -78,6 +78,8 @@ def createPlayer(request):
 
     if serializer.is_valid():
         serializer.save()
+        new_player = get_object_or_404(Player.objects, username=data.get('username'))
+        Two_Factor_Authentication.objects.create(player_id=new_player.id)
     else:
         print(serializer.errors)
         errorOfList = []

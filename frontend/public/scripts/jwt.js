@@ -16,7 +16,7 @@ export function setRefreshToken(token) {
 
 export function check_token_exists() {
 	if (!getJwtToken() && !getRefreshToken()) {
-		window.location.href = 'http://localhost:8080/login';
+		window.location.replace = 'http://localhost:8080/login';
 	}
 	return true
 }
@@ -57,7 +57,7 @@ export async function fetchMod(url, request) {
 		}
 	else {
 			console.log("access token invalid, refresh token not working, wallahi its over bijoever")
-			return false;
+			window.location.href = 'http://localhost:8080/login';
 		}
 	};
 
