@@ -104,9 +104,9 @@ class Friend_Request(models.Model):
 
     def decline(self):
         self.delete()
-        
-class Two_Factor_Authentication(models.Model):
-    player = models.ForeignKey(Player,  on_delete=models.CASCADE, related_name='player_tfa', default=None)
+
+class TwoFactorAuthentication(models.Model):
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='player_tfa', default=None)
     code = models.PositiveIntegerField(blank=True, default=100000)
 
     def generate_code(self):
@@ -119,7 +119,7 @@ class Two_Factor_Authentication(models.Model):
             return True
         else:
             return False
-    
+
 class Match(models.Model):
     id = models.BigAutoField(primary_key=True)
     matchid = models.CharField(max_length=8, unique=True, null=True, blank=True)

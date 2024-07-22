@@ -5,8 +5,10 @@ export default function ftlogin(prop={}) {
 
 	let render_code = () => {
 		return `
-		<div>
-			<p id="message">Login You In Rn...</p>
+		<div class='d-flex overflow-auto' id='main'>
+			<div id='message'>
+				Login You In Rn...
+			</div>
 		</div>
 		`
 	}
@@ -30,7 +32,7 @@ export default function ftlogin(prop={}) {
 			)
 
 			if (!response.ok) {
-				throw new Error(`${response.status}: ${response.statusText}`)
+				throw response
 			}
 
 			let data = await response.json()
@@ -50,14 +52,23 @@ export default function ftlogin(prop={}) {
 					body: JSON.stringify(payload)
 				}
 			)
+			if (!get_me.ok) {
+				throw get_me
+			}
 
 			data = await get_me.json()
+			const mainElement = document.getElementById('main')
 			const element = document.getElementById("message")
+			const funnyMessage = document.createElement('h1')
+			funnyMessage.innerText = "LOOK AT ALL THESE DATA"
+			funnyMessage.style.fontSize = `15vh`
+			funnyMessage.style.color = `white`
+			mainElement.prepend(funnyMessage)
 			element.innerText = JSON.stringify(data)
 		}
 		catch (err) {
 			const element = document.getElementById("message")
-			element.innerText = err.message
+			element.innerText = JSON.stringify(err)
 		}
 	}
 
@@ -65,7 +76,10 @@ export default function ftlogin(prop={}) {
 		const queryString = window.location.search
 		const urlParams = new URLSearchParams(queryString)
 		
+		console.log(queryString)
 		const code = urlParams.get('code')
+		console.log(code)
+
 		get_ft_code(code)
 	}
 

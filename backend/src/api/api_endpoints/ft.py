@@ -37,6 +37,8 @@ def get_ft_code(request):
         code = data["code"]
     except KeyError:
         return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    print(code)
 
     headers = {'content-type': 'multipart/form-data'}
     payload = {

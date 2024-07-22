@@ -125,6 +125,11 @@ const get_renderer = (uri, prop) => {
 const render_html = (which, prop={}) => {
 	let to_render = get_renderer(which, prop)
 	let [ prerender, render_code, postrender, cleanup] = to_render(prop)
+
+	if (!check_token_exists()) {
+		return
+	}
+
 	clean_up_function()
 	clean_up_function = cleanup
 	if (prerender())
@@ -140,27 +145,24 @@ const render_html = (which, prop={}) => {
 const navigate = (e, prop={}) => {
 	e.preventDefault()
 
-	var uri = window.location.pathname
+	// mmm search parameters not included, i wonder why is this not working
+	let searchParam = window.location.search
 
+	let uri = window.location.pathname
 	// clean uri
 	uri = uri.replace(/^\/+|\/+$/g, '');
-	uri = '/' + uri.split("/").filter(Boolean).join('/')
-
+	uri = '/' + uri.split("/").filter(Boolean).join('/') + searchParam
 	history.replaceState(null, null, uri)
-
-	// check_token_exists()
 
 	render_html(uri, prop)
 }
 
 export const redirect = (uri, prop={}) => {
-	clean_up_function()
-	render_html(uri, prop)
 	history.pushState(null, null, uri)
+	render_html(uri, prop)
 }
 
 export const redirect_without_history = (uri, prop={}) => {
-	clean_up_function()
 	render_html(uri, prop)
 }
 

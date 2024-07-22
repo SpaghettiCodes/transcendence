@@ -9,14 +9,14 @@ from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 
 from django.middleware import csrf
-from database.models import Player, Two_Factor_Authentication
+from database.models import Player, TwoFactorAuthentication
 from ..token import create_jwt_pair_for_user
-from django.core.exceptions import FieldDoesNotExist
+from django.core.exceptions import FieldDoesNotExist, ObjectDoesNotExist
 from django.core.files.images import ImageFile
 from django.conf import settings
 
 from django.db.utils import IntegrityError
-from ..serializer import PlayerSerializer, PublicPlayerSerializer
+from ..serializer import PlayerSerializer, PublicPlayerSerializer, PlayerCreator
 from rest_framework.serializers import StringRelatedField
 
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample,  OpenApiParameter
@@ -100,7 +100,7 @@ def login(request):
             {
                 "error": "password is incorrect"
             },
-            status=status.HTTP_400_BAD_REQUEST)
+            status=status.HTTP_401_UNAUTHORIZED)
 
 @extend_schema(
         summary="Register endpoint",
@@ -127,28 +127,40 @@ def createPlayer(request):
             )
 
     data=request.data
+    if 'username' in data.keys():
+        try:
+            Player.objects.get(username=data['username'])
+            return Response(status=status.HTTP_409_CONFLICT)
+        except ObjectDoesNotExist:
+            pass
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
     if 'password' in data.keys():
         raw_password = data.get('password')
         data['password'] = Player.encrypt_password(raw_password)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    if 'profile_pic' in request.FILES:
-        profile_pic = ImageFile(request.FILES['profile_pic'])
-        profile_pic.name = request.FILES['profile_pic'].name
-        request.data['profile_pic'] = profile_pic
-
-    serializer = PlayerSerializer(data=data)
+    serializer = PlayerCreator(data=data)
 
     if serializer.is_valid():
         serializer.save()
         new_player = get_object_or_404(Player.objects, username=data.get('username'))
-        Two_Factor_Authentication.objects.create(player_id=new_player.id)
+        TwoFactorAuthentication.objects.create(player_id=new_player.id)
+        new_player.now_online()
+        data = create_jwt_pair_for_user(new_player)
+        return Response({
+            "success" : "Register success",
+            "data": data
+        }, status=status.HTTP_201_CREATED)
     else:
         print(serializer.errors)
         errorOfList = {}
         for field, errorList in serializer.errors.items():
             fieldErrors = []
             for error in errorList:
-                fieldErrors.append(error)
+                fieldErrors.append(error.capitalize())
             errorOfList[field] = fieldErrors
         return Response({
                 "error": "Failed to add player into Database",
@@ -156,8 +168,6 @@ def createPlayer(request):
             },
             status=status.HTTP_400_BAD_REQUEST
         )
-
-    return Response(status=status.HTTP_201_CREATED)
 
 """
 test:

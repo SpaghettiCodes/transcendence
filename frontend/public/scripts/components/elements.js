@@ -1,5 +1,5 @@
-export const createButton = (text, classes = '', type) => `
-    <button class="${classes}" type="${type}"><span>${text}</span></button>
+export const createButton = (text, classes = '', type, id='') => `
+    <button class="${classes}" type="${type}" id="${id}"><span>${text}</span></button>
 `;
 
 export const createInput = (classes = '', type, id, placeholder) => `

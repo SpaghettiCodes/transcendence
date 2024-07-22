@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework.response import Response
 from rest_framework import status
-from database.models import Player, Two_Factor_Authentication
+from database.models import Player, TwoFactorAuthentication
 from django.conf import settings
 from django.core.mail import send_mail
 
@@ -18,7 +18,7 @@ def send_tfa_code(request):
 	
 	player_username = data.get('username')
 	player = get_object_or_404(Player.objects, username=player_username)
-	code_object = get_object_or_404(Two_Factor_Authentication.objects, player=player)
+	code_object = get_object_or_404(TwoFactorAuthentication.objects, player=player)
 	code_object.generate_code()
 	code = code_object.code
 	player_email = player.email
@@ -45,7 +45,7 @@ def verify_tfa_code(request):
 	
 	player_username = data.get('username')
 	player = get_object_or_404(Player.objects, username=player_username)
-	code_object = get_object_or_404(Two_Factor_Authentication.objects, player=player_username)
+	code_object = get_object_or_404(TwoFactorAuthentication.objects, player=player_username)
 	
 	if code_object.verify_code():
 		return Response(

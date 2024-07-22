@@ -1,3 +1,10 @@
+import { redirect } from "./router.js"
+
+let ALLOWED_PATH = [
+	'/', 
+	'/ftlogin'
+]
+
 export function getJwtToken() {
     return localStorage.getItem("jwtToken")
 }
@@ -15,8 +22,15 @@ export function setRefreshToken(token) {
 }
 
 export function check_token_exists() {
+	let path = window.location.pathname
+	// if its login, just let them thru
+	if (ALLOWED_PATH.includes(path)) {
+		return true
+	}
+
 	if (!getJwtToken() && !getRefreshToken()) {
-		window.location.replace = 'http://localhost:8080/login';
+		redirect('/')
+		return false
 	}
 	return true
 }
@@ -57,7 +71,8 @@ export async function fetchMod(url, request) {
 		}
 	else {
 			console.log("access token invalid, refresh token not working, wallahi its over bijoever")
-			window.location.href = 'http://localhost:8080/login';
+			redirect('/')
+			return {}
 		}
 	};
 
