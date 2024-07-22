@@ -1,5 +1,5 @@
 import { redirect } from "../router.js"
-import { getJwtToken } from "../jwt.js"
+import { getJwtToken, fetchMod } from "../jwt.js"
 
 export default function test(prop={}) {
 	// attach all pre-rendering code here (like idk, fetch request or something)
@@ -23,47 +23,28 @@ export default function test(prop={}) {
 
 	// attach all event listeners here (or do anything that needs to be done AFTER attaching the html code)
 	let postrender = () => {
-		const jwtToken = getJwtToken();
-		if (!jwtToken) {
-			window.location.href = 'http://localhost:8080/login';
-		}
+		// const jwtToken = getJwtToken();
+		// if (!jwtToken) {
+		// 	window.location.href = 'http://localhost:8080/login';
+		// }
 
         var form = document.getElementById("profile");
 		const jwt = getJwtToken()
         form.addEventListener('submit', async function (e) {
             e.preventDefault();
             const formData = new FormData(form).entries()
-            const response = await fetch('http://localhost:8000/api/player/e', {
-                method: 'POST',
+            const response = await fetchMod('http://localhost:8000/api/player/e', {
+                method: 'GET',
                 headers: {
 					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${jwt}`
+					// 'Authorization': `Bearer ${jwt}`
 				 },
-                body: JSON.stringify(Object.fromEntries(formData))
             });
         
 			if (response.ok) {
 				const result = await response.json();
 				console.log(result)
 				console.log("success")
-			}
-			else {
-				console.log("error")
-				const response_player = await fetch('http://localhost:8000/api/player/e', {
-					method: 'GET',
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${jwt}`
-					 },
-				});
-				if (response_player.ok) {
-					const result = await response_player.json();
-					console.log(result)
-					console.log("success player")
-				}
-				else {
-					console.log("error player")
-				}
 			}
 
         });

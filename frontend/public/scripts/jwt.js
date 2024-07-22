@@ -1,4 +1,3 @@
-// Short duration JWT token (5-10 min)
 export function getJwtToken() {
     return localStorage.getItem("jwtToken")
 }
@@ -7,7 +6,6 @@ export function setJwtToken(token) {
     localStorage.setItem("jwtToken", token)
 }
 
-// Longer duration refresh token (30-60 min)
 export function getRefreshToken() {
     return localStorage.getItem("refreshToken")
 }
@@ -16,13 +14,55 @@ export function setRefreshToken(token) {
     localStorage.setItem("refreshToken", token)
 }
 
-// function handleLogin({ email, password }) {
-//   // Call login method in API
-//   // The server handler is responsible for setting user fingerprint cookie during this as well
-//   const { jwtToken, refreshToken } = await login({ email, password })
-//   setJwtToken(jwtToken)
-//   setRefreshToken(refreshToken)
+export function check_token_exists() {
+	if (!getJwtToken() && !getRefreshToken()) {
+		window.location.replace = 'http://localhost:8080/login';
+	}
+	return true
+}
 
-//   // If you like, you may redirect the user now
-//   Router.push("/some-url")
-// }
+export async function fetchMod(url, request) {
+	const jwt_access_token = getJwtToken()
+	const jwt_refresh_token = getRefreshToken()
+
+	// if no access and refresh token, user hasnt login
+	if (!getJwtToken() && !getRefreshToken()) {
+		window.location.href = 'http://localhost:8080/login';
+	}
+
+	// verify access token in localStorage
+	const response_verify = await fetch('http://localhost:8000/api/token/verify', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({'token' : `${jwt_access_token}`})
+	})
+
+	// access token in locallStorage invalid/expired, request new one and sets the new one in localStorage
+	if (response_verify.status == 401) {
+		console.log("access token invalid/expired, requesting new one using refresh token...")
+		const response_refresh = await fetch('http://localhost:8000/api/token/refresh', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({'refresh' : `${jwt_refresh_token}`})
+		})
+		if (response_refresh.ok) {
+			const result = await response_refresh.json();
+			setJwtToken(result.access)
+			console.log("access token refreshed using refresh token")
+
+		}
+	else {
+			console.log("access token invalid, refresh token not working, wallahi its over bijoever")
+			window.location.href = 'http://localhost:8080/login';
+		}
+	};
+
+	// adds access token to header and calls fetch
+	request.headers['Authorization'] = `Bearer ${getJwtToken()}`
+	const response = await fetch(url, request)
+	return response;
+}

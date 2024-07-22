@@ -1,7 +1,8 @@
-import { redirect } from "../../router.js"
+import { redirect } from "../router.js"
+import { fetchMod } from "../jwt.js"
 
 export default function tournamentList(prop={}) {
-	// attach all pre-rendering code here (like idk, fetch request or something)
+	// attach all pre-rendering code here (like idk, fetchMod request or something)
 	let prerender = () => {
 		return true // return true to continue to render_code
 		// return false to abort (usually used with redirect)
@@ -91,7 +92,7 @@ export default function tournamentList(prop={}) {
 		const createNewTournament = async () => {
 			let response
 			try {
-				response = await fetch(
+				response = await fetchMod(
 					"http://localhost:8000/api/tournament",
 					{
 						method: "POST"
@@ -113,7 +114,7 @@ export default function tournamentList(prop={}) {
 			// to websocket or not to websocket
 			let response
 			try {
-				response = await fetch(
+				response = await fetchMod(
 					"http://localhost:8000/api/tournament",
 					{
 						method: "GET"

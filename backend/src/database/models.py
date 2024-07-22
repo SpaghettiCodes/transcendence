@@ -3,6 +3,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from passlib.hash import pbkdf2_sha256
+from random import randint
 import os
 
 # Create your models here.
@@ -103,7 +104,22 @@ class Friend_Request(models.Model):
 
     def decline(self):
         self.delete()
+        
+class Two_Factor_Authentication(models.Model):
+    player = models.ForeignKey(Player,  on_delete=models.CASCADE, related_name='player_tfa', default=None)
+    code = models.PositiveIntegerField(blank=True, default=100000)
 
+    def generate_code(self):
+        new_code = int(''.join(["{}".format(randint(0, 9)) for num in range(0, 6)]))
+        self.code = new_code
+        self.save
+
+    def verify_code(self, code):
+        if code == self.code:
+            return True
+        else:
+            return False
+    
 class Match(models.Model):
     id = models.BigAutoField(primary_key=True)
     matchid = models.CharField(max_length=8, unique=True, null=True, blank=True)

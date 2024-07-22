@@ -23,6 +23,7 @@ import matchmaking from "./pages/matchmaking.js"
 import chat from "./pages/chat/chat.js"
 import friendlist from "./pages/friendList.js"
 import match from "./pages/match.js"
+import { check_token_exists } from "./jwt.js"
 
 const routes = {
 	'/': landing,
@@ -146,6 +147,8 @@ const navigate = (e, prop={}) => {
 	uri = '/' + uri.split("/").filter(Boolean).join('/')
 
 	history.replaceState(null, null, uri)
+
+	// check_token_exists()
 
 	render_html(uri, prop)
 }

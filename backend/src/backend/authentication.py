@@ -15,12 +15,13 @@ import re
 JWT_AUTH_EXEMPT_PARTIAL = [
     '/admin/',
     '/api/ft/',
+    '/api/token/',
 ]
 
 JWT_AUTH_EXEMPT_FULL = [
     '/api/login',
     '/api/register',
-    '/api/error/401'
+    '/api/error/401',
 ]
 
 class AuthenticateJWT(JWTAuthentication):
