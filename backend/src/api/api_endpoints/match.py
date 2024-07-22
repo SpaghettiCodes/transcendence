@@ -10,8 +10,6 @@ from rest_framework import status
 
 from datetime import datetime
 
-import asyncio
-
 class MatchView(APIView):
     parser_classes = [JSONParser]
     renderer_classes = [JSONRenderer]

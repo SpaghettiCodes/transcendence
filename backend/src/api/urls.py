@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from .api_endpoints import friendRequest, ft, match, player, playerSpecific, friends, hello, chat, result, tournament, tfa, playerBlock
+from .api_endpoints import friendRequest, ft, match, player, playerSpecific, friends, hello, chat, result, tournament, tfa, playerBlock, me
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 urlpatterns = [
@@ -12,6 +12,9 @@ urlpatterns = [
     path('register', player.createPlayer),
 	path('2fa/send', tfa.send_tfa_code),
 	path('2fa/verify', tfa.verify_tfa_code),
+
+    ## get my own details
+    path('me', me.getMe),
 
     ## players
     path('player', player.ViewPlayers.as_view()),

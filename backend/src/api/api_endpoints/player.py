@@ -30,6 +30,7 @@ class ViewPlayers(APIView):
         print(request.user)
         p_all = PublicPlayerSerializer(Player.objects.all(), many=True)
         return Response(p_all.data)
+    # please remove when done
 
 @extend_schema(
         summary="Login Endpoint",

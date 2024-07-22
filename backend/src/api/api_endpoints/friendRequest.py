@@ -18,6 +18,11 @@ class ViewFriendRequest(APIView):
 
     # list received and sent friend request
     def get(self, request, player_username, format=None):
+        requester_username = request.user.username
+        if (player_username != requester_username):
+            # no snooping
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
         data = request.data
         user = get_object_or_404(Player, username=player_username)
 

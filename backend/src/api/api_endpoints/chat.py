@@ -51,8 +51,7 @@ class Chat(APIView):
     def post(self, request: Request, format = None):
         data = request.data
 
-        owner_username = data["username"]
-        owner = get_object_or_404(Player, username=owner_username)
+        owner = request.user
         chatroom_title = data["title"]
 
         new_chat = ChatRoom(owner=owner, title=chatroom_title)
@@ -147,10 +146,7 @@ def chatHistory(request: Request, chat_id):
     last_msgId = request.GET.get('start_id')
     maxMsgCount = 10 # change this later
 
-    # TEMP, PLEASE REMEMBER TO REMOVE, WE ARE NOT PUTTING PEOPLE ID IN URLS
-    username = request.GET.get('user')
-
-    userObj = get_object_or_404(Player, username=username)
+    userObj = request.user
     chatObj = get_object_or_404(ChatRoom, roomid=chat_id)
 
     if (userObj not in chatObj.members.all() and userObj != chatObj.owner):
@@ -236,7 +232,7 @@ def chatPostingMessages(request: Request, chat_id):
     room = get_object_or_404(ChatRoom.objects, roomid=chat_id)
     owner = room.owner
     members = room.members.all()
-    sender = get_object_or_404(Player.objects, username=data["sender"])
+    sender = request.user
 
     if sender not in members and sender != owner:
         return Response(status=status.HTTP_403_FORBIDDEN)

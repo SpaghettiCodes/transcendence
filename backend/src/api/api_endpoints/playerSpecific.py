@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 
 from rest_framework.decorators import api_view
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -13,17 +14,27 @@ from django.db.models import Q
 
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample,  OpenApiParameter
 
-def getSpecificPlayer(player_username):
+def getSpecificPlayer(request: Request, player_username):
     p = get_object_or_404(Player.objects, username=player_username)
     serialized = PlayerSerializer(p)
     return Response(serialized.data)
 
-def removeSpecificPlayer(player_username):
+def removeSpecificPlayer(request: Request, player_username):
+    requester_username = request.user.username
+    if (requester_username != player_username):
+        # AYE, WHAT U DOING HOMIE?
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
     p = get_object_or_404(Player.objects, username=player_username)
     p.delete()
     return Response(status=status.HTTP_200_OK)
 
 def editSpecificPlayer(request, player_username):
+    requester_username = request.user.username
+    if (requester_username != player_username):
+        # dont help other people edit
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
     username = player_username
     if username is None:
         return Response({"Error": "'username' must be included in query"},
@@ -65,9 +76,9 @@ def editSpecificPlayer(request, player_username):
 def SpecificPlayer(request, player_username):
     match request.method:
         case 'DELETE':
-            return removeSpecificPlayer(player_username)
+            return removeSpecificPlayer(request, player_username)
         case 'GET':
-            return getSpecificPlayer(player_username)
+            return getSpecificPlayer(request, player_username)
         case 'PATCH':
             return editSpecificPlayer(request, player_username)
 
@@ -110,6 +121,11 @@ def SpecificPlayerMatches(request, player_username):
 )
 @api_view(['GET'])
 def SpecificPlayerChats(request, player_username):
+    requester_username = request.user.username
+    if (requester_username != player_username):
+        # no need you snooping around
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
     p = get_object_or_404(Player.objects, username=player_username)
     c = (p.members.all() | p.owner.all()).distinct()
     serialized = PublicChatRoomSerializer(c, many=True)

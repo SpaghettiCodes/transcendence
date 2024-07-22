@@ -3,8 +3,8 @@
 // routing thingys
 // https://dev.to/rohanbagchi/how-to-write-a-vanillajs-router-hk3
 
-let mainDoc = document.getElementById("main")
-let videoContainer = document.getElementById('mainContainer')
+let errorContainer = document.getElementById("errorContainer")
+let mainContainer = document.getElementById('mainContainer')
 
 
 import "./jwt.js"
@@ -135,12 +135,16 @@ const render_html = (which, prop={}) => {
 
 	clean_up_function()
 	clean_up_function = cleanup
+
+	errorContainer.innerHTML = ''
+	mainContainer.innerHTML = ''
+
 	if (prerender())
 	{
 		if (to_render === routes['/error'])
-			mainDoc.innerHTML = render_code()
+			errorContainer.innerHTML = render_code()
 		else
-			videoContainer.innerHTML = render_code()
+			mainContainer.innerHTML = render_code()
 		postrender()
 	}
 }
