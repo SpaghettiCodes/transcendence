@@ -1,17 +1,61 @@
+// export function getJwtToken_LS() {
+//     return localStorage.getItem("jwtToken")
+// }
+
+// export function setJwtToken_LS(token) {
+//     localStorage.setItem("jwtToken", token)
+// }
+
+// export function getRefreshToken_LS() {
+//     return localStorage.getItem("refreshToken")
+// }
+
+// export function setRefreshToken_LS(token) {
+//     localStorage.setItem("refreshToken", token)
+// }
+
 export function getJwtToken() {
-    return localStorage.getItem("jwtToken")
+	let name = "jwtToken" + "=";
+	let ca = document.cookie.split(';');
+  	for (let i = 0; i < ca.length; i++) {
+    	let c = ca[i];
+    	while (c.charAt(0) == ' ') {
+      		c = c.substring(1);
+    	}
+    	if (c.indexOf(name) == 0) {
+      		return c.substring(name.length, c.length);
+    	}
+	}
+	return "";
 }
 
 export function setJwtToken(token) {
-    localStorage.setItem("jwtToken", token)
-}
-
-export function getRefreshToken() {
-    return localStorage.getItem("refreshToken")
+	const d = new Date();
+	d.setTime(d.getTime() + (30 * 60 * 60 * 1000));
+	let expires = "expires="+d.toUTCString();
+	document.cookie = "jwtToken" + "=" + token + ";" + expires + ";path=/";
 }
 
 export function setRefreshToken(token) {
-    localStorage.setItem("refreshToken", token)
+	const d = new Date();
+	d.setTime(d.getTime() + (1 * 24 * 60 * 60 * 1000));
+	let expires = "expires="+d.toUTCString();
+	document.cookie = "refreshToken" + "=" + token + ";" + expires + ";path=/";
+}
+
+export function getRefreshToken() {
+	let name = "refreshToken" + "=";
+	let ca = document.cookie.split(';');
+  	for (let i = 0; i < ca.length; i++) {
+    	let c = ca[i];
+    	while (c.charAt(0) == ' ') {
+      		c = c.substring(1);
+    	}
+    	if (c.indexOf(name) == 0) {
+      		return c.substring(name.length, c.length);
+    	}
+	}
+	return "";
 }
 
 export function check_token_exists() {
