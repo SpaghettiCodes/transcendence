@@ -35,13 +35,14 @@
 }
 
 .landingPageMain .ui-btn {
-	width: 100%;
+	--btn-width: 100%;
+    --btn-padding: 10px 30px;
+    --btn-height: 50px;
 }
 
 .landingPageMain .ui-btn:disabled {
-	width: 100%;
 	cursor: default;
-    box-shadow: 0px 0px 10px 0px rgba(119, 68, 255, 0.70);
+    box-shadow: 0px 0px 10px 0px var(--hover-btn-color);
 }
 
 .errorBoard {

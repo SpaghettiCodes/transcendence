@@ -1,3 +1,5 @@
+import { redirect } from "../router.js"
+
 export default function ftlogin(prop={}) {
 	let prerender = () => {
 		return true
@@ -75,11 +77,14 @@ export default function ftlogin(prop={}) {
 	let postrender = () => {
 		const queryString = window.location.search
 		const urlParams = new URLSearchParams(queryString)
-		
+
 		console.log(queryString)
 		const code = urlParams.get('code')
-		console.log(code)
-
+		if (!code) {
+			console.log("Go get your 42 auth code!")
+			redirect('/')
+			return
+		}
 		get_ft_code(code)
 	}
 

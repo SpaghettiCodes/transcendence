@@ -29,19 +29,22 @@ const routes = {
 	'/': landing,
 	'/error': fourofour,
 	'/ftlogin': ftlogin,
-	'/login': login,
-	'/test': test,
 	'/home': home,
-	'/match': matchListing,
 	'/match/<game_id>/spectate': match,
 	'/match/<game_id>/results': result,
 	'/match/<game_id>': match,
 	'/chat': chat,
-	'/tournament': tournamentListing,
 	'/tournament/<tournament_id>': tournament,
 	'/profile': profile,
 	'/matchmaking': matchmaking,
 	'/friends': friendlist,
+
+	// temp, remove when done
+
+	'/tournament': tournamentListing,
+	'/login': login,
+	'/test': test,
+	'/match': matchListing,
 }
 
 let clean_up_function = () => {}
