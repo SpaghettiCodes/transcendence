@@ -19,9 +19,10 @@ class TournamentManager:
         
         if len(cls.servers):
             for server_id, server in cls.servers.items():
-                if (not server.isHidden() and not server.hasStarted()):
-                    server_to_join = server_id
-                    break
+                if (not server.isFull()):
+                    if (not server.isHidden() and not server.hasStarted()):
+                        server_to_join = server_id
+                        break
 
         if server_to_join is None:
             server_to_join = cls.new_tournament()

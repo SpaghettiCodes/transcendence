@@ -70,6 +70,9 @@ class TournamentServer:
 
         self.winner = None
 
+    def isFull(self):
+        return len(self.currentPlayers) >= self.maxPlayers
+
     def hasStarted(self):
         return self.tournamentStarted
 

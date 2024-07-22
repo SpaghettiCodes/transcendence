@@ -22,7 +22,7 @@ class TournamentView(APIView):
         server_id = TournamentManager.new_tournament()
 
         if server_id == None:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         return Response({
             "tournament_id": server_id
