@@ -42,9 +42,9 @@ const routes = {
 	// temp, remove when done
 
 	'/tournament': tournamentListing,
+	'/match': matchListing,
 	'/login': login,
 	'/test': test,
-	'/match': matchListing,
 }
 
 let clean_up_function = () => {}
