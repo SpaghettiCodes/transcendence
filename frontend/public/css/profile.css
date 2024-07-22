@@ -7,6 +7,7 @@
     z-index: -1;
     overflow: hidden;
 }
+
 video {
     min-width: 100%;
     min-height: 100%;
@@ -15,51 +16,59 @@ video {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
 .profile {
-    margin-left: 100px;
-    display: grid;
-    grid-template-columns: auto auto;
+	display: grid;
+	grid-template-columns: 3fr 1.5fr;
+	flex-grow: 1;
     gap: 20px;
+	max-height: 80%;
 }
+
 .profile-info {
     grid-column-start: 1;
     grid-column-end: 3;
-    padding: 20px;
 }
+
 .chartArea {
-    grid-column-start: 1;
-    grid-column-end: 3;
-    display: grid;
-    grid-template-columns: 300px 300px 300px;
-    width: 950px;
-    border-radius: 1000px;
+	display: flex;
+	flex-direction: column;
+
+	overflow: hidden;
+
+    border-radius: 10000px;
     background-color: rgba(52, 58, 64, 0.85);
 }
+
 .chartBox {
-    width: 350px;
+	flex-grow: 1;
 }
+
 .profile-pic {
-    max-width: 150px;
-    max-height: 150px;
+	aspect-ratio: 1;
+	width: 150px;
+	height: 150px;
+	object-fit: cover;
 }
+
 .match-history {
-    grid-column-start: 1;
-    grid-column-end: 3;
-    padding: 20px;
     background-color: #343a40; /* Dark background color */
     color: #f8f9fa; /* Light text color */
-    border-radius: 5px; /* Optional: Add rounded corners */
 }
+
 .lowered {
     margin-top: 150px;
 }
+
 .title {
     margin-top: 30px;
 }
+
 .list-group-item {
     background-color: transparent; /* Make list group items transparent to match parent background */
     color: #ecf0f1; /* Light text color */
 }
+
 .bottom-left-buttons {
     position: fixed;
     bottom: 20px;

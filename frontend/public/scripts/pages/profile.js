@@ -16,44 +16,53 @@ export default function template(prop={}) {
                 Your browser does not support HTML5 video.
             </video>
         </div>
-        <div class="container text-white text-center">
-            <h1 class="title">Employee Infos</h1>
-        </div>
-        <div class="text-white">
-            <div class="profile p-4">
-                <div class="profile-info">
-                    <img src="bocchi.jpeg" alt="Profile Picture" class="profile-pic">
-                    <h2 class="mt-3">Username</h2>
-                </div>
-                <div class="col-md-8 match-history ">
-                    <h3>Match History</h3>
-                    <div class="tab-content mt-3" id="matchHistoryTabContent">
-                        <div class="tab-pane fade show active" id="recent" role="tabpanel" aria-labelledby="recent-tab">
-                            <ul class="list-group">
-                                <li class="list-group-item">Match 1: Win</li>
-                                <li class="list-group-item">Match 2: Loss</li>
-                                <li class="list-group-item">Match 3: Win</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="chartArea">
-                    <div class="chartBox">
-                        <canvas id="myChart1"></canvas>
-                    </div>
-                    <div class="chartBox">
-                        <canvas id="myChart2"></canvas>
-                    </div>
-                    <div class="chartBox">
-                        <canvas id="myChart3"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="bottom-left-buttons">
-            <button type="button" class="btn btn-secondary">Change Profile Pic</button>
-            <button type="button" class="btn btn-secondary">Change Email</button>
-        </div>
+		<div class='d-flex flex-column vh-100 vw-100 overflow-auto'>
+			<div class="text-white text-center">
+				<h1 class="title">Employee Infos</h1>
+			</div>
+			<div class="text-white profile p-4">
+				<div class='d-flex flex-column overflow-y-hidden gap-1'>
+					<div class="profile-info p-3">
+						<img src="/css/blackhole.jpg" alt="Profile Picture" class="profile-pic">
+						<h2 class="mt-3">Username</h2>
+					</div>
+					<div class="d-flex flex-column match-history flex-grow-1 overflow-y-hidden p-3 rounded">
+						<h3>Match History</h3>
+						<div class="d-flex overflow-y-hidden tab-content mt-3 tab-pane fade show active" id="recent" role="tabpanel" aria-labelledby="recent-tab" id="matchHistoryTabContent">
+							<ul class="d-flex w-100 flex-column overflow-y-auto list-group">
+								<li class="list-group-item">Match 1: Win</li>
+								<li class="list-group-item">Match 2: Loss</li>
+								<li class="list-group-item">Match 3: Win</li>
+								<li class="list-group-item">Match 1: Win</li>
+								<li class="list-group-item">Match 2: Loss</li>
+								<li class="list-group-item">Match 3: Win</li>
+								<li class="list-group-item">Match 1: Win</li>
+								<li class="list-group-item">Match 2: Loss</li>
+								<li class="list-group-item">Match 3: Win</li>
+								<li class="list-group-item">Match 1: Win</li>
+								<li class="list-group-item">Match 2: Loss</li>
+								<li class="list-group-item">Match 3: Win</li>
+								<li class="list-group-item">Match 3: Win</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="chartArea scroll-y-auto">
+					<div class="chartBox">
+						<canvas id="myChart1"></canvas>
+					</div>
+					<div class="chartBox">
+						<canvas id="myChart2"></canvas>
+					</div>
+						<canvas id="myChart3"></canvas>
+					</div>
+				</div>
+			</div>
+			<div class="bottom-left-buttons">
+				<button type="button" class="btn btn-secondary">Change Profile Pic</button>
+				<button type="button" class="btn btn-secondary">Change Email</button>
+			</div>
+		</div>
     `
 	}
 
@@ -86,7 +95,7 @@ export default function template(prop={}) {
                 ctx.font = 'bold 25px sans-serif';
                 ctx.fillStyle = 'lightgray';
                 ctx.textAlign = 'center';
-                ctx.fillText('Pong', xCenter, 60)
+                ctx.fillText('Pong', xCenter, 50)
                 ctx.translate(xCenter, yCenter);
                 ctx.font = 'bold 25px sans-serif';
                 ctx.fillStyle = 'lightgray';
@@ -102,7 +111,7 @@ export default function template(prop={}) {
                 ctx.font = 'bold 25px sans-serif';
                 ctx.fillStyle = 'lightgray';
                 ctx.textAlign = 'center';
-                ctx.fillText(`${(data.datasets[0].data[1] + data.datasets[0].data[0])} Games`, xCenter, yCenter + 140)
+                ctx.fillText(`${(data.datasets[0].data[1] + data.datasets[0].data[0])} Games`, xCenter, yCenter + 110)
             }
         };
         const config1 = {
@@ -152,7 +161,7 @@ export default function template(prop={}) {
                 ctx.font = 'bold 25px sans-serif';
                 ctx.fillStyle = 'lightgray';
                 ctx.textAlign = 'center';
-                ctx.fillText('APong', xCenter, 60)
+                ctx.fillText('APong', xCenter, 50)
                 ctx.translate(xCenter, yCenter);
                 ctx.font = 'bold 25px sans-serif';
                 ctx.fillStyle = 'lightgray';
@@ -168,7 +177,7 @@ export default function template(prop={}) {
                 ctx.font = 'bold 25px sans-serif';
                 ctx.fillStyle = 'lightgray';
                 ctx.textAlign = 'center';
-                ctx.fillText(`${(data.datasets[0].data[1] + data.datasets[0].data[0])} Games`, xCenter, yCenter + 140)
+                ctx.fillText(`${(data.datasets[0].data[1] + data.datasets[0].data[0])} Games`, xCenter, yCenter + 110)
             }
         };
         const config2 = {
@@ -218,7 +227,7 @@ export default function template(prop={}) {
                 ctx.font = 'bold 25px sans-serif';
                 ctx.fillStyle = 'lightgray';
                 ctx.textAlign = 'center';
-                ctx.fillText('Tournament', xCenter, 60)
+                ctx.fillText('Tournament', xCenter, 50)
                 ctx.translate(xCenter, yCenter);
                 ctx.font = 'bold 25px sans-serif';
                 ctx.fillStyle = 'lightgray';
@@ -234,7 +243,7 @@ export default function template(prop={}) {
                 ctx.font = 'bold 25px sans-serif';
                 ctx.fillStyle = 'lightgray';
                 ctx.textAlign = 'center';
-                ctx.fillText(`${(data.datasets[0].data[1] + data.datasets[0].data[0])} Games`, xCenter, yCenter + 140)
+                ctx.fillText(`${(data.datasets[0].data[1] + data.datasets[0].data[0])} Games`, xCenter, yCenter + 110)
             }
         };
         const config3 = {

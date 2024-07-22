@@ -25,10 +25,6 @@ import tournamentlist from "./pages/tournamentlist.js"
 
 const routes = {
 	'/': landing,
-	'/error': fourofour,
-	'/ftlogin': ftlogin,
-	'/login': login,
-	'/test': test,
 	'/home': home,
 	'/match': game,
 	'/match/<game_id>': match,
@@ -40,6 +36,12 @@ const routes = {
 	'/matchmaking': matchmaking,
 	'/msg': msg,
 	'/friendlist': friendlist,
+	'/error': fourofour,
+
+	// testing purposes, remove later
+	'/ftlogin': ftlogin,
+	'/login': login,
+	'/test': test,
 }
 
 let clean_up_function = () => {}
