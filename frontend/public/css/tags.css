@@ -6,13 +6,19 @@
 	animation: disappearing-frame 0.5s ;
 }
 
-
-.reappearing-3 {
-	animation: disappearing-frame 3s ;
-}
-
-
 @keyframes disappearing-frame {
 	from {opacity: 0;}
 	to {opacity: 1;}
+}
+
+.lowered {
+    margin-top: 150px;
+}
+
+.hide {
+	display: none;
+}
+
+.font-size-5vm {
+	font-size: 5vw;
 }
