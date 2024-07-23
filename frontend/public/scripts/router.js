@@ -38,7 +38,7 @@ const routes = {
 	'/chat': chat,
 	'/tournament/<tournament_id>': tournament,
 	'/profile': profile,
-	'/matchmaking': matchmaking,
+	'/matchmaking/<game_type>': matchmaking,
 	'/friends': friendlist,
 
 	// temp, remove when done

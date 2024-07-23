@@ -1,3 +1,4 @@
+import { fetchMod } from "../../jwt.js"
 import { redirect } from "../../router.js"
 
 export default function matchListing(prop={}) {
@@ -61,7 +62,7 @@ export default function matchListing(prop={}) {
 			let response
 			try
 			{
-				response = await fetch(
+				response = await fetchMod(
 					"http://localhost:8000/api/match",
 					{
 						method: "POST",
@@ -95,7 +96,7 @@ export default function matchListing(prop={}) {
 			let response
 			try
 			{
-				response = await fetch(
+				response = await fetchMod(
 					"http://localhost:8000/api/match",
 					{
 						method: "POST",
@@ -168,7 +169,7 @@ export default function matchListing(prop={}) {
 			let response
 			try
 			{
-				response = await fetch(
+				response = await fetchMod(
 					"http://localhost:8000/api/match?type=pong",
 					{
 						method: "GET",

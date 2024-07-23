@@ -80,6 +80,9 @@ export async function fetchMod(url, request) {
 	if (!request) {
 		request = {headers: {}}
 	}
+	if (!request.headers) {
+		request.headers = {}
+	}
 	request.headers['Authorization'] = `Bearer ${getJwtToken()}`
 	const response = await fetch(url, request)
 	return response;

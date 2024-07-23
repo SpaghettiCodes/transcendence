@@ -26,7 +26,6 @@ export default function template(prop={}) {
 			if (!matchHistoryResponse.ok)
 				throw new Error('Server responded with ' + matchHistoryResponse.statusText)
 			const matchData = await matchHistoryResponse.json()
-			console.log(matchData)
 			prop.match = matchData
 
 			return true; // Return true to continue to render_code
@@ -39,9 +38,10 @@ export default function template(prop={}) {
 
 	// return the html code here
 	let render_code = () => {
-		console.log(prop)
 		const profile = prop.data
 		const matches = prop.match
+
+		console.log(matches)
 
 		return `
 		<div class="container text-white text-center">
@@ -72,6 +72,20 @@ export default function template(prop={}) {
 
 	// attach all event listeners here (or do anything that needs to be done AFTER attaching the html code)
 	let postrender = () => {
+		const linkResultURL = () => {
+			let matches = prop.match
+			matches.forEach(match => {
+				let matchId = match.matchid
+				console.log(match)
+				console.log(match.matchid)
+				let matchDiv = document.getElementById(`match-${matchId}`)
+				matchDiv.onclick = () => {
+					redirect(`/match/${matchId}/results`)
+				}
+			});
+		}
+		linkResultURL()
+
 		document.getElementById('pfp_button').accept = 'image/*'
 		document.getElementById("pfp_button").addEventListener("click", () => {
 			// Trigger file selection dialog
