@@ -48,12 +48,13 @@ export default function template(prop={}) {
 					</div>
 				</div>
 				<div class="chartArea scroll-y-auto">
-					<div class="chartBox">
+					<div class="chartBox1">
 						<canvas id="myChart1"></canvas>
 					</div>
-					<div class="chartBox">
+					<div class="chartBox2">
 						<canvas id="myChart2"></canvas>
 					</div>
+                    <div class="chartBox3">
 						<canvas id="myChart3"></canvas>
 					</div>
 				</div>
@@ -68,20 +69,25 @@ export default function template(prop={}) {
 
 	// attach all event listeners here (or do anything that needs to be done AFTER attaching the html code)
 	let postrender = () => {
+        const lossColor = 'rgba(255, 26, 104, 0.2)';
+        const winColor = 'rgba(54, 162, 235, 0.2)';
+        const lossBorder = 'rgba(255, 26, 104, 1)';
+        const winBorder = 'rgba(54, 162, 235, 1)';
+
         const data1 = {
             labels: ['Losses', 'Wins'],
             datasets: [{
                 data: [43, 25],
                 backgroundColor: [
-                    'rgba(255, 26, 104, 0.2)',
-                    'rgba(54, 162, 235, 0.2)'
+                    lossColor,
+                    winColor
                 ],
                 borderColor: [
-                    'rgba(255, 26, 104, 1)',
-                    'rgba(54, 162, 235, 1)'
+                    lossBorder,
+                    winBorder
                 ],
                 borderWidth: 1,
-                cutout: '60%'
+                cutout: '65%'
             }]
         };
         const ratio1 = {
@@ -111,7 +117,7 @@ export default function template(prop={}) {
                 ctx.font = 'bold 25px sans-serif';
                 ctx.fillStyle = 'lightgray';
                 ctx.textAlign = 'center';
-                ctx.fillText(`${(data.datasets[0].data[1] + data.datasets[0].data[0])} Games`, xCenter, yCenter + 110)
+                ctx.fillText(`${(data.datasets[0].data[1] + data.datasets[0].data[0])} Games`, xCenter, yCenter + 120)
             }
         };
         const config1 = {
@@ -119,7 +125,7 @@ export default function template(prop={}) {
             data: data1,
             options: {
                 layout: {
-                    padding: 70,
+                    padding: 60,
                 },
                 plugins: {
                     legend: {
@@ -139,15 +145,15 @@ export default function template(prop={}) {
             datasets: [{
                 data: [7, 8],
                 backgroundColor: [
-                    'rgba(255, 26, 104, 0.2)',
-                    'rgba(54, 162, 235, 0.2)'
+                    lossColor,
+                    winColor
                 ],
                 borderColor: [
-                    'rgba(255, 26, 104, 1)',
-                    'rgba(54, 162, 235, 1)'
+                    lossBorder,
+                    winBorder
                 ],
                 borderWidth: 1,
-                cutout: '60%'
+                cutout: '65%'
             }]
         };
         const ratio2 = {
@@ -177,7 +183,7 @@ export default function template(prop={}) {
                 ctx.font = 'bold 25px sans-serif';
                 ctx.fillStyle = 'lightgray';
                 ctx.textAlign = 'center';
-                ctx.fillText(`${(data.datasets[0].data[1] + data.datasets[0].data[0])} Games`, xCenter, yCenter + 110)
+                ctx.fillText(`${(data.datasets[0].data[1] + data.datasets[0].data[0])} Games`, xCenter, yCenter + 120)
             }
         };
         const config2 = {
@@ -185,7 +191,7 @@ export default function template(prop={}) {
             data: data2,
             options: {
                 layout: {
-                    padding: 70,
+                    padding: 60,
                 },
                 plugins: {
                     legend: {
@@ -205,15 +211,15 @@ export default function template(prop={}) {
             datasets: [{
                 data: [3, 3],
                 backgroundColor: [
-                    'rgba(255, 26, 104, 0.2)',
-                    'rgba(54, 162, 235, 0.2)'
+                    lossColor,
+                    winColor
                 ],
                 borderColor: [
-                    'rgba(255, 26, 104, 1)',
-                    'rgba(54, 162, 235, 1)'
+                    lossBorder,
+                    winBorder
                 ],
                 borderWidth: 1,
-                cutout: '60%'
+                cutout: '65%'
             }]
         };
         const ratio3 = {
@@ -243,7 +249,7 @@ export default function template(prop={}) {
                 ctx.font = 'bold 25px sans-serif';
                 ctx.fillStyle = 'lightgray';
                 ctx.textAlign = 'center';
-                ctx.fillText(`${(data.datasets[0].data[1] + data.datasets[0].data[0])} Games`, xCenter, yCenter + 110)
+                ctx.fillText(`${(data.datasets[0].data[1] + data.datasets[0].data[0])} Games`, xCenter, yCenter + 120)
             }
         };
         const config3 = {
@@ -251,7 +257,7 @@ export default function template(prop={}) {
             data: data3,
             options: {
                 layout: {
-                    padding: 70,
+                    padding: 60,
                 },
                 plugins: {
                     legend: {

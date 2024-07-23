@@ -33,15 +33,33 @@ video {
 .chartArea {
 	display: flex;
 	flex-direction: column;
+    width: fit-content;
+    height: fit-content;
+    overflow: visible;
+}
 
-	overflow: hidden;
-
+.chartBox1 {
+    margin-left: -10px;
+    flex-grow: 1;
+    width: 300px;
     border-radius: 10000px;
     background-color: rgba(52, 58, 64, 0.85);
 }
-
-.chartBox {
-	flex-grow: 1;
+.chartBox2 {
+    margin-top: -80px;
+    margin-left: 240px;
+    flex-grow: 1;
+    width: 300px;
+    border-radius: 10000px;
+    background-color: rgba(52, 58, 64, 0.85);
+}
+.chartBox3 {
+    margin-top: -80px;
+    margin-left: -10px;
+    flex-grow: 1;
+    width: 300px;
+    border-radius: 10000px;
+    background-color: rgba(52, 58, 64, 0.85);
 }
 
 .profile-pic {
