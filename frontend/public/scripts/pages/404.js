@@ -1,5 +1,5 @@
 export default function fourofour(prop={}) {
-	let prerender = () => {
+	let prerender = async () => {
 		return true
 	}
 

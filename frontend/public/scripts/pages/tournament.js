@@ -8,7 +8,7 @@ export default function tournament(prop={}) {
 	let goingToBattle = false
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
-	let prerender = () => {
+	let prerender = async () => {
 		if (tournamentID === undefined)
 		{
 			redirect("/tournament")

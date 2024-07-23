@@ -5,7 +5,7 @@ export default function testChat(prop={}) {
 	let websocket = undefined
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
-	let prerender = () => {
+	let prerender = async () => {
 		return true // return true to continue to render_code
 		// return false to abort (usually used with redirect)
 	}

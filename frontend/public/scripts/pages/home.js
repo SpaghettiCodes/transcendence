@@ -2,7 +2,7 @@ import { createButton } from "../components/elements.js"
 import { redirect } from "../router.js"
 
 export default function home(prop={}) {
-	let prerender = () => {
+	let prerender = async () => {
 		return true
 	}
 

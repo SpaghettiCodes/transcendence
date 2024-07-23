@@ -12,7 +12,7 @@ export default function oldMatch(prop={}) {
 	let pongSocket = undefined
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
-	let prerender = () => {
+	let prerender = async () => {
 		// if (game_id === undefined)
 		// {
 		// 	redirect("/match")

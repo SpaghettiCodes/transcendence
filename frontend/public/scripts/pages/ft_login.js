@@ -1,7 +1,7 @@
 import { redirect } from "../router.js"
 
 export default function ftlogin(prop={}) {
-	let prerender = () => {
+	let prerender = async () => {
 		return true
 	}
 

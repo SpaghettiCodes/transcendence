@@ -7,7 +7,7 @@ import createInputFields from "../components/inputFields.js"
 // note to self: DO NOT, PUSH, TO GITHUB
 
 export default function landing(prop={}) {
-	let prerender = () => {
+	let prerender = async () => {
 		return true
 	}
 

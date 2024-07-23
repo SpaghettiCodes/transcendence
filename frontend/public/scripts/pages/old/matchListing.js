@@ -5,7 +5,7 @@ export default function matchListing(prop={}) {
 	let data_received = true
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
-	let prerender = () => {
+	let prerender = async () => {
 		return true
 	}
 

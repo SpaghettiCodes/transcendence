@@ -11,19 +11,21 @@ import "./jwt.js"
 import landing from "./pages/landing.js"
 import fourofour from "./pages/404.js"
 import ftlogin from "./pages/ft_login.js"
-import login from "./pages/old/login.js"
-import test from "./pages/test.js"
 import home from "./pages/home.js"
-import matchListing from "./pages/old/matchListing.js"
-import tournamentListing from "./pages/tournamentList.js"
 import tournament from "./pages/tournament.js"
 import result from "./pages/result/result.js"
-import profile from "./pages/profile.js"
+import profile from "./pages/profile/profile.js"
 import matchmaking from "./pages/matchmaking.js"
 import chat from "./pages/chat/chat.js"
 import friendlist from "./pages/friendList.js"
 import match from "./pages/match.js"
 import { check_token_exists } from "./jwt.js"
+
+// remove later
+import login from "./pages/old/login.js"
+import test from "./pages/old/test.js"
+import matchListing from "./pages/old/matchListing.js"
+import tournamentListing from "./pages/old/oldTournamentListing.js"
 
 const routes = {
 	'/': landing,
@@ -139,14 +141,17 @@ const render_html = (which, prop={}) => {
 	errorContainer.innerHTML = ''
 	mainContainer.innerHTML = ''
 
-	if (prerender())
-	{
-		if (to_render === routes['/error'])
-			errorContainer.innerHTML = render_code()
-		else
-			mainContainer.innerHTML = render_code()
-		postrender()
-	}
+	prerender().then(
+		(success) => {
+			if (success) {
+				if (to_render === routes['/error'])
+					errorContainer.innerHTML = render_code()
+				else
+					mainContainer.innerHTML = render_code()
+				postrender()
+			}
+		}
+	)
 }
 
 const navigate = (e, prop={}) => {
