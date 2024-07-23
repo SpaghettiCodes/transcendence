@@ -16,6 +16,7 @@ JWT_AUTH_EXEMPT_PARTIAL = [
     '/admin/',
     '/api/ft/',
     '/api/token/',
+    '/api/2fa/',
 ]
 
 JWT_AUTH_EXEMPT_FULL = [

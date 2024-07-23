@@ -12,6 +12,7 @@ import landing from "./pages/landing.js"
 import fourofour from "./pages/404.js"
 import ftlogin from "./pages/ft_login.js"
 import login from "./pages/login.js"
+import tfa from "./pages/tfa.js"
 import test from "./pages/test.js"
 import home from "./pages/home.js"
 import matchListing from "./pages/matchListing.js"
@@ -30,6 +31,7 @@ const routes = {
 	'/error': fourofour,
 	'/ftlogin': ftlogin,
 	'/login': login,
+	'/tfa': tfa,
 	'/test': test,
 	'/home': home,
 	'/match': matchListing,
