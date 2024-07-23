@@ -11,3 +11,12 @@ class APongUsGame(PongGame):
 
         self.attackerid = None
         self.defenderid = None
+
+    def incrementGameCount(self, playerObject):
+        playerObject.apong_matches_played += 1
+
+    def incrementWinCount(self, playerObject):
+        playerObject.apong_matches_won += 1
+
+    def incrementLostCount(self, playerObject):
+        playerObject.apong_matches_lost += 1

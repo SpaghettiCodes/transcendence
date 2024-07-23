@@ -113,6 +113,9 @@ class PongGame(Game):
             await matchObject.adelete()
             return
 
+        self.incrementGameCount(attacker)
+        self.incrementGameCount(defender)
+
         attacker_score = int(self.field.attackerScore)
         defender_score = int(self.field.defenderScore)
 
@@ -126,6 +129,9 @@ class PongGame(Game):
         else:
             winner = defender
             loser = attacker
+
+        self.incrementWinCount(winner)
+        self.incrementLostCount(loser)
 
         newResult = MatchResult(
             attacker=attacker, 
@@ -146,7 +152,6 @@ class PongGame(Game):
         self.resultsUploadSuccessfully = True
         await newResult.asave()
 
-
     def initialState(self):
         from ..common.states.processPhysics import ProcessPhysics
         from ..common.states.startingCountDown import startingCountDown
@@ -157,3 +162,12 @@ class PongGame(Game):
         if not self.played:
             return
         print("Uploading Scores to Database...")
+
+    def incrementWinCount(self, playerObject):
+        playerObject.pong_matches_won += 1
+
+    def incrementGameCount(self, playerObject):
+        playerObject.pong_matches_played += 1
+
+    def incrementLostCount(self, playerObject):
+        playerObject.pong_matches_lost += 1

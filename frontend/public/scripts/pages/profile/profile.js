@@ -21,7 +21,8 @@ export default function template(prop={}) {
 			yourName = data.username
 
 			// get match history
-			// i may throw this in /players also
+			// i may throw this in /players and /me also
+			// see first
 			const matchHistoryResponse = await fetchMod(`http://localhost:8000/api/player/${yourName}/match`)
 			if (!matchHistoryResponse.ok)
 				throw new Error('Server responded with ' + matchHistoryResponse.statusText)

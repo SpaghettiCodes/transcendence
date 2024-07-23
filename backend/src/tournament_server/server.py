@@ -311,9 +311,6 @@ class TournamentServer:
         winnerObject: Player = None
         tournamentObject: Tournament = None
 
-        print(self.completePlayers)
-        print(self.completeResults)
-
         try:
             tournamentObject = await Tournament.objects.aget(tournamentid=self.id)
         except ObjectDoesNotExist:
@@ -324,8 +321,12 @@ class TournamentServer:
         for player in self.completePlayers:
             try:
                 playerObject = await Player.objects.aget(username=player)
+                playerObject.tournament_played += 1
                 if (player == self.winner):
                     winnerObject = playerObject
+                    winnerObject.tournament_won += 1
+                else:
+                    playerObject.tournament_lost += 1
                 playerObjects.append(playerObject)
             except ObjectDoesNotExist:
                 print("well that person doesnt exist")
@@ -333,8 +334,6 @@ class TournamentServer:
                     print("Cant really have a non existant winner...")
                     await self.panicRemove()
                     return
-
-        print(playerObjects)
 
         # create new tournamentResult
         # add winner and players in

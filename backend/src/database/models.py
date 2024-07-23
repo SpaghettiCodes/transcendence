@@ -20,9 +20,17 @@ class Player(models.Model):
     is_active = models.BooleanField(default=False)
 
     # hmmm
-    matches_played = models.PositiveIntegerField(default=0)
-    matches_won = models.PositiveIntegerField(default=0)
-    matches_lost = models.PositiveIntegerField(default=0)
+    pong_matches_played = models.PositiveIntegerField(default=0)
+    pong_matches_won = models.PositiveIntegerField(default=0)
+    pong_matches_lost = models.PositiveIntegerField(default=0)
+
+    apong_matches_played = models.PositiveIntegerField(default=0)
+    apong_matches_won = models.PositiveIntegerField(default=0)
+    apong_matches_lost = models.PositiveIntegerField(default=0)
+
+    tournament_played = models.PositiveIntegerField(default=0)
+    tournament_won = models.PositiveIntegerField(default=0)
+    tournament_lost = models.PositiveIntegerField(default=0)
 
     def __str__(self) -> str:
         return f"User {self.username}"
