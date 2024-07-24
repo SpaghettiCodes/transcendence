@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 from database.models import Player, Friend_Request
-from ..serializer import PlayerSerializer, FriendRequestSerializer
+from ..serializer import FriendRequestSerializer
 
 from django.core.exceptions import FieldDoesNotExist
 from django.core.files.images import ImageFile

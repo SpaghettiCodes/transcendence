@@ -41,7 +41,8 @@ export async function fetchMod(url, request) {
 
 	// if no access and refresh token, user hasnt login
 	if (!getJwtToken() && !getRefreshToken()) {
-		window.location.href = 'http://localhost:8080/login';
+		redirect('/')
+		return {}
 	}
 
 	// verify access token in localStorage
@@ -67,7 +68,6 @@ export async function fetchMod(url, request) {
 			const result = await response_refresh.json();
 			setJwtToken(result.access)
 			console.log("access token refreshed using refresh token")
-
 		}
 	else {
 			console.log("access token invalid, refresh token not working, wallahi its over bijoever")

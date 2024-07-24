@@ -15,8 +15,7 @@ from django.core.exceptions import FieldDoesNotExist, ObjectDoesNotExist
 from django.core.files.images import ImageFile
 from django.conf import settings
 
-from django.db.utils import IntegrityError
-from ..serializer import PlayerSerializer, PublicPlayerSerializer, PlayerCreator
+from ..serializer import PublicPlayerSerializer, PlayerCreator
 from rest_framework.serializers import StringRelatedField
 
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample,  OpenApiParameter
