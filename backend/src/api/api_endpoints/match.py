@@ -15,21 +15,22 @@ class MatchView(APIView):
     renderer_classes = [JSONRenderer]
 
     # CREATE A NEW GAME
-    def post(self, request: Request, format = None):
-        data = request.data
-        server_id = PongServer.new_game(type=data["type"])
-        # server_id = asyncio.run(PongServer.new_game(type=data["type"]))
+    # def post(self, request: Request, format = None):
+    #     data = request.data
+    #     server_id = PongServer.new_game(type=data["type"])
+    #     # server_id = asyncio.run(PongServer.new_game(type=data["type"]))
 
-        if server_id == None:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    #     if server_id == None:
+    #         return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({
-            "game_id": server_id
-        }, status=status.HTTP_201_CREATED)
+    #     return Response({
+    #         "game_id": server_id
+    #     }, status=status.HTTP_201_CREATED)
 
     # RANDOM MATCHMAKING
     def get(self, request: Request, format = None):
         type = request.GET.get("type")
+        username = request.user.username
 
         server_id = PongServer.random_matchmake(type)
         if server_id is not None:
@@ -37,7 +38,7 @@ class MatchView(APIView):
                 "game_id": server_id
             }, status=status.HTTP_200_OK)
         
-        if not PongServer.matchMaking(type):
+        if not PongServer.matchMaking(username, type):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         # wait for 10 seconds
@@ -55,7 +56,7 @@ class MatchView(APIView):
             if server_id is not None:
                 break
 
-        PongServer.dismatchMaking(type)
+        PongServer.dismatchMaking(username, type)
         if server_id == None:
             return Response(status=status.HTTP_408_REQUEST_TIMEOUT)
 

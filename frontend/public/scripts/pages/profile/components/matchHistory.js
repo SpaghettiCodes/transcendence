@@ -10,9 +10,9 @@ export function generateMatchHistory(items) {
 		let matchId = match.matchid
 
 		return`
-		<li class="list-group-item">
-			<button id="match-${matchId}">
+		<li class="list-group-item" id="match-${matchId}">
+			<div>
 				${attacker.username} vs ${defender.username}: ${attacker_score} - ${defender_score}
-			</button>
+			</div>
 		</li>`})
 }

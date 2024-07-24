@@ -10,11 +10,11 @@ import datetime
 from django.core.exceptions import ObjectDoesNotExist
 
 class PongServer:
-    pongQueue = 0
-    apongQueue = 0
     servers: dict[None | str, dict[str, Game]] = {
         None: {}
     }
+    pongQueue = []
+    apongQueue = []
 
     channel_layer = get_channel_layer()
 
@@ -62,15 +62,15 @@ class PongServer:
         return server_to_join
 
     @classmethod
-    def matchMaking(cls, type="pong"):
+    def matchMaking(cls, playerUsername, type="pong"):
         print(cls.pongQueue, cls.apongQueue)
-        if type == "pong":
-            cls.pongQueue += 1
-            if cls.pongQueue >= 2:
+        if type == "pong" and playerUsername not in cls.pongQueue:
+            cls.pongQueue.append(playerUsername)
+            if len(cls.pongQueue) >= 2:
                 cls.new_game(type=type)
-        elif type == "apong":
-            cls.apongQueue += 1
-            if cls.apongQueue >= 2:
+        elif type == "apong" and playerUsername not in cls.apongQueue:
+            cls.apongQueue.append(playerUsername)
+            if len(cls.apongQueue) >= 2:
                 cls.new_game(type=type)
         else:
             return False
@@ -78,11 +78,11 @@ class PongServer:
         return True
 
     @classmethod
-    def dismatchMaking(cls, type='pong'):
-        if type == "pong":
-            cls.pongQueue -= 1
-        elif type == "apong":
-            cls.apongQueue += 1
+    def dismatchMaking(cls, playerUsername, type='pong'):
+        if type == "pong" and playerUsername in cls.pongQueue:
+            cls.pongQueue.remove(playerUsername)
+        elif type == "apong" and playerUsername in cls.apongQueue:
+            cls.apongQueue.remove(playerUsername)
         else:
             return False
 

@@ -327,6 +327,7 @@ class TournamentServer:
                     winnerObject.tournament_won += 1
                 else:
                     playerObject.tournament_lost += 1
+                await playerObject.asave()
                 playerObjects.append(playerObject)
             except ObjectDoesNotExist:
                 print("well that person doesnt exist")

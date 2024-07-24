@@ -25,11 +25,11 @@ export default function home(prop={}) {
 
 	let postrender = () => {
 		const	matchmakePong = () => {
-			alert("Playing the PONG game")
+			redirect('/matchmaking/pong')
 		}
 
 		const	matchmakeApong = () => {
-			alert('Entering APONG US game')
+			redirect('/matchmaking/apong')
 		}
 
 		const	 go_profile = () => {
@@ -42,7 +42,7 @@ export default function home(prop={}) {
 		}
 
 		const 	matchmakeTournamnet = () => {
-			alert('matchmaking for tournament')
+			redirect('/matchmaking/tournament')
 		}
 
 		const	changeLanguage = () => {

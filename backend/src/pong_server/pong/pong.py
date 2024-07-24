@@ -133,6 +133,9 @@ class PongGame(Game):
         self.incrementWinCount(winner)
         self.incrementLostCount(loser)
 
+        await attacker.asave()
+        await defender.asave()
+
         newResult = MatchResult(
             attacker=attacker, 
             defender=defender,

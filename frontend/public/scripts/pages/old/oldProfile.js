@@ -1,9 +1,9 @@
-import { createButton } from "../../components/elements.js";
-import { generateProfileInfo } from "../../components/generateProfileInfo.js";
-import { fetchMod } from "../../jwt.js";
 import { redirect } from "../../router.js"
-import { generateMatchHistory } from "./components/matchHistory.js";
-import drawPieChartData from "./components/pieChartData.js";
+import { generateProfileInfo } from "../../components/generateProfileInfo.js";
+import { generateList } from "../../components/generateList.js";
+import { createButton } from "../../components/elements.js";
+import { fetchMod } from "../../jwt.js";
+import { generateMatchHistory } from "../profile/components/matchHistory.js";
 
 export default function template(prop={}) {
 	let yourName = undefined
@@ -34,87 +34,45 @@ export default function template(prop={}) {
 			console.error('Fetch error:', error);
 			return false; // Return false to abort rendering
 		}
-	}
+	};
+
 
 	// return the html code here
 	let render_code = () => {
 		const profile = prop.data
 		const matches = prop.match
 
+		console.log(matches)
+
 		return `
-		<div class='d-flex flex-column overflow-hidden'>
-			<div class="text-white text-center">
-				<h1 class="title">Employee Infos</h1>
-			</div>
-			<div class="d-flex justify-content-center flex-grow-1 gap-5 text-white profile p-4">
-				<div class='d-flex flex-column overflow-y-hidden gap-1 profile-stuff'>
-					<div class="profile-info p-3">
-						${generateProfileInfo(profile)}
-					</div>
-					<div class="d-flex flex-column match-history flex-grow-1 overflow-y-hidden p-3 rounded">
-						<h3>Match History</h3>
-						<div class="d-flex overflow-y-hidden tab-content mt-3 tab-pane fade show active" id="recent" role="tabpanel" aria-labelledby="recent-tab" id="matchHistoryTabContent">
-							<ul class="d-flex w-100 flex-column overflow-y-auto list-group">
+		<div class="container text-white text-center">
+			<h1 class="title">Employee Infos</h1>
+		</div>
+		<div class="container lowered text-white">
+			<div class="profile p-4">
+				${generateProfileInfo(profile)} 
+				<div class="col-md-8 match-history ">
+					<h3>Match History</h3>
+					<div class="tab-content mt-3" id="matchHistoryTabContent">
+						<div class="tab-pane fade show active" id="recent" role="tabpanel" aria-labelledby="recent-tab">
+							<ul class="list-group">
 								${generateMatchHistory(matches)}
 							</ul>
 						</div>
 					</div>
 				</div>
-				<div class="d-flex flex-column chartArea scroll-y-auto">
-					<div class="chartBox1">
-						<canvas id="myChart1"></canvas>
-					</div>
-					<div class="chartBox2">
-						<canvas id="myChart2"></canvas>
-					</div>
-                    <div class="chartBox3">
-						<canvas id="myChart3"></canvas>
-					</div>
-				</div>
-			</div>
-			<div class="bottom-left-buttons">
-				${createButton('Change Profile Pic', 'btn btn-secondary', 'button', 'pfp_button')}
-				${createButton('Change Email', 'btn btn-secondary', 'button', 'email_button')}
 			</div>
 		</div>
-    `
+
+		<div class="bottom-left-buttons">
+			${createButton('Change Profile Pic', 'btn btn-secondary', '', 'pfp_button')}
+			${createButton('Change Email', 'btn btn-secondary', '', 'email_button')}
+		</div>
+	`
 	}
 
 	// attach all event listeners here (or do anything that needs to be done AFTER attaching the html code)
 	let postrender = () => {
-		const profile = prop.data
-		const { 
-			pong_matches_won,
-			pong_matches_lost,
-			apong_matches_won,
-			apong_matches_lost,
-			tournament_won,
-			tournament_lost,
-		} = profile
-		console.log(profile)
-
-		drawPieChartData(document.getElementById('myChart1'), {
-			labels: ['Losses', 'Wins'],
-			rawData: [pong_matches_won, pong_matches_lost],
-			id: 'pong',
-			gameName: 'Pong'
-		})
-
-		drawPieChartData(document.getElementById('myChart2'), {
-			labels: ['Losses', 'Wins'],
-			rawData: [apong_matches_lost, apong_matches_won],
-			id: 'apong',
-			gameName: 'APong'
-		})
-
-		drawPieChartData(document.getElementById('myChart3'), {
-			labels: ['Losses', 'Wins'],
-			rawData: [tournament_lost, tournament_won],
-			id: 'tournament',
-			gameName: 'Tournaments'
-		})
-
-		// ----- keep ----- //
 		const linkResultURL = () => {
 			let matches = prop.match
 			matches.forEach(match => {
@@ -184,3 +142,22 @@ export default function template(prop={}) {
 
 	return [prerender, render_code, postrender, cleanup]
 }
+
+// async function player_test() {
+// 	const response = await fetch("http://localhost:8000/api/me");
+// 	const json = await response.json();
+// 	console.log(json);
+// 	yourName = json.username
+// 	document.getElementById("username").innerHTML = json.username;
+// 	document.getElementById("stats").innerHTML = `<p>Games Played: ${json.matches_played}</p>
+// 				<p>Games Won: ${json.matches_won}</p>
+// 				<p>Win/Lost Ratio: 1.5</p>`
+// 	document.getElementById("pfp").src = `http://localhost:8000/api${json.profile_pic}`;
+// 	let matchHistory = [];
+// 	MHTemp.forEach(match => {
+// 		let matchDiv = `<li class="list-group-item">${match.result.attacker.username} vs ${match.result.defender.username} - ${match.result.winner} WON</li>`;
+// 		matchHistory.push(matchDiv);
+// 	});
+// 	let mhArray = matchHistory.slice(0, 5).join('');
+// 	document.getElementById("mh").innerHTML = mhArray;
+// }

@@ -138,12 +138,12 @@ const render_html = (which, prop={}) => {
 	clean_up_function()
 	clean_up_function = cleanup
 
-	errorContainer.innerHTML = ''
-	mainContainer.innerHTML = ''
-
 	prerender().then(
 		(success) => {
 			if (success) {
+				errorContainer.innerHTML = ''
+				mainContainer.innerHTML = ''
+
 				if (to_render === routes['/error'])
 					errorContainer.innerHTML = render_code()
 				else
@@ -175,6 +175,7 @@ export const redirect = (uri, prop={}) => {
 }
 
 export const redirect_without_history = (uri, prop={}) => {
+	history.replaceState(null, null, uri)
 	render_html(uri, prop)
 }
 
