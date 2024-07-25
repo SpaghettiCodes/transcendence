@@ -47,7 +47,7 @@ class MatchView(APIView):
         durationLeft = duration
         timeStart = datetime.now()
 
-        while (durationLeft >= 0.25):
+        while (durationLeft >= 0.25 and PongServer.inMatchMaking(username, type)):
             currentTime = datetime.now()
             difference = (currentTime - timeStart).total_seconds()
             durationLeft = max(0, duration - difference)
@@ -56,13 +56,23 @@ class MatchView(APIView):
             if server_id is not None:
                 break
 
+        if (not PongServer.inMatchMaking(username, type)):
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
         PongServer.dismatchMaking(username, type)
         if server_id == None:
-            return Response(status=status.HTTP_408_REQUEST_TIMEOUT)
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response({
             "game_id": server_id
         }, status=status.HTTP_200_OK)
+    
+    def delete(self, request: Request, format = None):
+        type = request.GET.get('type')
+        username = request.user.username
+
+        PongServer.dismatchMaking(username, type)
+        return Response(status=status.HTTP_200_OK)
 
 @api_view(["GET"])
 def specificMatchGet(request, match_id, tournament_id=None):

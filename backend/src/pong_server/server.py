@@ -62,6 +62,11 @@ class PongServer:
         return server_to_join
 
     @classmethod
+    def inMatchMaking(cls, playerUsername, type='pong'):
+        queue = cls.pongQueue if type == 'pong' else cls.apongQueue
+        return playerUsername in queue
+
+    @classmethod
     def matchMaking(cls, playerUsername, type="pong"):
         print(cls.pongQueue, cls.apongQueue)
         if type == "pong" and playerUsername not in cls.pongQueue:
@@ -79,6 +84,7 @@ class PongServer:
 
     @classmethod
     def dismatchMaking(cls, playerUsername, type='pong'):
+        print('disembarking')
         if type == "pong" and playerUsername in cls.pongQueue:
             cls.pongQueue.remove(playerUsername)
         elif type == "apong" and playerUsername in cls.apongQueue:
