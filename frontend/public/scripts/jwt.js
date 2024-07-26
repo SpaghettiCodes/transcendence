@@ -89,7 +89,7 @@ export async function fetchMod(url, request) {
 	// if no access and refresh token, user hasnt login
 	if (!getJwtToken() && !getRefreshToken()) {
 		redirect('/')
-		return {}
+		throw 'redirected'
 	}
 
 	// verify access token in localStorage
@@ -119,7 +119,7 @@ export async function fetchMod(url, request) {
 	else {
 			console.log("access token invalid, refresh token not working, wallahi its over bijoever")
 			redirect('/')
-			return {}
+			throw 'redirected'
 		}
 	};
 

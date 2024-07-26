@@ -11,7 +11,7 @@ export default function tournament(prop={}) {
 	let prerender = async () => {
 		if (tournamentID === undefined)
 		{
-			redirect("/tournament")
+			history.back()
 			return false
 		}
 		return true // return true to continue to render_code

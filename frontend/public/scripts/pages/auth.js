@@ -8,6 +8,7 @@ export default function auth2fa(prop={}) {
 	// attach all pre-rendering code here (like idk, fetch request or something)
 	let prerender = async () => {
 		if (!sendToUsername) {
+			history.back()
 			return false
 		}
 		return true // return true to continue to render_code
@@ -94,7 +95,7 @@ export default function auth2fa(prop={}) {
 				}
 
 				const result = await response.json();
-				const {access, refresh} = result
+				const { access, refresh } = result.data
 				setJwtToken(access)
 				setRefreshToken(refresh)
 				redirect('/home')

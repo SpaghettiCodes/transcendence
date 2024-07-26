@@ -31,6 +31,9 @@ export default function template(prop={}) {
 			return true; // Return true to continue to render_code
 		} catch (error) {
 			console.error('Fetch error:', error);
+			if (error === 'redirected')
+				return false
+			history.back()
 			return false; // Return false to abort rendering
 		}
 	}

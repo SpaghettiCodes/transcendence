@@ -35,6 +35,9 @@ export default function result(prop={}) {
 			return true
 		} catch (error) {
 			console.log(error)
+			if (error === 'redirected')
+				return false
+			history.back()
 			return false
 		}
 	}

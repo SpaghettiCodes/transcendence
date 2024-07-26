@@ -34,8 +34,10 @@ export default function chat(prop={}) {
 			value = await response.json()
 			prop.friendList = value
 		} catch (e) {
-			console.log("not good")
 			console.log(e)
+			if (e === 'redirected')
+				return false
+			history.back()
 			return false
 		}
 		return true // return true to continue to render_code

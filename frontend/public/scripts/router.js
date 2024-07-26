@@ -155,7 +155,7 @@ const render_html = (which, prop={}) => {
 				postrender()
 			} else {
 				// abort
-				history.back()
+				// oh fuck it, prerender is expected to handle the fails
 			}
 		}
 	)
