@@ -31,6 +31,15 @@ class PlayerCreator(serializers.ModelSerializer):
         model = Player
         fields = ('username', 'password')
 
+class ModifiableFieldsPlayer(serializers.ModelSerializer):
+    class Meta:
+        model = Player
+        fields = (
+                    'password',
+                    'email',
+                    'profile_pic',
+                )
+
 class PlayerSerializer(serializers.ModelSerializer):
     friends = serializers.SlugRelatedField(queryset=Player, many=True, slug_field='username')
 

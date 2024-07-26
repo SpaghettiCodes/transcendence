@@ -50,7 +50,7 @@ def verify_tfa_code(request):
 	player_username = data.get('username')
 	code = data.get('code')
 	player = get_object_or_404(Player.objects, username=player_username)
-	code_object = get_object_or_404(TwoFactorAuthentication.objects, player=player_username)
+	code_object = get_object_or_404(TwoFactorAuthentication.objects, player=player)
 	
 	if code_object.verify_code(code):
 		return Response(

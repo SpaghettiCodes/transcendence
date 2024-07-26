@@ -11,6 +11,6 @@ export function generateProfileInfo(profile) {
 
 	return `
 		<h2 class="mt-3">${profile.username}</h2>
-		<img src="${imageSrc}" alt="Profile Picture" class="profile-pic">
+		<img src="${imageSrc}" alt="Profile Picture" class="profile-pic" id="pfp">
     `;
 }

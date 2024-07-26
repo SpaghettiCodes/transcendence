@@ -44,16 +44,16 @@ export default function template(prop={}) {
 		return `
 		<div class='d-flex flex-column overflow-hidden'>
 			<div class="text-white text-center">
-				<h1 class="title">Employee Infos</h1>
+				<h1 class="title">Employee Info</h1>
 			</div>
-			<div class="d-flex justify-content-center flex-grow-1 gap-5 text-white profile p-4">
-				<div class='d-flex flex-column overflow-y-hidden gap-1 profile-stuff'>
+			<div class="d-flex justify-content-center flex-grow-1 gap-5 text-white overflow-y-hidden profile p-4">
+				<div class='d-flex flex-column overflow-y-auto gap-1 profile-stuff'>
 					<div class="profile-info p-3">
 						${generateProfileInfo(profile)}
 					</div>
-					<div class="d-flex flex-column match-history flex-grow-1 overflow-y-hidden p-3 rounded">
+					<div class="d-flex flex-column match-history flex-grow-1 overflow-y-auto p-3 rounded">
 						<h3>Match History</h3>
-						<div class="d-flex overflow-y-hidden tab-content mt-3 tab-pane fade show active" id="recent" role="tabpanel" aria-labelledby="recent-tab" id="matchHistoryTabContent">
+						<div class="d-flex overflow-y-auto tab-content mt-3 tab-pane fade show active" id="recent" role="tabpanel" aria-labelledby="recent-tab" id="matchHistoryTabContent">
 							<ul class="d-flex w-100 flex-column overflow-y-auto list-group">
 								${generateMatchHistory(matches)}
 							</ul>

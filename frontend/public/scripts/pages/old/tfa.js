@@ -1,9 +1,9 @@
-import { redirect } from "../router.js"
-import { setJwtToken, setRefreshToken, fetchMod } from "../jwt.js"
+import { redirect } from "../../router.js"
+import { setJwtToken, setRefreshToken, fetchMod } from "../../jwt.js"
 
 export default function tfa(prop={}) {
     // attach all pre-rendering code here (like idk, fetch request or something)
-    let prerender = () => {
+    let prerender = async () => {
         return true // return true to continue to render_code
         // return false to abort (usually used with redirect)
     }

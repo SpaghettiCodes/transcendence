@@ -6,11 +6,13 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from database.models import Player, Friend_Request, Match
-from ..serializer import PlayerSerializer, MatchSerializer, FriendRequestSerializer, PublicChatRoomSerializer
+from ..serializer import PlayerSerializer, MatchSerializer, FriendRequestSerializer, PublicChatRoomSerializer, ModifiableFieldsPlayer
 
 from django.core.exceptions import FieldDoesNotExist
 from django.core.files.images import ImageFile
 from django.db.models import Q
+
+import os
 
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample,  OpenApiParameter
 
@@ -49,17 +51,19 @@ def editSpecificPlayer(request, player_username):
                 {"Error": f"Field '{field}' does not exist in player model"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
-    data=request.data
+
+    data = request.data
+    print(data)
     if 'password' in data.keys():
         raw_password = data.get('password')
         data['password'] = Player.encrypt_password(raw_password)
-    serializer = PlayerSerializer(player, data=data, partial=True)
-    
+
     if 'profile_pic' in request.FILES:
         profile_pic = ImageFile(request.FILES['profile_pic'])
-        profile_pic.name = request.FILES['profile_pic'].name
+        profile_pic.name = f"player-pfp/player-{username}/{request.FILES['profile_pic'].name}"
         request.data['profile_pic'] = profile_pic
+
+    serializer = ModifiableFieldsPlayer(player, data=data, partial=True)
 
     if serializer.is_valid():
         serializer.save()
@@ -68,8 +72,8 @@ def editSpecificPlayer(request, player_username):
         return Response(
             {"Error": "Failed to update player"},
             status=status.HTTP_400_BAD_REQUEST
-            )
-    
+        )
+
     return Response(serializer.data)
 
 @api_view(['DELETE', 'GET', 'PATCH'])
