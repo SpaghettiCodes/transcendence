@@ -18,8 +18,18 @@ class GameFrame:
         self.ballSpeed = 350
         self.ball = Ball(radius=self.ballRadius, speed=self.ballSpeed)
 
-        self.paddleWidth = 10
-        self.paddleHeight = 75
+        # try to maintain a 493 w and 590 h 
+        # ie around 2/3
+        # so the image doesnt look like shit
+
+        # self.paddleWidth = 80
+        # self.paddleHeight = 120
+
+        # k nvm, looks like ass
+        self.paddleWidth = 30
+        self.paddleHeight = 110
+        # self.paddleHeight = self.height
+
         self.paddleOffset = 20
         self.paddleSpeed = 450
 
@@ -28,8 +38,13 @@ class GameFrame:
 
         self.goalWidth = 1
 
-        self.attackerGoal = scoreFrame(0, 0, width=self.goalWidth, height=self.height)
-        self.defenderGoal = scoreFrame(self.width - self.goalWidth, 0, width=self.goalWidth, height=self.height)
+        # self.attackerGoal = scoreFrame(0, 0, width=self.goalWidth, height=self.height)
+        # self.defenderGoal = scoreFrame(self.width - self.goalWidth, 0, width=self.goalWidth, height=self.height)
+
+        # REMEMBER TO CHANGE LATER
+        self.attackerGoal = scoreFrame(-5, 0, width=self.goalWidth, height=self.height)
+        self.defenderGoal = scoreFrame(-5, 0, width=self.goalWidth, height=self.height)
+
         self.attackerId = None
         self.defenderId = None
 

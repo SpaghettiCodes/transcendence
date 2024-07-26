@@ -19,9 +19,9 @@ export let playerDetailsGenerator = (playerDetails, callerUsername='') => {
 	<div class='d-flex flex-column flex-grow-1' id="${username}-details">
 		<div class='detailsDiv d-flex justify-content-center align-items-center my-5'>
 			<div class='usernameDiv text-center px-5' id='name'>${username}</div>
-			<img src="http://localhost:8000/api${profile_pic}" class='profilePic'>
+			<img src="http://localhost:8000/api${profile_pic}" class='profilePic rounded'>
 		</div>
-		${(username === callerUsername)? '' : `<button class='resultBtn' id="${playerViewProfileButtonID(username)}">View Profile</button>`}
+		${(username === callerUsername)? '' : `<button class='resultBtn rounded' id="${playerViewProfileButtonID(username)}">View Profile</button>`}
 	</div>
 	`
 }

@@ -57,6 +57,13 @@
 	opacity: 0.05;
 }
 
+.bg-star {
+	background-image: url('/image/star.jpg');
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
 .mainGameplayFrame .matchScoreCount.firstHalf {
 	justify-content: start;
 }
@@ -67,18 +74,26 @@
 }
 
 .mainGameplayFrame .attacker {
-	background-color: blue;
+	background-image: url('/image/leftDoor.png');
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
 }
 
 .mainGameplayFrame .defender {
-	background-color: red;
+	background-image: url('/image/rightDoor.png');
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
 }
 
 .mainGameplayFrame .ball {
-	background-image: url('/image/amogus.webp');
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
 	border-radius: 100%;
-	border: 3px solid white;
+}
+
+.mainGameplayFrame .vent {
+	background-image: url('/image/vent.png');
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
 }

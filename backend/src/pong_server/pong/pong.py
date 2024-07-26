@@ -23,7 +23,7 @@ class PongGame(Game):
 
         self.field = GameFrame()
 
-        self.maxScore = 1 # PLEASE CHANGE LATER
+        self.maxScore = 1000000 # PLEASE CHANGE LATER
 
         self.attackerid = None
         self.defenderid = None
@@ -130,12 +130,6 @@ class PongGame(Game):
             winner = defender
             loser = attacker
 
-        self.incrementWinCount(winner)
-        self.incrementLostCount(loser)
-
-        await attacker.asave()
-        await defender.asave()
-
         newResult = MatchResult(
             attacker=attacker, 
             defender=defender,
@@ -148,11 +142,19 @@ class PongGame(Game):
 
         if self.isForfeit():
             newResult.reason = 2
-        
+
         if attacker_score == defender_score:
+            # draw
             newResult.reason = 3
+            # no one wins and no one loses i guess?
+        else:
+            self.incrementWinCount(winner)
+            self.incrementLostCount(loser)
 
         self.resultsUploadSuccessfully = True
+
+        await attacker.asave()
+        await defender.asave()
         await newResult.asave()
 
     def initialState(self):

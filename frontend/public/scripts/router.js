@@ -149,6 +149,9 @@ const render_html = (which, prop={}) => {
 				else
 					mainContainer.innerHTML = render_code()
 				postrender()
+			} else {
+				// abort
+				history.back()
 			}
 		}
 	)
@@ -188,8 +191,7 @@ document.onclick = (e) => {
 	var element = e.target || e.srcElement
 
 	if (element.tagName.toLowerCase() === 'a') {
-		render_html(element.getAttribute("href"))
-		history.pushState(null, null, element.href)
+		redirect(element.href)
 		return false // prevents default action and stops event propagation
 	}
 }

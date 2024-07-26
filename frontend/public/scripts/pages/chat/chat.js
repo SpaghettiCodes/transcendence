@@ -5,13 +5,39 @@ import endOfChatDiv from "./components/endOfChatDiv.js"
 
 import { createButton, createInput } from "../../components/elements.js"
 import { fetchMod } from "../../jwt.js"
+import generateUserTabs from "../../components/userTab.js"
 
 export default function chat(prop={}) {
-	let websocket = undefined
-	let resizeHandler = undefined
+	let		websocket = undefined
+	let		resizeHandler = undefined
+	let		yourName = undefined
+	const	urlParams = new URLSearchParams(window.location.search)
+	let		currentlyVisiting = urlParams.get('friend')
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
 	let prerender = async () => {
+		try {
+			const me_response = await fetchMod(`http://localhost:8000/api/me`)
+			if (!me_response.ok)
+				throw me_response
+			let value = await me_response.json()
+			yourName = value.username
+
+			const response = await fetchMod(
+				`http://localhost:8000/api/player/${yourName}/friends`,
+				{
+					method: "GET",
+				}
+			)
+			if (!response.ok)
+				throw response
+			value = await response.json()
+			prop.friendList = value
+		} catch (e) {
+			console.log("not good")
+			console.log(e)
+			return false
+		}
 		return true // return true to continue to render_code
 		// return false to abort (usually used with redirect)
 	}
@@ -21,7 +47,7 @@ export default function chat(prop={}) {
 		return `
 		<h1 class="title">SMS</h1>
 		<div class="d-flex flex-grow-1 align-self-stretch overflow-hidden" id='contentDiv'>
-			<div class="d-flex flex-column friend-list p-2">
+			<div class="d-flex flex-column friend-list p-3">
 				<h4>Colleagues</h4>
 				<div class="input-group mb-3">
 					${createInput("form-control rounded", "search", "search", "Colleaguess' ID")}
@@ -37,16 +63,14 @@ export default function chat(prop={}) {
 					<div class="d-flex flex-row text-input-box">
 						<textarea class="form-control" rows="1" placeholder="Type your message here..." id="dataEnter"></textarea>
 						<button type="button" class="btn btn-dark mx-2 disabled" id="sendMessageButton">Send</button>
-						<button type="button" class="btn btn-dark d-flex disabled" id="inviteForMatchButton">
-							<div class='px-2'>
-								Invite
-							</div>
+						<button type="button" class="btn btn-dark d-flex disabled gap-3" id="inviteForMatchButton">
+							Invite
 							<select class='rounded bg-black border-black text-white' id="inviteForMatchType">
 								<option value="pong">Pong</option>
 								<option value="apong">APong Us</option>
 							</select>
 						</button>
-						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -55,13 +79,6 @@ export default function chat(prop={}) {
 
 	// attach all event listeners here (or do anything that needs to be done AFTER attaching the html code)
 	let postrender = () => {
-		// temp
-		const username = localStorage.getItem('username')
-		// PLEASE CHANGE LATER, WE ARE NOT SAVING USERNAME IN LOCAL STORAGE
-		// or maybe we are, idk
-
-		console.log('Username =', username)
-
 		const friendList = document.getElementById("friend-list-items")
 		const chatContentField = document.getElementById("chatContentField")
 		const sendMessageButton = document.getElementById('sendMessageButton')
@@ -75,37 +92,16 @@ export default function chat(prop={}) {
 		let gotAllMessages = false
 
 		let loadingNewChatroom = false
-		// <div class="friend-list-item">
-		// 	Friend 1
-		// </div>
 
-		const getFriendList = () => {
-			fetchMod(
-				`http://localhost:8000/api/player/${username}/friends`,
-				{
-					method: "GET",
-				}
-			).then((value) => {
-				if (!value.ok)
-					throw value
-				return value.json()
-			}).then(
-				(data) => {
-					for (let friend of data) {
-						let newFriendDiv = document.createElement("div")
-						let friendUsername = friend['username']
-						newFriendDiv.setAttribute('class', 'friend-list-item')
-
-						newFriendDiv.innerText = friendUsername
-						newFriendDiv.onclick = async () => {
-							await connectToNewChatroom(username, friendUsername)
-							newFriendDiv.setAttribute('id', 'friendMsgActivated')
-						}
-						friendList.append(newFriendDiv)
-					}
-				}
-			).catch((value) => console.error(value))
+		const generateUserTabFunctions = (friendData) => {
+			let { username } = friendData
+			return (element) => async () => {
+				await connectToNewChatroom(yourName, username)
+				element.setAttribute('id', 'friendMsgActivated')
+			}
 		}
+
+		friendList.appendChild(...generateUserTabs(prop.friendList, generateUserTabFunctions))
 
 		const connectToNewChatroom = async (player_username, target_username) => {
 			if (!loadingNewChatroom) {
@@ -119,6 +115,7 @@ export default function chat(prop={}) {
 				let chatID = await getChatRoomData(`http://localhost:8000/api/player/${player_username}/chat/${target_username}`)
 				connectToWebsocket(`ws://localhost:8000/chat/${chatID}`)
 
+				urlParams.set('friend', target_username)
 				// reenable sending message
 				sendMessageButton.classList.remove('disabled')
 				sendInviteButton.classList.remove('disabled')
@@ -233,7 +230,7 @@ export default function chat(prop={}) {
 			websocket.onopen = (e) => {
 				sendMessage({
 					'command': 'join',
-					'username': username
+					'username': yourName
 				})
 
 				loadingNewChatroom = false
@@ -277,7 +274,7 @@ export default function chat(prop={}) {
 		sendInviteButton.onclick = async () => {
 			let payload = {
 				'type': 'invite',
-				'sender': username,
+				'sender': yourName,
 				'message': 'do we really need a message?',
 				'match_type': typeSelectionField.value
 			}
@@ -308,7 +305,7 @@ export default function chat(prop={}) {
 
 			let payload = {
 				"type": "message",
-				"sender": username,
+				"sender": yourName,
 				// should sanitize data here...
 				"message": messageField.value
 			}
@@ -369,8 +366,6 @@ export default function chat(prop={}) {
 			}
 		}
 		window.addEventListener('resize', resizeHandler)
-
-		getFriendList()
 
 		let eofDiv = new endOfChatDiv()
 		chatContentField.appendChild(eofDiv.mainDiv)
