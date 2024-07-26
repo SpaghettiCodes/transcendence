@@ -16,7 +16,6 @@ export default function template(prop={}) {
 			if (!response.ok)
 				throw new Error('Network response was not ok ' + response.statusText);
 			const data = await response.json();
-			console.log(data)
 			prop.data = data; // Store the fetched data in the prop object
 			yourName = data.username
 
@@ -91,7 +90,6 @@ export default function template(prop={}) {
 			tournament_won,
 			tournament_lost,
 		} = profile
-		console.log(profile)
 
 		drawPieChartData(document.getElementById('myChart1'), {
 			labels: ['Losses', 'Wins'],
@@ -119,8 +117,6 @@ export default function template(prop={}) {
 			let matches = prop.match
 			matches.forEach(match => {
 				let matchId = match.matchid
-				console.log(match)
-				console.log(match.matchid)
 				let matchDiv = document.getElementById(`match-${matchId}`)
 				matchDiv.onclick = () => {
 					redirect(`/match/${matchId}/results`)

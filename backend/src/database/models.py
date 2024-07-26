@@ -136,7 +136,6 @@ class TwoFactorAuthentication(models.Model):
         return diffSecs > maxDuration
 
     def verify_code(self, code):
-        print(self.code)
         if int(code) == self.code and not self.used:
             self.used = True
             self.save()

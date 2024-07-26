@@ -1,4 +1,4 @@
-import { redirect } from "../router.js"
+import { redirect, redirect_replace_history, redirect_without_history } from "../router.js"
 import { setJwtToken, setRefreshToken } from "../jwt.js"
 import { createButton, createInput } from "../components/elements.js"
 import createInputFields from "../components/inputFields.js"
@@ -114,7 +114,7 @@ export default function landing(prop={}) {
 					showErrorMsg(errorMsgBoard, 'Incorrect Password')
 				} else if (error.status === 403) {
 					// forbidden, guy has 2fa on
-					redirect('/auth/2fa', {username: username})
+					redirect_without_history('/auth/2fa', {username: username})
 				}
 				loginButton.disabled = false
 			})

@@ -1,5 +1,5 @@
 import { fetchMod } from "../jwt.js"
-import { redirect, redirect_without_history } from "../router.js"
+import { redirect, redirect_replace_history } from "../router.js"
 
 export default function template(prop={}) {
 	let gameType = (prop.arguments) ? (prop.arguments.game_type) : undefined
@@ -51,7 +51,7 @@ export default function template(prop={}) {
 				const game_id = data.game_id
 
 				inMatchmaking = false
-				redirect_without_history(`/match/${game_id}`)
+				redirect_replace_history(`/match/${game_id}`)
 			} catch (e) {
 				if (inMatchmaking) {
 					inMatchmaking = false
@@ -72,7 +72,7 @@ export default function template(prop={}) {
 				const tournamentID = data.tournament_id
 
 				inMatchmaking = false
-				redirect_without_history(`/tournament/${tournamentID}`)
+				redirect_replace_history(`/tournament/${tournamentID}`)
 			} catch (e) {
 				if (inMatchmaking) {
 					inMatchmaking = false

@@ -97,7 +97,7 @@ export default function auth2fa(prop={}) {
 				const {access, refresh} = result
 				setJwtToken(access)
 				setRefreshToken(refresh)
-				// redirect('/home')
+				redirect('/home')
 			} catch (e) {
 				if (e.status === 410) { // code has expired
 					showErrorMsg(errorBoard, 'Code has expired! Request for a new one!')

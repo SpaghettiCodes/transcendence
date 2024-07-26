@@ -181,8 +181,12 @@ export const redirect = (uri, prop={}) => {
 	render_html(uri, prop)
 }
 
-export const redirect_without_history = (uri, prop={}) => {
+export const redirect_replace_history = (uri, prop={}) => {
 	history.replaceState(null, null, uri)
+	render_html(uri, prop)
+}
+
+export const redirect_without_history = (uri, prop={}) => {
 	render_html(uri, prop)
 }
 
