@@ -33,6 +33,10 @@ def send_tfa_code(request):
 	email_from = settings.EMAIL_HOST_USER
 	recipient_list = [player_email]
 	send_mail( subject, message, email_from, recipient_list )
+	return Response(
+			{"Message": "Code sent through email"},
+			status=status.HTTP_200_OK
+		)
 
 @api_view(['POST'])
 def verify_tfa_code(request):
@@ -44,10 +48,11 @@ def verify_tfa_code(request):
 		)
 	
 	player_username = data.get('username')
+	code = data.get('code')
 	player = get_object_or_404(Player.objects, username=player_username)
 	code_object = get_object_or_404(TwoFactorAuthentication.objects, player=player_username)
 	
-	if code_object.verify_code():
+	if code_object.verify_code(code):
 		return Response(
 			{"Message": "Code verified"},
 			status=status.HTTP_200_OK
@@ -59,3 +64,4 @@ def verify_tfa_code(request):
 		)
 
 # {"username":"justyn"}
+# {"username":"justyn","code":"522685"}

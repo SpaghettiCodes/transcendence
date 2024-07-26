@@ -1,3 +1,50 @@
+// export function getJwtToken() {
+// 	let name = "jwtToken" + "=";
+// 	let ca = document.cookie.split(';');
+//   	for (let i = 0; i < ca.length; i++) {
+//     	let c = ca[i];
+//     	while (c.charAt(0) == ' ') {
+//       		c = c.substring(1);
+//     	}
+//     	if (c.indexOf(name) == 0) {
+//       		return c.substring(name.length, c.length);
+//     	}
+// 	}
+// 	return "";
+// }
+
+// export function setJwtToken(token) {
+// 	const d = new Date();
+// 	d.setTime(d.getTime() + (30 * 60 * 60 * 1000));
+// 	let expires = "expires="+d.toUTCString();
+// 	document.cookie = "jwtToken" + "=" + token + ";" + expires + ";path=/";
+// }
+
+// export function setRefreshToken(token) {
+// 	const d = new Date();
+// 	d.setTime(d.getTime() + (1 * 24 * 60 * 60 * 1000));
+// 	let expires = "expires="+d.toUTCString();
+// 	document.cookie = "refreshToken" + "=" + token + ";" + expires + ";path=/";
+// }
+
+// export function getRefreshToken() {
+// 	let name = "refreshToken" + "=";
+// 	let ca = document.cookie.split(';');
+//   	for (let i = 0; i < ca.length; i++) {
+//     	let c = ca[i];
+//     	while (c.charAt(0) == ' ') {
+//       		c = c.substring(1);
+//     	}
+//     	if (c.indexOf(name) == 0) {
+//       		return c.substring(name.length, c.length);
+//     	}
+// 	}
+// 	return "";
+// }
+
+// // COOKIE VERSION ABOVE
+// // LOCATSTORAGE VERSION BELOW
+
 import { redirect } from "./router.js"
 
 let ALLOWED_PATH = [

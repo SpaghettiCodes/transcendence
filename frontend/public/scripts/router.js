@@ -24,6 +24,7 @@ import { check_token_exists } from "./jwt.js"
 // remove later
 import login from "./pages/old/login.js"
 import test from "./pages/old/test.js"
+import tfa from "./pages/tfa.js"
 import matchListing from "./pages/old/matchListing.js"
 import tournamentListing from "./pages/old/oldTournamentListing.js"
 
@@ -46,6 +47,7 @@ const routes = {
 	'/tournament': tournamentListing,
 	'/match': matchListing,
 	'/login': login,
+	'/tfa': tfa,
 	'/test': test,
 }
 
