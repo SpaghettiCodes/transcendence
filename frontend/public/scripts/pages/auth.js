@@ -2,8 +2,8 @@ import { setJwtToken, setRefreshToken } from "../jwt.js"
 import { redirect } from "../router.js"
 
 export default function auth2fa(prop={}) {
-	let sendToUsername = '2'
-	// let sendToUsername = prop.username
+	// let sendToUsername = '2'
+	let sendToUsername = prop.username
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
 	let prerender = async () => {

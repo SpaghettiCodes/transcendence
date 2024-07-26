@@ -123,7 +123,10 @@ class TwoFactorAuthentication(models.Model):
     lastGenerated = models.DateTimeField(auto_now_add=True)
 
     def generate_code(self):
-        new_code = int(''.join(["{}".format(randint(0, 9)) for num in range(0, 6)]))
+        print('test')
+        new_code = randint(100000, 999999)
+        print(new_code)
+        # new_code = int(''.join(["{}".format(randint(0, 9)) for num in range(0, 6)]))
         self.code = new_code
         self.used = False
         self.lastGenerated = timezone.now()

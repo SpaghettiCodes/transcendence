@@ -19,7 +19,8 @@ def send_tfa_code(request):
 
     player_username = data.get('username')
     player = get_object_or_404(Player.objects, username=player_username)
-    code_object = get_object_or_404(TwoFactorAuthentication.objects, player=player)
+    code_object = get_object_or_404(TwoFactorAuthentication.objects.filter(player=player))
+    print(code_object)
     code_object.generate_code()
     code = code_object.code
     player_email = player.email
