@@ -89,12 +89,17 @@ def login(request):
     p = get_object_or_404(Player.objects, username=username)
 
     if p.verify_password(raw_password=raw_password):
+        if p.has_tfa_activated():
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
         p.now_online()
         data = create_jwt_pair_for_user(p)
-        response = Response()
-
-        response.data = {"success" : "Login successfully", "data": data}
-        return response
+        return Response(
+            {
+                "success" : "Login successfully", 
+                "data": data
+            }
+        , status=status.HTTP_200_OK)
     else:
         return Response(
             {

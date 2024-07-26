@@ -1,6 +1,3 @@
-import { redirect } from "../../router.js"
-import { setJwtToken, setRefreshToken, fetchMod } from "../../jwt.js"
-
 export default function tfa(prop={}) {
     // attach all pre-rendering code here (like idk, fetch request or something)
     let prerender = async () => {

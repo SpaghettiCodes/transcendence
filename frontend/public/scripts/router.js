@@ -20,6 +20,7 @@ import chat from "./pages/chat/chat.js"
 import friendlist from "./pages/friendList.js"
 import match from "./pages/match.js"
 import { check_token_exists } from "./jwt.js"
+import auth2fa from "./pages/auth.js"
 
 // remove later
 import login from "./pages/old/login.js"
@@ -41,6 +42,7 @@ const routes = {
 	'/profile': profile,
 	'/matchmaking/<game_type>': matchmaking,
 	'/friends': friendlist,
+	'/auth/2fa': auth2fa,
 
 	// temp, remove when done
 

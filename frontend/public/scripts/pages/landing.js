@@ -112,6 +112,9 @@ export default function landing(prop={}) {
 					showErrorMsg(errorMsgBoard, 'Cannot find crewmate')
 				} else if (error.status === 401) {
 					showErrorMsg(errorMsgBoard, 'Incorrect Password')
+				} else if (error.status === 403) {
+					// forbidden, guy has 2fa on
+					redirect('/auth/2fa', {username: username})
 				}
 				loginButton.disabled = false
 			})
