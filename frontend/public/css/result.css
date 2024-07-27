@@ -41,3 +41,11 @@
 .resultDiv .watchPrompt {
 	font-size: 0.25em;
 }
+
+.btn-bot{
+	position:absolute; 
+	margin-left:-50px;
+	left:50%;
+	width:100px;
+	bottom:50px;
+ }
