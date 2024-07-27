@@ -47,6 +47,9 @@ export default function result(prop={}) {
 		return `
 		<div class='resultDiv align-self-stretch d-flex flex-column vh-100 text-white'>
 			${scoreDetailsDiv(prop.data, yourName)}
+		</div>
+		<div class='btn-btm'>
+			<button class='btn btn-dark text-white btn-bot btn-lg' id='home-button'>Home</button>
 		</div>`
 	}
 
@@ -65,6 +68,13 @@ export default function result(prop={}) {
 				redirect(`/friends?search=${playerUsername}`)
 			}
 		}
+
+		const	goHome = () => {
+			history.back()
+		}
+
+		const home_button = document.getElementById("home-button")
+		home_button.addEventListener('click', goHome)
 	}
 
 	let cleanup = () => {

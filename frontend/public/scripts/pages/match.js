@@ -1,4 +1,4 @@
-import { fetchMod } from "../jwt.js"
+import { fetchMod, getJwtToken } from "../jwt.js"
 import { redirect, redirect_replace_history } from "../router.js"
 import { ImageFromBackendUrl } from "./helpers.js"
 
@@ -8,9 +8,6 @@ export default function match(prop={}) {
 	let tournament_id = (prop["arguments"]) ? prop["arguments"]["tournament_id"] : undefined
 	let spectating = (prop["arguments"]) ? prop["arguments"]["spectate"] ? true : false : false
 	let apiURI = (tournament_id) ? `tournament/${tournament_id}/match/${game_id}` : `match/${game_id}`
-
-	// TEMP, REPLACE WITH JWT LATER
-	let player_id = localStorage.getItem("username") || "default"
 
 	let fixDimensions = undefined
 	let pongSocket = undefined
@@ -462,14 +459,12 @@ export default function match(prop={}) {
 				case (87):
 					e.preventDefault()
 					sendMessage({
-						"username": player_id,
 						"action": "go_up"
 					})
 					break;
 				case (83):
 					e.preventDefault()
 					sendMessage({
-						"username": player_id,
 						"action": "go_down"
 					})
 					break;
@@ -491,7 +486,7 @@ export default function match(prop={}) {
 
 				sendMessage({
 					'command': commandToSend,
-					'username': player_id, // fuck gotta figure out how to do this now wohoo
+					'jwt': getJwtToken() // hoho this will not come back and back me in the ass i hope
 				})
 			}
 	
@@ -570,7 +565,6 @@ export default function match(prop={}) {
 				case (83):
 					e.preventDefault()
 					sendMessage({
-						"username": player_id,
 						"action": "stop"
 					})
 					break;

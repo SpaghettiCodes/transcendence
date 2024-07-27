@@ -73,9 +73,10 @@ export default function auth2fa(prop={}) {
 			try {
 				e.preventDefault();
 				const data = new FormData(form_verify).entries()
-				const code = Object.fromEntries(data).code
+				const code = Object.fromEntries(data).code.trim()
 
 				if (!code.match(/^[0-9]{6,6}$/)) {
+					console.log('womp womp')
 					showErrorMsg(errorBoard, 'Invalid Code!')
 					return
 				}
