@@ -25,6 +25,7 @@ JWT_AUTH_EXEMPT_FULL = [
     '/api/login',
     '/api/register',
     '/api/error/401',
+    '/api/ft'
 ]
 
 class AuthenticateJWT(JWTAuthentication):

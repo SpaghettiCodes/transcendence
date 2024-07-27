@@ -46,8 +46,9 @@ urlpatterns = [
 
     ## 42 login
     path('ft/auth', ft.get_ft_code),
-    path('ft/me', ft.get_ft_me),
+    # path('ft/me', ft.get_ft_me),
     path('ft/env', ft.get_ft_env),
+    path('ft', ft.FourtyTwoAuth.as_view()),
 
     ## tournamnet
     path('tournament', tournament.TournamentView.as_view()),

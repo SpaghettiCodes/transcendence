@@ -10,7 +10,7 @@ let mainContainer = document.getElementById('mainContainer')
 import "./jwt.js"
 import landing from "./pages/landing.js"
 import fourofour from "./pages/404.js"
-import ftlogin from "./pages/ft_login.js"
+import ftlogin from "./pages/42auth.js"
 import home from "./pages/home.js"
 import tournament from "./pages/tournament.js"
 import result from "./pages/result/result.js"
@@ -32,7 +32,6 @@ import tournamentListing from "./pages/old/oldTournamentListing.js"
 const routes = {
 	'/': landing,
 	'/error': fourofour,
-	'/ftlogin': ftlogin,
 	'/home': home,
 	'/match/<game_id>/spectate': match,
 	'/match/<game_id>/results': result,
@@ -43,6 +42,7 @@ const routes = {
 	'/matchmaking/<game_type>': matchmaking,
 	'/friends': friendlist,
 	'/auth/2fa': auth2fa,
+	'/ftlogin': ftlogin,
 
 	// temp, remove when done
 

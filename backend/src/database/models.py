@@ -116,17 +116,21 @@ class Friend_Request(models.Model):
     def decline(self):
         self.delete()
 
+class FourtyTwoAccount(models.Model):
+    player = models.OneToOneField(Player, on_delete=models.CASCADE, related_name='fourty_two_account')
+    intraID = models.CharField(max_length=50)
+
+    def __str__(self) -> str:
+        return f"Associated With IntraID - {self.intraID}"
+
 class TwoFactorAuthentication(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='player_tfa', default=None)
-    code = models.PositiveIntegerField(blank=True, default=100000)
+    code = models.CharField(blank=True, default='100000', max_length=6)
     used = models.BooleanField(default=False)
     lastGenerated = models.DateTimeField(auto_now_add=True)
 
     def generate_code(self):
-        print('test')
-        new_code = randint(100000, 999999)
-        print(new_code)
-        # new_code = int(''.join(["{}".format(randint(0, 9)) for num in range(0, 6)]))
+        new_code = ''.join(["{}".format(randint(0, 9)) for _ in range(0, 6)])
         self.code = new_code
         self.used = False
         self.lastGenerated = timezone.now()
@@ -139,7 +143,7 @@ class TwoFactorAuthentication(models.Model):
         return diffSecs > maxDuration
 
     def verify_code(self, code):
-        if int(code) == self.code and not self.used:
+        if int(code) == int(self.code) and not self.used:
             self.used = True
             self.save()
             return True

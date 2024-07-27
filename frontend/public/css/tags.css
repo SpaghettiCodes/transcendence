@@ -16,7 +16,7 @@
 }
 
 .hide {
-	display: none;
+	display: none !important;
 }
 
 .font-size-5vm {
