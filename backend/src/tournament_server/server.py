@@ -11,7 +11,7 @@ from math import ceil
 from asgiref.sync import sync_to_async, async_to_sync
 
 from database.models import Tournament, TournamentResult, TournamentRound, Player, Match
-from api.serializer import MatchSerializer
+from api.serializer import MatchSerializer, PublicPlayerSerializer
 from util.base_converter import from_base52, to_base52
 
 import asyncio
@@ -88,35 +88,35 @@ class TournamentServer:
             "round": self.round,
         }
 
-    def spectatorJoin(self, username):
-        self.spectators.append(username)
+    def spectatorJoin(self, playerObject):
+        self.spectators.append(playerObject)
 
-    def spectatorLeft(self, username):
-        self.spectators.remove(username)
+    def spectatorLeft(self, playerObject):
+        self.spectators.remove(playerObject)
 
-    async def playerJoin(self, username):
-        if username in self.losers:
+    async def playerJoin(self, playerObject):
+        if playerObject in self.losers:
             return (False, "You lost!")
-        if self.tournamentStarted and username not in self.expectedPlayers:
+        if self.tournamentStarted and playerObject not in self.expectedPlayers:
             return (False, "Tournament Already Started")
         if len(self.currentPlayers) >= self.maxPlayers:
             return (False, "Max player allowed")
 
-        if (username not in self.currentPlayers):
-            self.currentPlayers.append(username)
+        if (playerObject not in self.currentPlayers):
+            self.currentPlayers.append(playerObject)
 
         await self.refresh_PlayerList()
         await self.update_list()
 
         return (True, "Everything went well, yep")
 
-    async def playerLeft(self, username):
+    async def playerLeft(self, playerObject):
         if not self.onGoingMatch: # temp, think of a fix later
-            if username in self.currentPlayers:
-                self.currentPlayers.remove(username)
+            if playerObject in self.currentPlayers:
+                self.currentPlayers.remove(playerObject)
 
-            if username in self.readiedPlayers:
-                self.readiedPlayers.remove(username)
+            if playerObject in self.readiedPlayers:
+                self.readiedPlayers.remove(playerObject)
 
             if not len(self.currentPlayers):
                 await self.removalFunction()
@@ -124,12 +124,12 @@ class TournamentServer:
             await self.refresh_PlayerList()
             await self.update_list()
 
-    async def readyUp(self, username):
-        if username not in self.currentPlayers:
+    async def readyUp(self, playerObject):
+        if playerObject not in self.currentPlayers:
             return (False, "Not in the game")
 
-        if username not in self.readiedPlayers:
-            self.readiedPlayers.append(username)
+        if playerObject not in self.readiedPlayers:
+            self.readiedPlayers.append(playerObject)
 
         await self.refresh_PlayerList()
 
@@ -138,11 +138,11 @@ class TournamentServer:
 
         return (True, "")
 
-    async def disReadyUp(self, username):
-        if username not in self.readiedPlayers:
+    async def disReadyUp(self, playerObject):
+        if playerObject not in self.readiedPlayers:
             return (False, "User not readeid")
 
-        self.readiedPlayers.remove(username)
+        self.readiedPlayers.remove(playerObject)
 
         await self.refresh_PlayerList()
         return (True, "")
@@ -153,9 +153,8 @@ class TournamentServer:
 
     def getDetails(self):
         return {
-            "players": self.currentPlayers,
-            "ready": self.readiedPlayers,
-            "spectators": self.spectators,
+            "players": PublicPlayerSerializer(self.currentPlayers, many=True).data,
+            "ready": [player.username for player in self.readiedPlayers],
             "started": self.tournamentStarted,
             "previousMatches": self.getSerializedCompleteResults(),
             "matches": self.getMatches()
@@ -179,16 +178,16 @@ class TournamentServer:
         )
 
     async def processInfo(self, data):
-        username = data.get("username")
+        playerObject = data.get("player")
         if data.get("command") is None:
             return (False, "Invalid command")
 
         command = data.get("command")
         match command:
             case "ready":
-                return await self.readyUp(username)
+                return await self.readyUp(playerObject)
             case "unready":
-                return await self.disReadyUp(username)
+                return await self.disReadyUp(playerObject)
             case _:
                 return (False, "Invalid command")
 
@@ -230,9 +229,6 @@ class TournamentServer:
         self.matchesCount = 0
         self.matchesPlayed = 0
         self.currentResults = []
-        # temp
-        self.playedIDs = []
-        # temp end
         self.readiedPlayers = []
 
     async def delaySeconds(self, duration, functionToRun=None):
@@ -312,8 +308,6 @@ class TournamentServer:
             await self.panicRemove()
             return
 
-        playerObjects: list[Player] = []
-        winnerObject: Player = None
         tournamentObject: Tournament = None
 
         try:
@@ -325,15 +319,12 @@ class TournamentServer:
 
         for player in self.completePlayers:
             try:
-                playerObject = await Player.objects.aget(username=player)
-                playerObject.tournament_played += 1
+                player.tournament_played += 1
                 if (player == self.winner):
-                    winnerObject = playerObject
-                    winnerObject.tournament_won += 1
+                    self.winner.tournament_won += 1
                 else:
-                    playerObject.tournament_lost += 1
-                await playerObject.asave()
-                playerObjects.append(playerObject)
+                    player.tournament_lost += 1
+                await player.asave()
             except ObjectDoesNotExist:
                 print("well that person doesnt exist")
                 if (player == self.winner):
@@ -344,10 +335,10 @@ class TournamentServer:
         # create new tournamentResult
         # add winner and players in
         newTournamentResult = await TournamentResult.objects.acreate(
-            winner=winnerObject,
+            winner=self.winner,
             tournament=tournamentObject
         )
-        await newTournamentResult.players.aadd(*playerObjects)
+        await newTournamentResult.players.aadd(*self.completePlayers)
         await newTournamentResult.asave()
 
         # create the rounds
@@ -378,7 +369,7 @@ class TournamentServer:
 
             self.currentResults.append(matchObject)
 
-            loserGetter = lambda : matchObject.result.loser.username
+            loserGetter = lambda : matchObject.result.loser
             loser = await sync_to_async(loserGetter)()
 
             if loser in self.currentPlayers:
@@ -400,8 +391,8 @@ class TournamentServer:
             "type": "message",
             "text": {
                 "status": "playerList",
-                "players": self.currentPlayers,
-                "ready": self.readiedPlayers
+                "players": PublicPlayerSerializer(self.currentPlayers, many=True).data,
+                "ready": [player.username for player in self.readiedPlayers],
             }
         })
 

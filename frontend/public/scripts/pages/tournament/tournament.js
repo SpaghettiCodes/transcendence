@@ -61,26 +61,6 @@ export default function tournament(prop={}) {
 		`
 	}
 
-	const getPlayersData = async (username) => {
-		try {
-			const response = await fetchMod(
-				`http://localhost:8000/api/player/${username}`
-			)
-
-			if (!response.ok) {
-				throw response
-			}
-
-			const data = await response.json()
-			return data
-		} catch (response) {
-			console.log(response)
-			if (response.status === 404) {
-				console.error('dont know who that is')
-			}
-		}
-	}
-
 	const getTournamentData = async() => {
 		try {
 			const response = await fetchMod(
@@ -128,37 +108,26 @@ export default function tournament(prop={}) {
 			// lazy fix, maybe i will revamp tournament and matches again
 			// for now, this is the lazy fix
 
-			const gatherPlayersData = async () => {
-				return await Promise.all(
-					players.map(async (username) => await getPlayersData(username))
-				)
+			let userTabs = generateUserTabs(players)
+
+			playerList.innerHTML = ''
+			if (userTabs.length) {
+				for (let userTab of userTabs) {
+					if ( readiedPlayers.includes(userTab.playerAssociated) )
+						userTab.classList.add('ready')
+					playerList.appendChild(userTab)
+				}
+			} else {
+				playerList.innerHTML = "No one is in this tournament!"
 			}
 
-
-			gatherPlayersData().then(
-				(playerDatas) => {
-					let userTabs = generateUserTabs(playerDatas)
-
-					playerList.innerHTML = ''
-					if (userTabs.length) {
-						for (let userTab of userTabs) {
-							if ( readiedPlayers.includes(userTab.playerAssociated) )
-								userTab.classList.add('ready')
-							playerList.appendChild(userTab)
-						}
-					} else {
-						playerList.innerHTML = "No one is in this tournament!"
-					}
-
-					if (readiedPlayers.includes(yourName)) {
-						readyButton.onclick = unready
-						readyButton.innerText = 'Unready'
-					} else {
-						readyButton.onclick = ready
-						readyButton.innerText = 'Ready'
-					}
-				}
-			)
+			if (readiedPlayers.includes(yourName)) {
+				readyButton.onclick = unready
+				readyButton.innerText = 'Unready'
+			} else {
+				readyButton.onclick = ready
+				readyButton.innerText = 'Ready'
+			}
 		}
 
 		const loadCurrentGameList = (games) => {
@@ -204,6 +173,7 @@ export default function tournament(prop={}) {
 
 		const loadTournamentData = (data) => {
 			let { started, players, ready, previousMatches, matches } = data
+			console.log(players)
 			loadPlayerList(players, ready)
 			loadPlayedList(previousMatches)
 			loadCurrentGameList(matches)

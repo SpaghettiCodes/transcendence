@@ -41,18 +41,16 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
                 playerJWT = content.get('jwt')
                 validated_token = self.authenticator.get_validated_token(playerJWT)
                 self.playerObject = await sync_to_async(self.authenticator.get_user)(validated_token)
-                username = self.playerObject.username
 
-                result, message = await TournamentManager.player_join(username, self.tournament_id)
+                result, message = await TournamentManager.player_join(self.playerObject, self.tournament_id)
                 if result:
-                    self.playerName = username
                     self.authorized = True
                     await self.send_json({
                         "status": "refresh"
                     })
             case _:
                 content = {
-                    'username': self.playerObject.username,
+                    'player': self.playerObject,
                     **content
                 }
                 result, message = await TournamentManager.passInfo(self.tournament_id, content)

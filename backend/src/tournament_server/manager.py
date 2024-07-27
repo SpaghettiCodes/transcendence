@@ -37,11 +37,11 @@ class TournamentManager:
         return result
 
     @classmethod
-    async def player_join(cls, username, id):
+    async def player_join(cls, playerObject, id):
         if id not in cls.servers.keys():
             return (False, "Tournament does not exist")
         
-        success, message = await cls.servers[id].playerJoin(username)
+        success, message = await cls.servers[id].playerJoin(playerObject)
 
         if not success:
             return (success, message)
@@ -49,11 +49,11 @@ class TournamentManager:
         return (True, "Nothing to see here, move along")
 
     @classmethod
-    async def player_left(cls, username, id):
+    async def player_left(cls, playerObject, id):
         if id not in cls.servers.keys():
             return (False, "Tournament does not exist")
 
-        await cls.servers[id].playerLeft(username)
+        await cls.servers[id].playerLeft(playerObject)
 
         return (True, "Everything is fine")
 

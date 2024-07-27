@@ -9,9 +9,6 @@ class APongUsGame(PongGame):
 
         self.field = GameFrame()
 
-        self.attackerid = None
-        self.defenderid = None
-
     def incrementGameCount(self, playerObject):
         playerObject.apong_matches_played += 1
 
