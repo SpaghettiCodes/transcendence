@@ -3,6 +3,7 @@ data/*
 node_modules/
 __pycache__/
 migrations/
+!*/migrations/__init__.py
 .env
 *.pyc
 *.pyo
