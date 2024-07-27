@@ -151,8 +151,10 @@ def createPlayer(request):
 
     if serializer.is_valid():
         serializer.save()
+
         new_player = get_object_or_404(Player.objects, username=data.get('username'))
-        TwoFactorAuthentication.objects.create(player_id=new_player.id)
+        TwoFactorAuthentication.objects.create(player_id=new_player.id) # i will not comment on this
+
         new_player.now_online()
         data = create_jwt_pair_for_user(new_player)
         return Response({

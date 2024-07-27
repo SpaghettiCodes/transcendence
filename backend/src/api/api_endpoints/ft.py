@@ -2,10 +2,20 @@ from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
+from rest_framework.renderers import JSONRenderer
+from rest_framework.views import APIView
+from rest_framework.serializers import StringRelatedField
 from rest_framework import status
 
+from django.shortcuts import get_object_or_404
+from django.core.exceptions import ObjectDoesNotExist
+
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample,  OpenApiParameter
-from rest_framework.serializers import StringRelatedField
+from database.models import FourtyTwoAccount, Player
+from backend.authentication import AuthenticateJWT
+
+from ..serializer import PlayerSerializer
+from ..token import create_jwt_pair_for_user
 
 import requests
 
@@ -101,3 +111,57 @@ def get_ft_env(request):
         "redirecturi": os.environ.get("42API_URI"),
         "state": os.environ.get("42API_STATE")
     })
+
+class FourtyTwoAuth(APIView):
+    parser_classes = [JSONParser]
+    renderer_classes = [JSONRenderer]
+
+    def post(self, request, format=None):
+        ftAuthCode = request.data['ft_code']
+        playerCode = request.data['player_code']
+
+        headers = {'Authorization': f'Bearer {ftAuthCode}'}
+        response = requests.get("https://api.intra.42.fr/v2/me", headers=headers)
+        ft_data = response.json()
+
+        intraID = ft_data['login']
+
+        authObject = AuthenticateJWT()
+        playerObject = authObject.get_user(authObject.get_validated_token(playerCode))
+
+        try:
+            intraObject = FourtyTwoAccount.objects.get(intraID=intraID)
+            intraObject.player = playerObject
+        except ObjectDoesNotExist:
+            intraObject = FourtyTwoAccount.objects.create(
+                intraID=intraID,
+                player=playerObject
+            )
+
+        return Response(status=status.HTTP_201_CREATED)
+
+    def get(self, request, format=None):
+        # we steal JWTAuthentication's header extraction
+        authObject = AuthenticateJWT()
+
+        fourtyTwoCode = authObject.get_raw_token(authObject.get_header(request))
+        headers = {'Authorization': f'Bearer {fourtyTwoCode.decode('utf-8')}'} # pray that it works
+        response = requests.get("https://api.intra.42.fr/v2/me", headers=headers)
+
+        if (not response.ok):
+            return Response(
+                data=response.json(),
+                status=response.status_code
+            )
+
+        ft_data = response.json()
+
+        intraID = ft_data['login']
+        intraIDObject = get_object_or_404(FourtyTwoAccount, intraID=intraID)
+        playerObject = intraIDObject.player
+        playerObject.now_online()
+        data = create_jwt_pair_for_user(playerObject)
+        return Response({
+            'success': '42 Login Success',
+            'data': data
+        }, status=status.HTTP_200_OK)

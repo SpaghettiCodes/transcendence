@@ -2,7 +2,6 @@ import { setJwtToken, setRefreshToken } from "../jwt.js"
 import { redirect } from "../router.js"
 
 export default function auth2fa(prop={}) {
-	// let sendToUsername = '2'
 	let sendToUsername = prop.username
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
@@ -27,8 +26,8 @@ export default function auth2fa(prop={}) {
 			<div class="input_field">
 				<input type="text" name="code" value="">
 			</div>
-			<div id="verify">
-				<input type="submit" id="verify" value="Verify">
+			<div>
+				<input type="submit" value="Verify">
 			</div>
 		</form>
 
