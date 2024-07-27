@@ -1,152 +1,67 @@
-.tournament.body {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: white;
+.tournamentContents .tournamentProgress .round{
+	display:flex;
+	flex-direction:column;
+	justify-content:center;
+	list-style:none;
+	padding:0;
 }
 
-.title {
-    text-align: center;
-    color: white;
-    margin-bottom: 30px;
+.tournamentContents .tournamentProgress .round {
+	flex-grow: 1;
 }
 
-.tournament {
-    position: relative;
-    width: 80%;
-    max-width: 800px;
-    height: 500px;
-    margin: auto;
+.tournamentContents .tournamentProgress .round .spacer { 
+	flex-grow: 1;
 }
 
-.box {
-    width: 100px;
-    height: 100px;
-    background-color: rgba(128, 128, 128, 1);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    border-radius: 5px;
+.tournamentContents .tournamentProgress .round .spacer:first-child,
+.tournamentContents .tournamentProgress .round .spacer:last-child { 
+	flex-grow: .5;
 }
 
-.corner-top-left {
-    top: 0;
-    left: 0;
+.tournamentContents .tournamentProgress .round .game-spacer {
+	flex-grow: 1;
 }
 
-.corner-top-right {
-    top: 0;
-    right: 0;
+.tournamentContents .tournamentProgress li.game {
+	padding-left:20px;  
 }
 
-.corner-bottom-left {
-    bottom: 0;
-    left: 0;
+.tournamentContents .tournamentProgress li.game.winner {
+	font-weight:bold;
 }
 
-.corner-bottom-right {
-    bottom: 0;
-    right: 0;
+.tournamentContents .tournamentProgress li.game span {
+	float:right;
+	margin-right:5px;
 }
 
-.final-left {
-    top: 50%;
-    left: 25%;
-    transform: translateY(-50%);
+.tournamentContents .tournamentProgress li.game-top {
+	border-bottom:1px solid #aaa;
 }
 
-.final-right {
-    top: 50%;
-    right: 25%;
-    transform: translateY(-50%);
+.tournamentContents .tournamentProgress li.game-spacer { 
+	border-right:1px solid #aaa;
+	min-height:40px;
 }
 
-.center {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+.tournamentContents .tournamentProgress li.game-bottom { 
+	border-top:1px solid #aaa;
 }
 
-.line {
-    position: absolute;
-    background-color: rgba(255, 255, 255, 1);
-    z-index: -1;
+.tournamentContents .player-list {
+	background-color: darkgray;
+	padding: 20px;
+	overflow-y: auto;
+	min-width: 20vw;
+	max-width: 350px;
+	width: 20vw;
 }
 
-.line.horizontal {
-    height: 4px;
-    width: 50%;
-}
-
-.line.vertical {
-    width: 4px;
-    height: 40%;
-}
-
-.line.top-left-to-bottom-left {
-    top: 2cm;
-    left: 5.5%;
-    height: 80%;
-    width: 4px;
-}
-
-.line.top-right-to-bottom-right {
-    top: 2cm;
-    right: 5.5%;
-    height: 80%;
-    width: 4px;
-}
-
-.line.bottom-left-to-final-left {
-    top: 50%;
-    right: 2cm;
-    left: 3cm;
-    width: 50%;
-    height: 4px;
-}
-
-.line.bottom-right-to-final-right {
-    top: 50%;
-    right: 6%;
-    width: 25%;
-    height: 4px;
-}
-
-.line.final-left-to-center {
-    top: 50%;
-    left: 6%;
-    width: 20%;
-    height: 4px;
-}
-
-.line.final-right-to-center {
-    top: 50%;
-    height: 4px;
-}
-
-.middle-left {
-    top: 42%;
-    left: 0;
-}
-
-.middle-right {
-    top: 42%;
-    right: 0;
-}
-
-.center-up {
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.line.center-to-winner {
-    top: 2cm;
-    left: 50%;
-    height: 40%;
-    width: 4px;
+.tournamentContents .player-list .player-list-item {
+	color: black;
+	background-color: #f8f9fa;
+	margin-bottom: 10px;
+	border-radius: 5px;
+	padding: 10px;
 }

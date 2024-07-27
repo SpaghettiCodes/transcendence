@@ -3,44 +3,54 @@
 // routing thingys
 // https://dev.to/rohanbagchi/how-to-write-a-vanillajs-router-hk3
 
-let mainDoc = document.getElementById("main")
-let videoContainer = document.getElementById('mainContainer')
+let errorContainer = document.getElementById("errorContainer")
+let mainContainer = document.getElementById('mainContainer')
 
 
 import "./jwt.js"
 import landing from "./pages/landing.js"
 import fourofour from "./pages/404.js"
-import ftlogin from "./pages/ft_login.js"
-import login from "./pages/login.js"
-import test from "./pages/test.js"
+import ftlogin from "./pages/42auth.js"
 import home from "./pages/home.js"
-import matchListing from "./pages/matchListing.js"
-import tournamentList from "./pages/oldTournamentListing.js"
 import tournament from "./pages/tournament.js"
 import result from "./pages/result/result.js"
-import profile from "./pages/profile.js"
+import profile from "./pages/profile/profile.js"
 import matchmaking from "./pages/matchmaking.js"
 import chat from "./pages/chat/chat.js"
 import friendlist from "./pages/friendList.js"
 import match from "./pages/match.js"
+import { check_token_exists } from "./jwt.js"
+import auth2fa from "./pages/auth.js"
+
+// remove later
+import login from "./pages/old/login.js"
+import test from "./pages/old/test.js"
+import tfa from "./pages/old/tfa.js"
+import matchListing from "./pages/old/matchListing.js"
+import tournamentListing from "./pages/old/oldTournamentListing.js"
 
 const routes = {
 	'/': landing,
 	'/error': fourofour,
-	'/ftlogin': ftlogin,
-	'/login': login,
-	'/test': test,
 	'/home': home,
-	'/match': matchListing,
 	'/match/<game_id>/spectate': match,
 	'/match/<game_id>/results': result,
 	'/match/<game_id>': match,
 	'/chat': chat,
-	'/tournament': tournamentList,
 	'/tournament/<tournament_id>': tournament,
 	'/profile': profile,
-	'/matchmaking': matchmaking,
+	'/matchmaking/<game_type>': matchmaking,
 	'/friends': friendlist,
+	'/auth/2fa': auth2fa,
+	'/ftlogin': ftlogin,
+
+	// temp, remove when done
+
+	'/tournament': tournamentListing,
+	'/match': matchListing,
+	'/login': login,
+	'/tfa': tfa,
+	'/test': test,
 }
 
 let clean_up_function = () => {}
@@ -124,36 +134,60 @@ const get_renderer = (uri, prop) => {
 const render_html = (which, prop={}) => {
 	let to_render = get_renderer(which, prop)
 	let [ prerender, render_code, postrender, cleanup] = to_render(prop)
+
+	if (!check_token_exists()) {
+		return
+	}
+
 	clean_up_function()
 	clean_up_function = cleanup
-	if (prerender())
-	{
-		if (to_render === routes['/error'])
-			mainDoc.innerHTML = render_code()
-		else
-			videoContainer.innerHTML = render_code()
-		postrender()
-	}
+
+	prerender().then(
+		(success) => {
+			if (success) {
+				errorContainer.innerHTML = ''
+				mainContainer.innerHTML = ''
+
+				if (to_render === routes['/error'])
+					errorContainer.innerHTML = render_code()
+				else
+					mainContainer.innerHTML = render_code()
+				postrender()
+			} else {
+				// abort
+				// oh fuck it, prerender is expected to handle the fails
+			}
+		}
+	)
 }
 
 const navigate = (e, prop={}) => {
 	e.preventDefault()
 
-	var uri = window.location.pathname
+	// mmm search parameters not included, i wonder why is this not working
+	let searchParam = window.location.search
 
+	let uri = window.location.pathname
 	// clean uri
 	uri = uri.replace(/^\/+|\/+$/g, '');
-	uri = '/' + uri.split("/").filter(Boolean).join('/')
-
+	uri = '/' + uri.split("/").filter(Boolean).join('/') + searchParam
 	history.replaceState(null, null, uri)
 
 	render_html(uri, prop)
 }
 
 export const redirect = (uri, prop={}) => {
-	clean_up_function()
-	render_html(uri, prop)
 	history.pushState(null, null, uri)
+	render_html(uri, prop)
+}
+
+export const redirect_replace_history = (uri, prop={}) => {
+	history.replaceState(null, null, uri)
+	render_html(uri, prop)
+}
+
+export const redirect_without_history = (uri, prop={}) => {
+	render_html(uri, prop)
 }
 
 // catch all links and change their default behavior
@@ -165,8 +199,7 @@ document.onclick = (e) => {
 	var element = e.target || e.srcElement
 
 	if (element.tagName.toLowerCase() === 'a') {
-		render_html(element.getAttribute("href"))
-		history.pushState(null, null, element.href)
+		redirect(element.href)
 		return false // prevents default action and stops event propagation
 	}
 }

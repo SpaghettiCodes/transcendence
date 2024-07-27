@@ -10,9 +10,10 @@ class GameFrame(PongGameFrame):
     def __init__(self, width=750, height=350) -> None:
         super().__init__(width, height)
 
+        self.realBallColor = self.ball.getColorValue()
         self.lastMadeFakeBall = datetime.now()
 
-        # please change this later, i just need it to test
+        # TODO: please change this later, i just need it to test
         self.coolDownSec = 5
         self.fakeBallChance = 100
         self.fakeBallMax = 10
@@ -20,10 +21,29 @@ class GameFrame(PongGameFrame):
         self.fakeBalls: list[Ball] = []
 
         # testing purposes
-        self.ventWidths = 100
 
-        ventA = Vent(None, self.ventWidths, 75, 20)
-        ventB = Vent(ventA, self.ventWidths, 500, 320)
+        # aspect ratio so the vent 
+        # doesnt look weird - 1.311
+        self.ventWidths = 52.44
+        self.ventHeights = 40
+
+        self.ventYOffset = 20
+        self.ventXOffset = 150
+
+        ventA = Vent(
+            None, 
+            self.ventWidths, 
+            self.ventHeights, 
+            self.ventXOffset, 
+            self.ventYOffset
+        )
+        ventB = Vent(
+            ventA,
+            self.ventWidths,
+            self.ventHeights,
+            self.width - self.ventWidths - self.ventXOffset,
+            self.height - self.ventHeights - self.ventYOffset
+        )
         ventA.setExit(ventB)
         self.vents = [ventA, ventB]
 
@@ -32,7 +52,8 @@ class GameFrame(PongGameFrame):
         return {
             **something,
             "vent": {
-                "width": self.ventWidths
+                "width": self.ventWidths,
+                'height': self.ventHeights
             }
         }
 
@@ -62,7 +83,7 @@ class GameFrame(PongGameFrame):
     def generateFakeBall(self):
         x, y = self.ball.get_coord()
         if (random.random() < (self.fakeBallChance / 100)):
-            newFakeBall = Ball(x, y, self.ballRadius, self.ballSpeed)
+            newFakeBall = Ball(x, y, self.ballRadius, self.ballSpeed, len(self.fakeBalls) + 1 + self.realBallColor)
             newFakeBall.random_velocity(0, 90)
             self.fakeBalls.append(newFakeBall)
 

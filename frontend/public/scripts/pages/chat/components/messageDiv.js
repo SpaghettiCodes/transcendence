@@ -5,7 +5,7 @@ export default class messageDiv {
 		this.mainDiv = document.createElement("div")
 		this.mainDiv.setAttribute('class', 'messageBox rounded')
 
-		this.ImageHolder = document.createElement("div")
+		this.ImageHolder = document.createElement("img")
 		this.ImageHolder.setAttribute("class", "ImageHolder")
 		this.mainDiv.appendChild(this.ImageHolder)
 
@@ -45,6 +45,8 @@ export default class messageDiv {
 
 	setData = (data) => {
 		let authorID = data['sender']['username']
+		let imageURL = `http://localhost:8000/api${data['sender']['profile_pic']}`
+		this.ImageHolder.src = imageURL
 
 		if (this.type === 'message') {
 			let messageContent = data['content']

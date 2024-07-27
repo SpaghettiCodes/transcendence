@@ -1,10 +1,9 @@
-import { redirect } from "../router.js"
-import "../jwt.js"
-import { setJwtToken, setRefreshToken } from "../jwt.js"
+import { redirect } from "../../router.js"
+import { setJwtToken, setRefreshToken } from "../../jwt.js"
 
 export default function login(prop={}) {
     // attach all pre-rendering code here (like idk, fetch request or something)
-    let prerender = () => {
+    let prerender = async () => {
         return true // return true to continue to render_code
         // return false to abort (usually used with redirect)
     }
@@ -32,7 +31,7 @@ export default function login(prop={}) {
         form.addEventListener('submit', async function (e) {
             e.preventDefault();
             const formData = new FormData(form).entries()
-            const response = await fetch('http://localhost:8000/api/player/login', {
+            const response = await fetch('http://localhost:8000/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(Object.fromEntries(formData))

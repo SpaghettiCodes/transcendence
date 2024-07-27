@@ -36,10 +36,7 @@ class Paddle(Component):
             else:
                 ball.reverse_x()
                 if (ball_x < self.x):
-                    # i can just set x based on paddle
-                    # thanks wallace for suggestion
                     new_x = self.x - ball_radius
-                # hit right side
                 elif (ball_x > self.x + self.width):
                     new_x = self.x + self.width + ball_radius
             ball.set_coord(new_x, new_y)

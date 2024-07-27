@@ -1,0 +1,7 @@
+/* i should clean this up later */
+
+#registerPlayer .inputFields {
+	display: grid;
+	grid-template-columns: 1fr 4fr;
+	gap: 2rem;
+}

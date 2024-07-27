@@ -1,4 +1,6 @@
-import { redirect } from "../router.js"
+import { fetchMod } from "../jwt.js"
+import { redirect, redirect_replace_history } from "../router.js"
+import { ImageFromBackendUrl } from "./helpers.js"
 
 export default function match(prop={}) {
 	// API
@@ -14,7 +16,7 @@ export default function match(prop={}) {
 	let pongSocket = undefined
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
-	let prerender = () => {
+	let prerender = async () => {
 		return true // return true to continue to render_code
 		// return false to abort (usually used with redirect)
 	}
@@ -22,8 +24,8 @@ export default function match(prop={}) {
 	// return the html code here
 	let render_code = () => {
 		return `
-		<div class="matchContent d-flex flex-column bg-black" id="matchContent">
-			<div class="matchDetailsFrame d-flex align-items-end text-white" id="matchDetailsFrame">
+		<div class="matchContent d-flex flex-column bg-star" id="matchContent">
+			<div class="matchDetailsFrame d-flex align-items-end flex-grow-1  text-white" id="matchDetailsFrame">
 				<h1 class="flex-grow-1 text-center" id="attackerNameField">Name</h1>
 				<h1>VS</h1>
 				<h1 class="flex-grow-1 text-center" id="defenderNameField">Name</h1>
@@ -64,6 +66,7 @@ export default function match(prop={}) {
 		let serverBallRadius = undefined
 
 		let serverVentWidth = undefined
+		let serverVentHeight = undefined
 
 		// playing field dimensions, CAN AND WILL CHANGE
 		let fieldHeight = undefined
@@ -76,7 +79,7 @@ export default function match(prop={}) {
 
 		const getGameData = async () => {
 			try {
-				let value = await fetch (
+				let value = await fetchMod (
 					`http://localhost:8000/api/${apiURI}`,
 					{
 						method: "GET",
@@ -114,8 +117,10 @@ export default function match(prop={}) {
 				serverPaddleWidth = settings["paddle"]["width"],
 				serverPaddleHeight = settings["paddle"]["height"]
 
-				if (settings["vent"])
+				if (settings["vent"]) {
 					serverVentWidth = settings["vent"]["width"]
+					serverVentHeight = settings['vent']['height']
+				}
 
 				fixFieldDimensions()
 			} catch (reason) {
@@ -153,11 +158,6 @@ export default function match(prop={}) {
 
 			paddleElement.style.width = `${newPaddleWidth}px`
 			paddleElement.style.height = `${newPaddleHeight}px`
-
-			return {
-				"newPaddleWidth": newPaddleWidth,
-				"newPaddleHeight": newPaddleHeight
-			}
 		}
 
 		const updateScoreBoard = () => {
@@ -181,6 +181,42 @@ export default function match(prop={}) {
 			paddleElement.style.left = `${newFieldWidth * xRatio}px`
 		}
 
+		const fixVentDimensions = ({
+			ventElement,
+			oldWidth,
+			oldHeight,
+			oldFieldWidth,
+			oldFieldHeight,
+			newFieldWidth,
+			newFieldHeight
+		}) => {
+			let ventWidthRatio = oldWidth / oldFieldWidth
+			let ventHeightRatio = oldHeight / oldFieldHeight
+
+			let newVentWidth = newFieldWidth * ventWidthRatio
+			let newVentHeight = newFieldHeight * ventHeightRatio
+
+			ventElement.style.width = `${newVentWidth}px`
+			ventElement.style.height = `${newVentHeight}px`
+		}
+
+		const fixVentPosition = ({
+			ventElement, 
+			oldx,
+			oldy,
+			oldFieldWidth,
+			oldFieldHeight,
+			newFieldWidth,
+			newFieldHeight,
+		}) => {
+			// note -> vent's position is at the middle, not top or bottom
+			let xRatio = oldx / oldFieldWidth
+			let yRatio = oldy / oldFieldHeight
+
+			ventElement.style.top = `${newFieldHeight * yRatio}px`
+			ventElement.style.left = `${newFieldWidth * xRatio}px`
+		}
+
 		const fixBallDimensions = ({
 			ballElement,
 			oldRadius,
@@ -194,8 +230,6 @@ export default function match(prop={}) {
 
 			ballElement.style.width = `${newballDiameter}px`
 			ballElement.style.height = `${newballDiameter}px`
-
-			return newballRadius
 		}
 
 		const fixBallPosition = ({
@@ -285,12 +319,29 @@ export default function match(prop={}) {
 					"newFieldHeight": fieldHeight
 				})
 			}
-		}
 
-		const setMinDimensions = () => {
-			let minimumBearableHeight = minimumBearableWidth / serverAspectRatio
-			mainField.style.minWidth = `${minimumBearableWidth}px`
-			mainField.style.minHeight = `${minimumBearableHeight}px`
+			let vents = document.getElementsByClassName('vent')
+			for (let vent of vents) {
+				fixVentDimensions({
+					"ventElement": vent,
+					"oldWidth": serverVentWidth,
+					"oldHeight": serverVentHeight,
+					"oldFieldWidth": serverFieldWidth,
+					"oldFieldHeight": serverFieldHeight,
+					"newFieldWidth": fieldWidth,
+					"newFieldHeight": fieldHeight
+				})
+
+				fixVentPosition({
+					"ventElement": vent,
+					"oldx": +vent.style.left.slice(0, -2),
+					"oldy": +vent.style.top.slice(0, -2),
+					"oldFieldWidth": oldFieldWidth,
+					"oldFieldHeight": oldFieldHeight,
+					"newFieldWidth": fieldWidth,
+					"newFieldHeight": fieldHeight
+				})
+			}
 		}
 
 		const makePaddle = (newx, newy, id) => {
@@ -320,10 +371,46 @@ export default function match(prop={}) {
 			gameComponent.appendChild(newPaddle)
 		}
 
-		const makeBall = (newx, newy) => {
+		const makeVent = (newx, newy) => {
+			let newVent = document.createElement("div")
+			newVent.setAttribute("class", `vent`)
+
+			fixVentDimensions({
+				"ventElement": newVent,
+				"oldWidth": serverVentWidth,
+				"oldHeight": serverVentHeight,
+				"oldFieldWidth": serverFieldWidth,
+				"oldFieldHeight": serverFieldHeight,
+				"newFieldWidth": fieldWidth,
+				"newFieldHeight": fieldHeight
+			})
+
+			fixVentPosition({
+				"ventElement": newVent,
+				"oldx": newx,
+				"oldy": newy,
+				"oldFieldWidth": serverFieldWidth,
+				"oldFieldHeight": serverFieldHeight,
+				"newFieldWidth": fieldWidth,
+				"newFieldHeight": fieldHeight
+			})
+
+			gameComponent.appendChild(newVent)
+		}
+
+		const rotateBall = (ballElement, directionDegree) => {
+			if (directionDegree > 90 && directionDegree < 270) {
+				ballElement.style.transform = `scaleY(-1)`
+			}
+
+			ballElement.style.rotate = `${directionDegree}deg`
+		}
+
+		const makeBall = (newx, newy, facing, imageDir) => {
 			let newBall = document.createElement("div")
 			newBall.setAttribute("class", "ball")
 
+			newBall.style.backgroundImage = `url(${ImageFromBackendUrl(imageDir)})`
 			fixBallDimensions({
 				"ballElement": newBall,
 				"oldRadius": serverBallRadius,
@@ -341,18 +428,25 @@ export default function match(prop={}) {
 				"newFieldHeight": fieldHeight
 			})
 
+			rotateBall(newBall, facing)
 			gameComponent.appendChild(newBall)
 		}
 
 		const processFrame = (data) => {
 			gameComponent.innerHTML = ''
 			messageBoard.innerHTML = ''
-			let {balls, attacker, defender} = data
-			makePaddle(attacker["x"], attacker["y"], "attacker")
-			makePaddle(defender["x"], defender["y"], "defender")
+			let {balls, attacker, defender, vents} = data
+			makePaddle(attacker.x, attacker.y, "attacker")
+			makePaddle(defender.x, defender.y, "defender")
 
 			for (let ball of balls) {
-				makeBall(ball["x"], ball["y"])
+				makeBall(ball.x, ball.y, ball.facing, ball.imageDir)
+			}
+
+			if (vents) {
+				for (let vent of vents) {
+					makeVent(vent.x, vent.y)
+				}
 			}
 		}
 
@@ -450,7 +544,7 @@ export default function match(prop={}) {
 						updateMessageBoard(`Game Ended\nYou will be ejected in ${gameLifetime}`, 5)
 						break
 					case "redirect":
-						history.back()
+						redirect_replace_history(`/match/${game_id}/results`)
 						break
 					default:
 						console.log("unrecognizable message")
@@ -491,6 +585,7 @@ export default function match(prop={}) {
 			}
 		).catch(
 			(error) => {
+				console.log(error)
 				console.log("well that did not work out")
 			}
 		)

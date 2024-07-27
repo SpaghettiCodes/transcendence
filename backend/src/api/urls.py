@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from .api_endpoints import friendRequest, ft, match, player, playerSpecific, friends, hello, chat, result, tournament, error_page, playerBlock
+from .api_endpoints import friendRequest, ft, match, player, playerSpecific, friends, hello, chat, result, tournament, tfa, playerBlock, me
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 urlpatterns = [
@@ -10,6 +10,11 @@ urlpatterns = [
     ## login n register
     path('login', player.login),
     path('register', player.createPlayer),
+	path('2fa/send', tfa.send_tfa_code),
+	path('2fa/verify', tfa.verify_tfa_code),
+
+    ## get my own details
+    path('me', me.getMe),
 
     ## players
     path('player', player.ViewPlayers.as_view()),
@@ -41,8 +46,9 @@ urlpatterns = [
 
     ## 42 login
     path('ft/auth', ft.get_ft_code),
-    path('ft/me', ft.get_ft_me),
+    # path('ft/me', ft.get_ft_me),
     path('ft/env', ft.get_ft_env),
+    path('ft', ft.FourtyTwoAuth.as_view()),
 
     ## tournamnet
     path('tournament', tournament.TournamentView.as_view()),
@@ -55,6 +61,4 @@ urlpatterns = [
     path('token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify', TokenVerifyView.as_view(), name='token_verify'),
 
-    ## thou are not authorized
-    path('error/401', error_page.Return401),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

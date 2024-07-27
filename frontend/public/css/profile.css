@@ -1,25 +1,50 @@
-.profile {
-    display: flex;
-    flex-wrap: wrap;
-    margin-left: 100px;
+.profile-info {
+	min-width: 450px;
+	width: 450px;
 }
 
-.profile-info {
-    flex: 1;
-    padding: 20px;
+.chartArea {
+    width: fit-content;
+    height: fit-content;
+    overflow: visible;
+}
+
+.chartBox1 {
+    margin-left: -10px;
+    flex-grow: 1;
+    width: 300px;
+    border-radius: 100%;
+    background-color: rgba(52, 58, 64, 0.85);
+}
+
+.chartBox2 {
+    margin-top: -80px;
+    margin-left: 240px;
+    flex-grow: 1;
+    width: 300px;
+    border-radius: 100%;
+    background-color: rgba(52, 58, 64, 0.85);
+}
+
+.chartBox3 {
+    margin-top: -80px;
+    margin-left: -10px;
+    flex-grow: 1;
+    width: 300px;
+    border-radius: 100%;
+    background-color: rgba(52, 58, 64, 0.85);
 }
 
 .profile-pic {
-    max-width: 150px;
-    max-height: 150px;
+	aspect-ratio: 1;
+	width: 150px;
+	height: 150px;
+	object-fit: cover;
 }
 
 .match-history {
-    flex: 2;
-    padding: 20px;
     background-color: #343a40; /* Dark background color */
     color: #f8f9fa; /* Light text color */
-    border-radius: 5px; /* Optional: Add rounded corners */
 }
 
 .lowered {

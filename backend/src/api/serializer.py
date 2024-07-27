@@ -11,14 +11,56 @@ class PublicPlayerSerializer(serializers.ModelSerializer):
 class PublicPlayerDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = ('username', 'profile_pic', 'is_active', 'matches_played', 'matches_won', 'matches_lost')
+        fields = (
+                    'username', 
+                    'profile_pic', 
+                    'is_active', 
+                    'pong_matches_played',
+                    'pong_matches_won',
+                    'pong_matches_lost',
+                    'apong_matches_played',
+                    'apong_matches_won',
+                    'apong_matches_lost',
+                    'tournament_played',
+                    'tournament_won',
+                    'tournament_lost',
+                )
+
+class PlayerCreator(serializers.ModelSerializer):
+    class Meta:
+        model = Player
+        fields = ('username', 'password')
+
+class ModifiableFieldsPlayer(serializers.ModelSerializer):
+    class Meta:
+        model = Player
+        fields = (
+                    'password',
+                    'email',
+                    'profile_pic',
+                )
 
 class PlayerSerializer(serializers.ModelSerializer):
     friends = serializers.SlugRelatedField(queryset=Player, many=True, slug_field='username')
 
     class Meta:
         model = Player
-        fields = ('username', 'email', 'profile_pic', 'is_active', 'matches_played', 'matches_won', 'matches_lost', 'friends')
+        fields = (
+                    'username', 
+                    'email',
+                    'profile_pic', 
+                    'is_active', 
+                    'pong_matches_played',
+                    'pong_matches_won',
+                    'pong_matches_lost',
+                    'apong_matches_played',
+                    'apong_matches_won',
+                    'apong_matches_lost',
+                    'tournament_played',
+                    'tournament_won',
+                    'tournament_lost',
+                    'friends'
+                )
 
 class FriendRequestSerializer(serializers.ModelSerializer):
     sender = serializers.SlugRelatedField(queryset=Player, slug_field='username')

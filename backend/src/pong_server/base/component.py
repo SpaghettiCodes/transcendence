@@ -24,11 +24,12 @@ class Component:
 
     def get_coord(self):
         return (self.x, self.y)
-    
+
     def get_json_coord(self):
+        # what
         return {
             "x": self.x,
-            "y": self.y
+            "y": self.y,
         }
 
     # make sure min angle is >= 0 and max_angle is <= 90

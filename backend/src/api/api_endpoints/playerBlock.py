@@ -21,6 +21,13 @@ class ViewBlocked(APIView):
 
     # add someone to block
     def post(self, request: Request, player_username, format=None):
+        requester_username = request.user.username
+        if (requester_username != player_username):
+            # dont help other people block
+            return Response(
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         target_username = request.data.get('target')
         if target_username is None:
             return Response(
@@ -42,6 +49,13 @@ class ViewBlocked(APIView):
 
     # unblock someone
     def delete(self, request: Request, player_username, format=None):
+        requester_username = request.user.username
+        if (requester_username != player_username):
+            # dont need your help
+            return Response(
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         target_username = request.data.get('target')
         if target_username is None:
             return Response(

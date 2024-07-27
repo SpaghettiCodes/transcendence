@@ -1,4 +1,5 @@
-import { redirect } from "../router.js"
+import { redirect } from "../../router.js"
+import { fetchMod } from "../../jwt.js"
 
 export default function oldMatch(prop={}) {
 	console.log(prop)
@@ -11,8 +12,8 @@ export default function oldMatch(prop={}) {
 	let player_id = localStorage.getItem("username") || "default"
 	let pongSocket = undefined
 
-	// attach all pre-rendering code here (like idk, fetch request or something)
-	let prerender = () => {
+	// attach all pre-rendering code here (like idk, fetchMod request or something)
+	let prerender = async () => {
 		// if (game_id === undefined)
 		// {
 		// 	redirect("/match")
@@ -58,7 +59,7 @@ export default function oldMatch(prop={}) {
 		const scoreDiv = document.getElementById("score")
 
 		const getGameData = () => {
-			fetch (
+			fetchMod (
 				`http://localhost:8000/api/${apiURI}`,
 				{
 					method: "GET",

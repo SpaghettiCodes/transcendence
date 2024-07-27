@@ -8,10 +8,10 @@ export default function tournament(prop={}) {
 	let goingToBattle = false
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
-	let prerender = () => {
+	let prerender = async () => {
 		if (tournamentID === undefined)
 		{
-			redirect("/tournament")
+			history.back()
 			return false
 		}
 		return true // return true to continue to render_code
@@ -21,52 +21,84 @@ export default function tournament(prop={}) {
 	// return the html code here
 	let render_code = () => {
 		return `
-		<div class="video-container">
-			<video autoplay muted loop id="bg-video">
-				<source src="video/among_us.mp4" type="video/mp4">
-				Your browser does not support HTML5 video.
-			</video>
+		<div class="container-fluid text-white text-center">
+			<h1 class="title">Tournament</h1>
 		</div>
-		<h1 class="title">Tournament Mode</h1>
-		<div class="tournament">
-			<div class="box corner-top-left text-black display: flex-column">
-				Player 1
-				<div class="btn btn-dark">Ready</div>
+		<div class="row container-fluid d-flex flex-row justify-content-center align-self-center overflow-y-auto flex-grow-1 gap-3 px-5 tournamentContents">
+			<div class='col-sm d-flex flex-row flex-grow-1 flex-shrink-1 tournamentProgress' id="tournament">
+				<ul class="round round-1">
+					<li class="spacer">&nbsp;</li>
+					
+					<li class="game game-top winner">Player 1</li>
+					<li class="game game-spacer">&nbsp;</li>
+					<li class="game game-bottom ">Player 2</li>
+				
+					<li class="spacer">&nbsp;</li>
+					
+					<li class="game game-top winner">Player 3</li>
+					<li class="game game-spacer">&nbsp;</li>
+					<li class="game game-bottom ">Player 4</li>
+				
+					<li class="spacer">&nbsp;</li>
+					
+					<li class="game game-top winner">Player 5</li>
+					<li class="game game-spacer">&nbsp;</li>
+					<li class="game game-bottom ">Player 6</li>
+				
+					<li class="spacer">&nbsp;</li>
+					
+					<li class="game game-top winner">Player 7</li>
+					<li class="game game-spacer">&nbsp;</li>
+					<li class="game game-bottom ">Player 8</li>
+				
+					<li class="spacer">&nbsp;</li>
+				</ul>
+				<ul class="round round-2">
+					<li class="spacer">&nbsp;</li>
+					
+					<li class="game game-top winner">Player 1</li>
+					<li class="game game-spacer">&nbsp;</li>
+					<li class="game game-bottom ">Player 4</li>
+				
+					<li class="spacer">&nbsp;</li>
+					
+					<li class="game game-top winner">Player 5</li>
+					<li class="game game-spacer">&nbsp;</li>
+					<li class="game game-bottom ">Player 7</li>
+				
+					<li class="spacer">&nbsp;</li>
+				</ul>
+					<ul class="round round-3">
+					<li class="spacer">&nbsp;</li>
+					
+					<li class="game game-top winner">Player 1</li>
+					<li class="game game-spacer">&nbsp;</li>
+					<li class="game game-bottom ">Player 5</li>
+				
+					<li class="spacer">&nbsp;</li>
+				</ul>
+				<ul class="round round-4">
+					<li class="spacer">&nbsp;</li>
+					
+					<li class="game game-top winner">Player 1</li>
+				
+					<li class="spacer">&nbsp;</li>
+				</ul>
 			</div>
-			<div class="box middle-left text-black">Player 1</br>vs</br>Player 3</div>
-			<div class="box corner-top-right text-black display: flex-column">
-				Player 2
-				<div class="btn btn-dark">Ready</div>
+			<div class="col-sm player-list rounded d-flex flex-column align-items-stretch flex-grow-1 overflow-y-hidden">
+				<h4>Players</h4>
+				<br>
+				<div class='d-flex flex-column overflow-y-auto'>
+					<div class="player-list-item">Player 1</div>
+					<div class="player-list-item">Player 2</div>
+					<div class="player-list-item">Player 3</div>
+					<div class="player-list-item">Player 4</div>
+					<div class="player-list-item">Player 5</div>
+					<div class="player-list-item">Player 6</div>
+					<div class="player-list-item">Player 7</div>
+					<div class="player-list-item">Player 8</div>
+				</div>
 			</div>
-			<div class="box corner-bottom-left text-black display: flex-column">
-				Player 3
-				<div class="btn btn-dark">Ready</div>
-			</div>
-			<div class="box middle-right text-black">Player 2</br>vs</br>Player 4</div>
-			<div class="box corner-bottom-right text-black display: flex-column">
-				Player 4
-				<div class="btn btn-dark">Ready</div>
-			</div>        
-			<div class="box final-left text-black display: flex-column">
-				Finalist 1
-				<div class="btn btn-dark">Ready</div>
-			</div>
-			<div class="box final-right text-black display: flex-column">
-				Finalist 2
-				<div class="btn btn-dark">Ready</div>
-			</div>
-			<div class="box center text-black">Finalist 1<br>vs<br>Finalist 2</div>
-			
-			<div class="box center-up text-black">Winner</div>
-			
-			<!-- Lines connecting the boxes -->
-			<div class="line top-left-to-bottom-left"></div>
-			<div class="line top-right-to-bottom-right"></div>
-			<div class="line bottom-left-to-final-left"></div>
-			<div class="line bottom-right-to-final-right"></div>
-			<div class="line final-left-to-center"></div>
-			<div class="line final-right-to-center"></div>
-			<div class="line center-to-winner"></div>
 		</div>
 		`
 	}

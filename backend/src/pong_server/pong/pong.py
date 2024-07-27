@@ -23,7 +23,7 @@ class PongGame(Game):
 
         self.field = GameFrame()
 
-        self.maxScore = 1000 # PLEASE CHANGE LATER
+        self.maxScore = 3 # TODO: PLEASE CHANGE LATER
 
         self.attackerid = None
         self.defenderid = None
@@ -113,6 +113,9 @@ class PongGame(Game):
             await matchObject.adelete()
             return
 
+        self.incrementGameCount(attacker)
+        self.incrementGameCount(defender)
+
         attacker_score = int(self.field.attackerScore)
         defender_score = int(self.field.defenderScore)
 
@@ -139,13 +142,20 @@ class PongGame(Game):
 
         if self.isForfeit():
             newResult.reason = 2
-        
+
         if attacker_score == defender_score:
+            # draw
             newResult.reason = 3
+            # no one wins and no one loses i guess?
+        else:
+            self.incrementWinCount(winner)
+            self.incrementLostCount(loser)
 
         self.resultsUploadSuccessfully = True
-        await newResult.asave()
 
+        await attacker.asave()
+        await defender.asave()
+        await newResult.asave()
 
     def initialState(self):
         from ..common.states.processPhysics import ProcessPhysics
@@ -157,3 +167,12 @@ class PongGame(Game):
         if not self.played:
             return
         print("Uploading Scores to Database...")
+
+    def incrementWinCount(self, playerObject):
+        playerObject.pong_matches_won += 1
+
+    def incrementGameCount(self, playerObject):
+        playerObject.pong_matches_played += 1
+
+    def incrementLostCount(self, playerObject):
+        playerObject.pong_matches_lost += 1

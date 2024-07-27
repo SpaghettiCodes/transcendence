@@ -177,6 +177,18 @@ class Game(ABC):
         pass
 
     @abstractmethod
+    def incrementWinCount(self, playerObject):
+        pass
+
+    @abstractmethod
+    def incrementGameCount(self, playerObject):
+        pass
+
+    @abstractmethod
+    def incrementLostCount(self, playerObject):
+        pass
+
+    @abstractmethod
     def getWinner(self):
         pass
 

@@ -1,0 +1,24 @@
+.width-80 {
+	width: 80%;
+}
+
+.reappearing-point5 {
+	animation: disappearing-frame 0.5s ;
+}
+
+@keyframes disappearing-frame {
+	from {opacity: 0;}
+	to {opacity: 1;}
+}
+
+.lowered {
+    margin-top: 150px;
+}
+
+.hide {
+	display: none !important;
+}
+
+.font-size-5vm {
+	font-size: 5vw;
+}

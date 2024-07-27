@@ -3,13 +3,14 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from passlib.hash import pbkdf2_sha256
+from random import randint
 import os
 
 # Create your models here.
 class Player(models.Model):
     username = models.CharField(max_length=35, unique=True)
     password = models.CharField(max_length=256)
-    email = models.EmailField(max_length=100, unique=True, blank=True, null=True)
+    email = models.EmailField(max_length=100, unique=True, blank=True, null=True, default=None)
     profile_pic = models.ImageField(default="./firefly.png")
     date_joined = models.DateTimeField(auto_now_add=True)
 
@@ -19,9 +20,17 @@ class Player(models.Model):
     is_active = models.BooleanField(default=False)
 
     # hmmm
-    matches_played = models.PositiveIntegerField(default=0)
-    matches_won = models.PositiveIntegerField(default=0)
-    matches_lost = models.PositiveIntegerField(default=0)
+    pong_matches_played = models.PositiveIntegerField(default=0)
+    pong_matches_won = models.PositiveIntegerField(default=0)
+    pong_matches_lost = models.PositiveIntegerField(default=0)
+
+    apong_matches_played = models.PositiveIntegerField(default=0)
+    apong_matches_won = models.PositiveIntegerField(default=0)
+    apong_matches_lost = models.PositiveIntegerField(default=0)
+
+    tournament_played = models.PositiveIntegerField(default=0)
+    tournament_won = models.PositiveIntegerField(default=0)
+    tournament_lost = models.PositiveIntegerField(default=0)
 
     def __str__(self) -> str:
         return f"User {self.username}"
@@ -75,6 +84,9 @@ class Player(models.Model):
         self.is_active = False
         self.save()
 
+    def has_tfa_activated(self):
+        return self.email != None
+
 class Friend_Request(models.Model):
     sender = models.ForeignKey(
         Player, 
@@ -103,6 +115,40 @@ class Friend_Request(models.Model):
 
     def decline(self):
         self.delete()
+
+class FourtyTwoAccount(models.Model):
+    player = models.OneToOneField(Player, on_delete=models.CASCADE, related_name='fourty_two_account')
+    intraID = models.CharField(max_length=50)
+
+    def __str__(self) -> str:
+        return f"Associated With IntraID - {self.intraID}"
+
+class TwoFactorAuthentication(models.Model):
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='player_tfa', default=None)
+    code = models.CharField(blank=True, default='100000', max_length=6)
+    used = models.BooleanField(default=False)
+    lastGenerated = models.DateTimeField(auto_now_add=True)
+
+    def generate_code(self):
+        new_code = ''.join(["{}".format(randint(0, 9)) for _ in range(0, 6)])
+        self.code = new_code
+        self.used = False
+        self.lastGenerated = timezone.now()
+        self.save()
+
+    def expired(self, maxDuration=300):
+        # duration is 5 min by default
+        timeNow = timezone.now()
+        diffSecs = (timeNow - self.lastGenerated).seconds
+        return diffSecs > maxDuration
+
+    def verify_code(self, code):
+        if int(code) == int(self.code) and not self.used:
+            self.used = True
+            self.save()
+            return True
+        else:
+            return False
 
 class Match(models.Model):
     id = models.BigAutoField(primary_key=True)
