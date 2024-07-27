@@ -103,7 +103,9 @@ export default function chat(prop={}) {
 			}
 		}
 
-		friendList.appendChild(...generateUserTabs(prop.friendList, generateUserTabFunctions))
+		let friendTabs = generateUserTabs(prop.friendList, generateUserTabFunctions)
+		if (friendTabs.length)
+			friendList.appendChild(...friendTabs)
 
 		const connectToNewChatroom = async (player_username, target_username) => {
 			if (!loadingNewChatroom) {
