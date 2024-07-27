@@ -58,10 +58,10 @@
 	width: 20vw;
 }
 
-.tournamentContents .player-list .player-list-item {
-	color: black;
-	background-color: #f8f9fa;
-	margin-bottom: 10px;
-	border-radius: 5px;
-	padding: 10px;
+.tournamentContents .player-list .friend-list-item.ready {
+	background-color: rgb(120, 255, 94);
+}
+
+.tournamentContents .player-list .friend-list-item:hover {
+	cursor: default;
 }

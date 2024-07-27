@@ -1,4 +1,4 @@
-import { redirect } from "../router.js"
+import { redirect } from "../../router"
 
 export default function tournament(prop={}) {
 	const tournamentID = (prop["arguments"]) ? (prop["arguments"]["tournament_id"]) : undefined

@@ -4,6 +4,8 @@ import { ImageFromBackendUrl } from "./helpers.js"
 
 export default function match(prop={}) {
 	// API
+	let currentPathName = window.location.pathname
+
 	let game_id = (prop["arguments"]) ? (prop["arguments"]["game_id"]) : undefined
 	let tournament_id = (prop["arguments"]) ? prop["arguments"]["tournament_id"] : undefined
 	let spectating = (prop["arguments"]) ? prop["arguments"]["spectate"] ? true : false : false
@@ -94,8 +96,8 @@ export default function match(prop={}) {
 					attacker = data["sides"]["attacker"]
 					defender = data["sides"]["defender"]
 
-					document.getElementById("attackerNameField").innerText = attacker
-					document.getElementById("defenderNameField").innerText = defender
+					document.getElementById("attackerNameField").innerText = attacker.username
+					document.getElementById("defenderNameField").innerText = defender.username
 
 					// no idea where to put score first sooo
 					scores[attacker] = data["score"]["attacker"]
@@ -122,7 +124,7 @@ export default function match(prop={}) {
 				fixFieldDimensions()
 			} catch (reason) {
 				if (reason.status == 404) {
-					redirect('/error')
+					redirect('/error', {}, currentPathName)
 				} else {
 					errorMessage("Yeah idk also ¯\\_(ツ)_/¯")
 				}
@@ -539,7 +541,7 @@ export default function match(prop={}) {
 						updateMessageBoard(`Game Ended\nYou will be ejected in ${gameLifetime}`, 5)
 						break
 					case "redirect":
-						redirect_replace_history(`/match/${game_id}/results`)
+						redirect_replace_history(`/match/${game_id}/results`, {}, currentPathName)
 						break
 					default:
 						console.log("unrecognizable message")
