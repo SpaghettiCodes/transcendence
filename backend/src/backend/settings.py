@@ -189,7 +189,7 @@ DEFAULT_IMAGE_PATH = "media/firefly.png"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# plz change later
+# TODO: plz change later
 CORS_ORIGIN_ALLOW_ALL = True
 ALLOWED_HOSTS = ('*', )
 CORS_ALLOWED_ORIGINS = [

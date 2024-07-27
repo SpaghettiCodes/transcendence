@@ -144,7 +144,7 @@ class Chat(APIView):
 @api_view(['GET'])
 def chatHistory(request: Request, chat_id):
     last_msgId = request.GET.get('start_id')
-    maxMsgCount = 10 # change this later
+    maxMsgCount = 10 # TODO: change this later
 
     userObj = request.user
     chatObj = get_object_or_404(ChatRoom, roomid=chat_id)

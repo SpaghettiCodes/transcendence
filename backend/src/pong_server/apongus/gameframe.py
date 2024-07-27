@@ -13,7 +13,7 @@ class GameFrame(PongGameFrame):
         self.realBallColor = self.ball.getColorValue()
         self.lastMadeFakeBall = datetime.now()
 
-        # please change this later, i just need it to test
+        # TODO: please change this later, i just need it to test
         self.coolDownSec = 5
         self.fakeBallChance = 100
         self.fakeBallMax = 10
