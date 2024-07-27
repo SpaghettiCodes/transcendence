@@ -272,8 +272,13 @@ class TournamentServer:
 
         self.reset()
 
+        # assume everyone is readied
+        self.readiedPlayers = [player for player in self.currentPlayers]
+
         if (len(self.currentPlayers) == 1):
             asyncio.create_task(self.endTournament())
+        else:
+            asyncio.create_task(self.startMatch())
 
     async def matchUp(self) -> None:
         random.shuffle(self.currentPlayers)
