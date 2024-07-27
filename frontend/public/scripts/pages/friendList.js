@@ -2,14 +2,21 @@ import { redirect } from "../router.js"
 import { createButton, createInput } from "../components/elements.js"
 import { generateProfileInfo } from "../components/generateProfileInfo.js";
 import { generateList } from "../components/generateList.js";
+import { fetchMod } from "../jwt.js";
 
 export default function template(prop={}) {
 	let prerender = async () => {
 		try {
-			const response = await fetch('/api/friendlist'); //change to the correct endpoint
+			const response = await fetchMod('http://localhost:8000/api/me'); //change to the correct endpoint
 			if (!response.ok)
 				throw new Error('Network response was not ok ' + response.statusText);
 			const data = await response.json();
+			console.log(data);
+			const FL = await fetchMod(`http://localhost:8000/api/player/${data.username}/friends`)
+			if (!FL.ok)
+				throw new Error('Network response was not ok ' + response.statusText);
+			const FLData = await FL.json();
+			console.log(FLData);
 			prop.data = data; // Store the fetched data in the prop object
 			return true; // Return true to continue to render_code
 		} catch (error) {

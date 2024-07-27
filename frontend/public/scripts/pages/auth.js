@@ -18,21 +18,25 @@ export default function auth2fa(prop={}) {
 	// return the html code here
 	let render_code = () => {
 		return `
-		<h1 id='status'>Sending Verification Code</h1>
-		<button id='resendCode'>Resend Code</button>
-
+		<div class="text-center mb-5">
+            <h1 class="header-font">APONG US</h1>
+        </div>
+		<h3 id='status'>Sending Verification Code</h3>
+		
 		<br>
-
+		
 		<form class='d-flex gap-2 align-items-center' id="verify">
-			<div class="input_field">
-				<input type="text" name="code" value="">
-			</div>
-			<div id="verify">
-				<input type="submit" id="verify" value="Verify">
-			</div>
+		<div class="input_field">
+		<input type="text" name="code" value="">
+		</div>
+		<div id="verify">
+		<input class="btn btn-dark" type="submit" id="verify" value="Verify">
+		</div>
 		</form>
-
+		
 		<br>
+
+		<button id='resendCode' class="btn btn-dark">Resend Code</button>
 
 		<h3 class="fw-bold hide landing-ui-var text-danger text-center errorMsg" id="errorBoard">Test</h3>
 		`
@@ -56,7 +60,7 @@ export default function auth2fa(prop={}) {
 					throw response
 				}
 
-				document.getElementById('status').innerText = 'Verification Code Sent'
+				document.getElementById('status').innerText = 'The verification code had been sent to your email'
 			} catch (e) {
 				console.log(e)
 				document.getElementById('status').innerText = 'Error while sending code'
