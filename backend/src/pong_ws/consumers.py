@@ -46,11 +46,10 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
             playerJWT = content['jwt']
             validated_token = self.authenticator.get_validated_token(playerJWT)
             self.playerObject = await sync_to_async(self.authenticator.get_user)(validated_token)
-            player_name = self.playerObject.username
 
             match command:
                 case 'join':
-                    result = await PongServer.join_player(player_name, self.gameid, self.subserverid)
+                    result = await PongServer.join_player(self.playerObject, self.gameid, self.subserverid)
                     if not result[0]:
                         await self.send_json({
                             'status': 'error',
@@ -62,7 +61,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
                     self.authorized = True
                 case 'watch':
-                    result = await PongServer.new_spectator(player_name, self.gameid, self.subserverid)
+                    result = await PongServer.new_spectator(self.playerObject, self.gameid, self.subserverid)
                     if not result[0]:
                         await self.send_json({
                             'status': 'error',
@@ -79,7 +78,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
         else:
             content = {
-                'username': self.playerObject.username,
+                'player': self.playerObject,
                 **content
             }
             if self.authorized:

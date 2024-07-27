@@ -46,10 +46,10 @@ INSTALLED_APPS = [
 	'rest_framework_simplejwt',
     'corsheaders',
     'pong_ws',
-    'pongList_ws',
+    # 'pongList_ws',
     'chat_ws',
     'tournament_ws',
-    'tournamentList_ws',
+    # 'tournamentList_ws',
     # 'drf_spectacular',
 ]
 
