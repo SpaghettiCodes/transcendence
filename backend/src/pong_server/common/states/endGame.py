@@ -10,7 +10,7 @@ class endGame(State):
         self.durationLeft = durationUntilClose
         self.startTime = datetime.now()
 
-        self.winner = self.gameInstance.getWinner()
+        self.winner = self.gameInstance.getWinner().username
         self.removingFromServer = False
         self.kickEveryoneOut = False
 

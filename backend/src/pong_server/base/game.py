@@ -73,41 +73,41 @@ class Game(ABC):
             "players": self.expectedPlayers
         }
 
-    async def playerLeft(self, username):
-        if username in self.spectator:
-            self.spectator.remove(username)
+    async def playerLeft(self, playerObject):
+        if playerObject in self.spectator:
+            self.spectator.remove(playerObject)
             # no one cares if a spectator leaves
             return
 
-        if username not in self.players:
+        if playerObject not in self.players:
             return
 
-        self.players.remove(username)
+        self.players.remove(playerObject)
 
         await self.channel_layer.group_send(self.gameid, {
             "type": "message",
             "text": json.dumps({
                 "status": "info",
-                "message": f"player ${username} left",
+                "message": f"player ${playerObject.username} left",
             })
         })
 
         if self.emptyLobby():
             await self.removeFromServer()
 
-    async def playerJoin(self, username):
+    async def playerJoin(self, playerObject):
         if not self.has_begin():
-            if self.expectedPlayers and username not in self.expectedPlayers:
+            if self.expectedPlayers and playerObject not in self.expectedPlayers:
                 return (False, "You arent Invited!")
         else:
             # allow reconnection
-            if username not in self.expectedPlayers:
+            if playerObject not in self.expectedPlayers:
                 return (False, "Ongoing Match!")
 
         # anyone that come here should be
         # 1. a new player
         # 2. a reconnected old player
-        self.players.append(username)
+        self.players.append(playerObject)
 
         if not self.has_begin():
             if self.canStart():
@@ -122,8 +122,8 @@ class Game(ABC):
 
         return (True, "nothing to see here, move along")
 
-    def spectatorJoin(self, username):
-        self.spectator.append(username)
+    def spectatorJoin(self, playerObject):
+        self.spectator.append(playerObject)
         return (True, "yep, all good")
 
     async def start(self):

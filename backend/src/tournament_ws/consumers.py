@@ -35,12 +35,14 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 
     async def receive_json(self, content):
         command = content.get("command")
-        playerJWT = content.get('jwt')
-        validated_token = self.authenticator.get_validated_token(playerJWT)
-        self.playerObject = await sync_to_async(self.authenticator.get_user)(validated_token)
-        username = self.playerObject.username
+
         match command:
             case "join":
+                playerJWT = content.get('jwt')
+                validated_token = self.authenticator.get_validated_token(playerJWT)
+                self.playerObject = await sync_to_async(self.authenticator.get_user)(validated_token)
+                username = self.playerObject.username
+
                 result, message = await TournamentManager.player_join(username, self.tournament_id)
                 if result:
                     self.playerName = username
@@ -50,7 +52,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
                     })
             case _:
                 content = {
-                    'username': username,
+                    'username': self.playerObject.username,
                     **content
                 }
                 result, message = await TournamentManager.passInfo(self.tournament_id, content)

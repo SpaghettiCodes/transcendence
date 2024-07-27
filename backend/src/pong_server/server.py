@@ -95,7 +95,7 @@ class PongServer:
         return True
 
     @classmethod
-    async def join_player(cls, username, gameid, subserver_id=None):
+    async def join_player(cls, playerObject, gameid, subserver_id=None):
         if cls.servers.get(subserver_id) is None:
             return (False, "That tournament no longer Exist")
         subserver = cls.servers[subserver_id]
@@ -103,13 +103,13 @@ class PongServer:
         if gameid not in subserver.keys():
             return (False, "Game does not exist")
 
-        res = await subserver[gameid].playerJoin(username)
+        res = await subserver[gameid].playerJoin(playerObject)
 
         await cls.update_list()
         return res
 
     @classmethod
-    async def new_spectator(cls, username, gameid, subserver_id=None):
+    async def new_spectator(cls, playerObject, gameid, subserver_id=None):
         if cls.servers.get(subserver_id) is None:
             return (False, "That tournament no longer Exist")
         subserver = cls.servers[subserver_id]
@@ -117,7 +117,7 @@ class PongServer:
         if gameid not in subserver.keys():
             return (False, "Game does not exist")
 
-        res = subserver[gameid].spectatorJoin(username)
+        res = subserver[gameid].spectatorJoin(playerObject)
 
         await cls.update_list()
         return res
@@ -219,10 +219,11 @@ class PongServer:
 
     @classmethod
     async def update_list(cls):
-        from pongList_ws.consumers import match_list_newsletter
+        # from pongList_ws.consumers import match_list_newsletter
 
-        await cls.channel_layer.group_send(match_list_newsletter, {
-                "type": "message",
-                "text": cls.get_servers_list()
-        })
+        # await cls.channel_layer.group_send(match_list_newsletter, {
+        #         "type": "message",
+        #         "text": cls.get_servers_list()
+        # })
 
+        pass

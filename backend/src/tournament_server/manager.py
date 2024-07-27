@@ -119,10 +119,10 @@ class TournamentManager:
 
     @classmethod
     async def update_list(cls):
-        from tournamentList_ws.consumers import tournament_list_newslatter
+        # from tournamentList_ws.consumers import tournament_list_newslatter
 
-        await cls.channel_layer.group_send(tournament_list_newslatter, {
-                "type": "message",
-                "text": cls.get_server_list()
-        })
-
+        # await cls.channel_layer.group_send(tournament_list_newslatter, {
+        #         "type": "message",
+        #         "text": cls.get_server_list()
+        # })
+        pass
