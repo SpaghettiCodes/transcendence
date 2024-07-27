@@ -99,20 +99,15 @@ class GameFrame(PongGameFrame):
         ball_cord = self.ball.get_json_coord()
 
         ballCoordinates = [ball_cord] + [fakeBall.get_json_coord() for fakeBall in self.fakeBalls]
-        # have fun figuring out which is the real ball MUAHAHAHAHA
-        # mm nah animation looks like ass
-        # random.shuffle(ballCoordinates)
 
         return {
             "status": "update",
             "balls": ballCoordinates,
             "vents": [vent.get_json_coord() for vent in self.vents],
             "attacker": {
-                "id": self.attackerId,
                 **attacker_cord
             },
             "defender": {
-                "id": self.defenderId,
                 **defender_cord
             }
         }

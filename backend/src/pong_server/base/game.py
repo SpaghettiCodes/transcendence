@@ -6,6 +6,7 @@ import asyncio
 import json
 
 from ..base.state import State
+from api.serializer import PlayerSerializer
 
 class Game(ABC):
     FRAME_RATE = 1/240
@@ -70,7 +71,7 @@ class Game(ABC):
             "player_count": len(self.players),
             "spectator_count": len(self.spectator),
             "begin": self.begin,
-            "players": self.expectedPlayers
+            "players": [ player.username for player in self.expectedPlayers ],
         }
 
     async def playerLeft(self, playerObject):
