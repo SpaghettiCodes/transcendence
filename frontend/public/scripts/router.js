@@ -6,7 +6,6 @@
 let errorContainer = document.getElementById("errorContainer")
 let mainContainer = document.getElementById('mainContainer')
 
-
 import "./jwt.js"
 import landing from "./pages/landing.js"
 import fourofour from "./pages/404.js"
@@ -131,7 +130,21 @@ const get_renderer = (uri, prop) => {
 	return routes[found_uri]
 }
 
-const render_html = (which, prop={}) => {
+const render_html = (which, prop={}, originator=undefined, rightBefore=undefined) => {
+	console.log(originator)
+
+	if (originator !== undefined) {
+		// get current link
+		let callerLocation = rightBefore
+		if (rightBefore === undefined)
+			callerLocation = window.location.pathname
+		console.log(callerLocation)
+		if (callerLocation !== originator)
+			// the caller location is not the same as where the redirect is called
+			// this probably means we have already been redirected away
+			return
+	}
+
 	let to_render = get_renderer(which, prop)
 	let [ prerender, render_code, postrender, cleanup] = to_render(prop)
 
@@ -176,14 +189,16 @@ const navigate = (e, prop={}) => {
 	render_html(uri, prop)
 }
 
-export const redirect = (uri, prop={}) => {
+export const redirect = (uri, prop={}, originator=undefined) => {
+	let rightBefore = window.location.pathname
 	history.pushState(null, null, uri)
-	render_html(uri, prop)
+	render_html(uri, prop, originator, rightBefore)
 }
 
-export const redirect_replace_history = (uri, prop={}) => {
+export const redirect_replace_history = (uri, prop={}, originator=undefined) => {
+	let rightBefore = window.location.pathname
 	history.replaceState(null, null, uri)
-	render_html(uri, prop)
+	render_html(uri, prop, originator, rightBefore)
 }
 
 export const redirect_without_history = (uri, prop={}) => {

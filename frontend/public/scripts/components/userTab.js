@@ -19,10 +19,22 @@ function generateUserTab(friendData, onClickFunction) {
 	usernameDiv.innerText = username
 	newFriendDiv.append(usernameDiv)
 
-	newFriendDiv.onclick = onClickFunction(newFriendDiv)
+	if (onClickFunction)
+		newFriendDiv.onclick = onClickFunction(newFriendDiv)
+
+	newFriendDiv.playerAssociated = username
+	newFriendDiv.setAttribute('id', `player-details-${username}`)
 	return newFriendDiv
 }
 
 export default function generateUserTabs(friendList, onClickFunctionGenerator) {
+	if (onClickFunctionGenerator === undefined) {
+		onClickFunctionGenerator = () => undefined
+	}
+
 	return friendList.map((friend) => generateUserTab(friend, onClickFunctionGenerator(friend)))
 }
+
+export function getUserTab(usernameID) {
+	return document.getElementById(`player-details-${usernameID}`)
+} 
