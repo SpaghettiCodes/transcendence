@@ -10,31 +10,20 @@ import datetime
 from django.core.exceptions import ObjectDoesNotExist
 
 class PongServer:
-    servers: dict[None | str, dict[str, Game]] = {
-        None: {}
-    }
+    servers: dict[None | str, dict[str, Game]] = {}
     pongQueue = []
     apongQueue = []
 
     channel_layer = get_channel_layer()
 
     @classmethod
-    def getDetails(cls, game_id, subserver_id=None):
-        print(cls.servers)
-        if cls.servers.get(subserver_id) is None:
-            return
-        subserver = cls.servers[subserver_id]
-
-        return subserver[game_id].getDetails()
+    def getDetails(cls, game_id, ):
+        return cls.servers[game_id].getDetails()
 
     @classmethod
-    def get_servers_list(cls, subserver_id=None):
-        if cls.servers.get(subserver_id) is None:
-            return []
-        subserver = cls.servers[subserver_id]
-
+    def get_servers_list(cls, ):
         ret = []
-        for server_id, server in subserver.items():
+        for server_id, server in cls.servers.items():
             if (not server.is_hidden()):
                 ret.append(server.get_data())
         return ret
@@ -44,10 +33,9 @@ class PongServer:
     # put on hold for now
     def random_matchmake(cls, type="pong"):
         server_to_join = None
-        subserver = cls.servers[None]
 
         if len(cls.servers):
-            for server_id, server in subserver.items():
+            for server_id, server in cls.servers.items():
                 # should not be able to join a hidden server
                 # nor a server with player restriction
                 # nor a server that already started playing
@@ -95,29 +83,15 @@ class PongServer:
         return True
 
     @classmethod
-    async def join_player(cls, playerObject, gameid, subserver_id=None):
-        if cls.servers.get(subserver_id) is None:
-            return (False, "That tournament no longer Exist")
-        subserver = cls.servers[subserver_id]
-
-        if gameid not in subserver.keys():
-            return (False, "Game does not exist")
-
-        res = await subserver[gameid].playerJoin(playerObject)
+    async def join_player(cls, playerObject, gameid, ):
+        res = await cls.servers[gameid].playerJoin(playerObject)
 
         await cls.update_list()
         return res
 
     @classmethod
-    async def new_spectator(cls, playerObject, gameid, subserver_id=None):
-        if cls.servers.get(subserver_id) is None:
-            return (False, "That tournament no longer Exist")
-        subserver = cls.servers[subserver_id]
-
-        if gameid not in subserver.keys():
-            return (False, "Game does not exist")
-
-        res = subserver[gameid].spectatorJoin(playerObject)
+    async def new_spectator(cls, playerObject, gameid, ):
+        res = cls.servers[gameid].spectatorJoin(playerObject)
 
         await cls.update_list()
         return res
@@ -143,21 +117,16 @@ class PongServer:
         type="pong", 
         hidden=False, 
         expectedPlayers=[],
-        subserver_id=None
     ):
-        if (cls.servers.get(subserver_id) is None):
-            cls.servers[subserver_id] = dict()
-        subserver = cls.servers[subserver_id]
-
         server_id = cls.getNewServerID(type)
 
         if removalFunction is None:
-            removalFunction = cls.createRemovalFunction(server_id, subserver_id)
+            removalFunction = cls.createRemovalFunction(server_id)
 
         if type == "pong":
-            subserver[server_id] = PongGame(server_id, removalFunction, subserver_id, hidden, expectedPlayers)
+            cls.servers[server_id] = PongGame(server_id, removalFunction, hidden, expectedPlayers)
         elif type == "apong":
-            subserver[server_id] = APongUsGame(server_id, removalFunction, subserver_id, hidden, expectedPlayers)
+            cls.servers[server_id] = APongUsGame(server_id, removalFunction, hidden, expectedPlayers)
         else:
             print("Well that type does NOT exist")
             Match.objects.get(matchid=server_id).delete()
@@ -169,48 +138,29 @@ class PongServer:
         return server_id
 
     @classmethod
-    def getGameInstance(cls, game_id, subserver_id=None):
-        if (cls.servers.get(subserver_id) is None):
-            return None
-        subserver = cls.servers[subserver_id]
-
-        return subserver.get(game_id)
+    def getGameInstance(cls, game_id, ):
+        return cls.servers.get(game_id)
 
     @classmethod
-    def createRemovalFunction(cls, game_id, subserver_id=None):
+    def createRemovalFunction(cls, game_id, ):
         async def removalFunction():
-            if cls.servers.get(subserver_id) is None:
-                return
-            subserver = cls.servers[subserver_id]
-
-            gameInstance = subserver.pop(game_id)
+            gameInstance = cls.servers.pop(game_id)
             if not gameInstance.matchPlayed():
                 matchObject = await Match.objects.aget(matchid=game_id)
                 await matchObject.adelete()
             else:
                 await gameInstance.uploadMatchResults()
 
-            if subserver_id is not None and not len(subserver):
-                cls.servers.pop(subserver_id)
-
             await cls.update_list()
         return removalFunction
 
     @classmethod
-    def pass_info(cls, json_info, game_id, subserver_id=None):
-        if cls.servers.get(subserver_id) is None:
-            return
-
-        subserver = cls.servers[subserver_id]
-        subserver[game_id].command(json_info)
+    def pass_info(cls, json_info, game_id, ):
+        cls.servers[game_id].command(json_info)
 
     @classmethod
-    async def player_left(cls, username, game_id, subserver_id=None):
-        if cls.servers.get(subserver_id) is None:
-            return
-        subserver = cls.servers[subserver_id]
-
-        server = subserver.get(game_id)
+    async def player_left(cls, username, game_id, ):
+        server = cls.servers.get(game_id)
         if (not server):
             print("Probably a funny bug happened")
             return

@@ -11,7 +11,7 @@ from api.serializer import PlayerSerializer
 class Game(ABC):
     FRAME_RATE = 1/240
 
-    def __init__(self, gameid, removalFunction, subserver_id = None, hidden=False, expectedPlayers=[]) -> None:
+    def __init__(self, gameid, removalFunction, hidden=False, expectedPlayers=[]) -> None:
         # initial positions and shit
         self.gameid = gameid
         

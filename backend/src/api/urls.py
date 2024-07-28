@@ -55,7 +55,6 @@ urlpatterns = [
     path('tournament', tournament.TournamentView.as_view()),
     path('tournament/<tournament_id>', tournament.specificTournamentDetails),
     path('tournament/<tournament_id>/result', tournament.specificTournamentResults),
-    path('tournament/<tournament_id>/match/<match_id>', match.specificMatchGet),
 
     ## jwt token
     # path('token', TokenObtainPairView.as_view(), name='token_obtain_pair'), # fam we obtain the pair via /login

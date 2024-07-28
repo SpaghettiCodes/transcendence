@@ -37,7 +37,6 @@ class TournamentServer:
 
         self.minRequiredReady = minRequiredReady
 
-        self.subserverId = self.id
         self.groupName = f"tournament-{self.id}"
 
         self.removalFunction = removalFunction
@@ -45,6 +44,8 @@ class TournamentServer:
         # for database saving
         self.completePlayers = []
         self.completeResults = []
+
+        self.currentlyRunningMatches = []
 
         # for running the server
         self.currentPlayers = []
@@ -161,10 +162,7 @@ class TournamentServer:
         }
 
     def getMatches(self):
-        matches = PongServer.get_servers_list(self.subserverId)
-        if matches is None:
-            return []
-        return matches
+        return self.currentlyRunningMatches
 
     def canBeginTournament(self):
         return (
@@ -230,6 +228,7 @@ class TournamentServer:
         self.matchesPlayed = 0
         self.currentResults = []
         self.readiedPlayers = []
+        self.currentlyRunningMatches = []
 
     async def delaySeconds(self, duration, functionToRun=None):
         startTime = datetime.now()
@@ -287,11 +286,11 @@ class TournamentServer:
         for matchup in matchups:
             gameId = await sync_to_async(PongServer.new_game) (
                 expectedPlayers=[matchup[0], matchup[1]],
-                subserver_id=self.subserverId
             )
+            self.currentlyRunningMatches.append(gameId)
 
             # i have only myself to blame for this situation
-            gameInstance = PongServer.getGameInstance(gameId, self.subserverId)
+            gameInstance = PongServer.getGameInstance(gameId)
             gameInstance.setRemovalFunction(self.collectData(gameInstance))
             await gameInstance.startImmediately()
 
@@ -361,9 +360,8 @@ class TournamentServer:
     def collectData(self, gameInstance: PongGame):
         async def function():
             gameId = gameInstance.gameid
-            subserverId = self.subserverId
             # remove game instance from Server
-            await PongServer.createRemovalFunction(gameId, subserverId)()
+            await PongServer.createRemovalFunction(gameId)()
 
             matchObject = await Match.objects.aget(matchid=gameId)
 
