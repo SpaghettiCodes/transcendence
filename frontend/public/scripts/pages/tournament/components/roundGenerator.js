@@ -86,9 +86,12 @@ function matchDetailsDiv(matchCount, matches, onClickGenerator) {
 			bottomPlayer.appendChild(bottomRedirector)
 
 			fragment.appendChild(bottomPlayer)
+
+			if ((i + 1) == matchCount - 1) // last one
+				fragment.appendChild(spaceGenerator())
 		}
 
-		if (i == matchCount - 1) // last one
+		if ((i) == matchCount - 1) // last one
 			fragment.appendChild(spaceGenerator())
 	}
 

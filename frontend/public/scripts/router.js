@@ -36,6 +36,8 @@ const routes = {
 	'/match/<game_id>/results': result,
 	'/match/<game_id>': match,
 	'/chat': chat,
+	'/tournament/<tournament_id>/spectate': tournament,
+	'/tournament/<tournament_id>/results': fourofour,
 	'/tournament/<tournament_id>': tournament,
 	'/profile': profile,
 	'/matchmaking/<game_type>': matchmaking,

@@ -5,6 +5,7 @@ import { appendOngoingMatchup, appendTournamentScreen, generateTournamentScreen 
 
 export default function tournament(prop={}) {
 	const tournamentID = (prop["arguments"]) ? (prop["arguments"]["tournament_id"]) : undefined
+	const spectating = (prop['arguments']) ? prop['arguments']['spectate'] ? true : false : false
 
 	let tournamentSocket = undefined
 	let goingToBattle = false
@@ -43,9 +44,9 @@ export default function tournament(prop={}) {
 			<h1 class="title">Tournament</h1>
 		</div>
 		<div class="row container-fluid d-flex flex-row justify-content-center align-self-center overflow-y-auto flex-grow-1 gap-3 px-5 tournamentContents">
-			<div class='col-sm d-flex flex-row flex-grow-1 flex-shrink-1 tournamentProgress' id="tournament-rounds">
-				<div>
-					Tournament has not started
+			<div class='d-flex flex-column col-sm'>
+				<h2 id='status'>Tournament has not started</h2>
+				<div class='col-sm d-flex flex-row flex-grow-1 flex-shrink-1 tournamentProgress' id="tournament-rounds">
 				</div>
 			</div>
 			<div class="col-sm player-list rounded d-flex flex-column align-items-stretch flex-grow-1 overflow-y-hidden">
@@ -85,6 +86,7 @@ export default function tournament(prop={}) {
 		let tournamentScreen = document.getElementById('tournament-rounds')
 		let playerList = document.getElementById('playersList')
 		let readyButton = document.getElementById('readybutton')
+		let statusBar = document.getElementById('status')
 
 		const sendMessage = (data) => {
 			tournamentSocket.send(JSON.stringify(data))
@@ -135,30 +137,29 @@ export default function tournament(prop={}) {
 			let newRoundPlayers = games.map((game) => {
 				return game.players
 			})
-			console.log(newRoundPlayers)
 
 			appendTournamentScreen(tournamentScreen, newRoundPlayers)
 
 			const onClickGenerator = (gameID) => () => {
-				redirect(`/match/${gameID}`, {
-					'arguments': {
-						'tournament_id': tournamentID
-					}
-				})
+				if (spectating) {
+					redirect(`/match/${gameID}/spectate`)
+				} else {
+					redirect(`/match/${gameID}`)
+				}
 			}
 
 			let newRoundMatches = []
 
 			for (let game of games) {
 				let gameID = game.game_id
-				if (game.players.includes(yourName)) {
-					redirect(`/match/${gameID}`, {
-						'arguments': {
-							'tournament_id': tournamentID
-						}
-					})
-					return
-				}
+				// if (game.players.includes(yourName)) {
+				// 	redirect(`/match/${gameID}`, {
+				// 		'arguments': {
+				// 			'tournament_id': tournamentID
+				// 		}
+				// 	})
+				// 	return
+				// }
 				newRoundMatches.push(gameID)
 			}
 
@@ -167,12 +168,19 @@ export default function tournament(prop={}) {
 
 		const loadPlayedList = (previousRounds) => {
 			tournamentScreen.innerHTML = ''
-
+			
+			console.log('previously played')
 			console.log(previousRounds)
 		}
 
 		const loadTournamentData = (data) => {
 			let { started, players, ready, previousMatches, matches } = data
+
+			if (started)
+				setStatusMessage('Round have started')
+			else
+				setStatusMessage("Waiting for players...")
+
 			console.log(players)
 			loadPlayerList(players, ready)
 			loadPlayedList(previousMatches)
@@ -187,6 +195,10 @@ export default function tournament(prop={}) {
 			)
 		}
 
+		const setStatusMessage = (msg) => {
+			statusBar.innerText = msg
+		}
+
 		const connectToWebsocket = async () => {
 			tournamentSocket = new WebSocket(`ws://localhost:8000/tournament/${tournamentID}`)
 			
@@ -195,10 +207,16 @@ export default function tournament(prop={}) {
 			}
 
 			tournamentSocket.onopen = () => {
-				sendMessage({
-					"command": "join",
-					'jwt': getJwtToken()
-				})
+				if (!spectating){
+					sendMessage({
+						"command": "join",
+						'jwt': getJwtToken()
+					})
+				} else {
+					sendMessage({
+						"command": "spectate",
+					})
+				}
 			}
 
 			tournamentSocket.onclose = () => {
@@ -207,14 +225,14 @@ export default function tournament(prop={}) {
 
 			tournamentSocket.onmessage = (e) => {
 				const data = JSON.parse(e.data)
+				console.log(data)
 
 				const status = data["status"]
 
 				switch (status)
 				{
 					case "error":
-						let tournamentDetails = document.getElementById("tournamentDetails")
-						tournamentDetails.innerText = data["message"]
+						setStatusMessage(data['message'])
 						break
 					case "refresh":
 						refreshTournamentData()
@@ -223,11 +241,10 @@ export default function tournament(prop={}) {
 						loadPlayerList(data["players"], data["ready"])
 						break
 					case "timer":
-						console.log('Implement me Later')
+						setStatusMessage(data['message'])
 						break
 					case "cancel":
-						console.log('Implement Me Later')
-						// setStatusMessage("Waiting for enough people to ready up...")
+						setStatusMessage("Waiting for enough people to ready up...")
 						break
 					case "leave":
 						history.back()
