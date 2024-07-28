@@ -1,5 +1,5 @@
 import { fetchMod } from "../../jwt.js"
-import { redirect } from "../../router.js"
+import { redirect, redirect_without_history } from "../../router.js"
 import { scoreDetailsDiv } from "./components/scoreDetailsDiv.js"
 import { playerViewProfileButtonID } from "./components/playerDiv.js"
 
@@ -37,7 +37,9 @@ export default function result(prop={}) {
 			console.log(error)
 			if (error === 'redirected')
 				return false
-			history.back()
+			if (error.status === 404) {
+				redirect_without_history('/error')
+			}
 			return false
 		}
 	}

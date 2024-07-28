@@ -9,13 +9,88 @@ export default function match(prop={}) {
 	let game_id = (prop["arguments"]) ? (prop["arguments"]["game_id"]) : undefined
 	let spectating = (prop["arguments"]) ? prop["arguments"]["spectate"] ? true : false : false
 	let apiURI = `match/${game_id}`
-
+	
 	let fixDimensions = undefined
 	let pongSocket = undefined
 
+	// these are server data and should be taken from API calling /match/<id>
+	let matchStarted = false
+
+	let serverFieldWidth = undefined
+	let serverFieldHeight = undefined
+	let serverAspectRatio = undefined
+
+	let serverPaddleHeight = undefined
+	let serverPaddleWidth = undefined
+
+	let serverBallRadius = undefined
+
+	let serverVentWidth = undefined
+	let serverVentHeight = undefined
+
+	let attacker = undefined
+	let defender = undefined
+
+	let scores = {}
+
+	const getGameData = async () => {
+		try {
+			let value = await fetchMod (
+				`http://localhost:8000/api/${apiURI}`,
+				{
+					method: "GET",
+				}
+			)
+
+			if (!value.ok)
+				throw value
+
+			let data = await value.json()
+			console.log(data)
+			matchStarted = data["started"]
+			if (matchStarted)
+			{
+				attacker = data["sides"]["attacker"]
+				defender = data["sides"]["defender"]
+
+				// no idea where to put score first sooo
+				scores[attacker] = data["score"]["attacker"]
+				scores[defender] = data["score"]["defender"]
+			}
+
+			let settings = data["settings"]
+
+			serverFieldWidth = settings["width"]
+			serverFieldHeight = settings["height"]
+			serverAspectRatio = serverFieldWidth / serverFieldHeight
+
+			serverBallRadius = settings["ball"]["radius"],
+			serverPaddleWidth = settings["paddle"]["width"],
+			serverPaddleHeight = settings["paddle"]["height"]
+
+			if (settings["vent"]) {
+				serverVentWidth = settings["vent"]["width"]
+				serverVentHeight = settings['vent']['height']
+			}
+		} catch (response) {
+			console.log(response)
+			if (response.status === 404) {
+				// okayyy its probably already done and is in results?
+				console.log('go somwhere else')
+				redirect_replace_history(`/match/${game_id}/results`, {})
+			} else {
+				console.log("i have no idea what happened")
+				console.log(response)
+			}
+			return false
+		}
+		return true
+	}
+
 	// attach all pre-rendering code here (like idk, fetch request or something)
 	let prerender = async () => {
-		return true // return true to continue to render_code
+		let results = await getGameData()
+		return results // return true to continue to render_code
 		// return false to abort (usually used with redirect)
 	}
 
@@ -51,86 +126,9 @@ export default function match(prop={}) {
 		const gameComponent = document.getElementById("gameComponent")
 		const messageBoard = document.getElementById("messageBoard")
 
-		let matchStarted = false
-
-		// these are fixed and should be taken from API calling /match/<id>
-		let serverFieldWidth = undefined
-		let serverFieldHeight = undefined
-		let serverAspectRatio = undefined
-
-		let serverPaddleHeight = undefined
-		let serverPaddleWidth = undefined
-
-		let serverBallRadius = undefined
-
-		let serverVentWidth = undefined
-		let serverVentHeight = undefined
-
 		// playing field dimensions, CAN AND WILL CHANGE
 		let fieldHeight = undefined
 		let fieldWidth = undefined
-
-		let attacker = undefined
-		let defender = undefined
-
-		let scores = {}
-
-		const getGameData = async () => {
-			try {
-				let value = await fetchMod (
-					`http://localhost:8000/api/${apiURI}`,
-					{
-						method: "GET",
-					}
-				)
-
-				if (!value.ok)
-					throw value
-
-				let data = await value.json()
-				console.log(data)
-				matchStarted = data["started"]
-				if (matchStarted)
-				{
-					attacker = data["sides"]["attacker"]
-					defender = data["sides"]["defender"]
-
-					document.getElementById("attackerNameField").innerText = attacker.username
-					document.getElementById("defenderNameField").innerText = defender.username
-
-					// no idea where to put score first sooo
-					scores[attacker] = data["score"]["attacker"]
-					scores[defender] = data["score"]["defender"]
-
-					updateScoreBoard()
-				}
-
-				let settings = data["settings"]
-
-				serverFieldWidth = settings["width"]
-				serverFieldHeight = settings["height"]
-				serverAspectRatio = serverFieldWidth / serverFieldHeight
-
-				serverBallRadius = settings["ball"]["radius"],
-				serverPaddleWidth = settings["paddle"]["width"],
-				serverPaddleHeight = settings["paddle"]["height"]
-
-				if (settings["vent"]) {
-					serverVentWidth = settings["vent"]["width"]
-					serverVentHeight = settings['vent']['height']
-				}
-
-				fixFieldDimensions()
-			} catch (reason) {
-				if (reason.status == 404) {
-					redirect_without_history('/error', {})
-				} else {
-					errorMessage("Yeah idk also ¯\\_(ツ)_/¯")
-				}
-				throw reason
-			}
-
-		}
 
 		const errorMessage = (msg) => {
 			document.getElementById("matchContent").removeAttribute('class')
@@ -158,9 +156,18 @@ export default function match(prop={}) {
 			paddleElement.style.height = `${newPaddleHeight}px`
 		}
 
+		const updatePlayerBoard = () => {
+			if (attacker !== undefined)
+				document.getElementById("attackerNameField").innerText = attacker.username
+			if (defender !== undefined)
+				document.getElementById("defenderNameField").innerText = defender.username
+		}
+
 		const updateScoreBoard = () => {
-			document.getElementById("attackerScoreBoard").innerText = scores[attacker]
-			document.getElementById("defenderScoreBoard").innerText = scores[defender]
+			if (scores[attacker] !== undefined)
+				document.getElementById("attackerScoreBoard").innerText = scores[attacker]
+			if (scores[defender] !== undefined)
+				document.getElementById("defenderScoreBoard").innerText = scores[defender]
 		}
 
 		const fixPaddlePosition = ({
@@ -509,7 +516,11 @@ export default function match(prop={}) {
 					case "joined":
 						break
 					case "start":
-						getGameData()
+						getGameData().then((e) => {
+							fixFieldDimensions()
+							updateScoreBoard()
+							updatePlayerBoard()	
+						})
 						break
 					case "wait":
 						updateMessageBoard("Waiting for players...", 5)
@@ -572,18 +583,12 @@ export default function match(prop={}) {
 			}
 		}
 
-		getGameData().then(
-			(value) => {
-				connectSocket()
-				window.addEventListener("resize", fixFieldDimensions)
-				fixDimensions = fixFieldDimensions
-			}
-		).catch(
-			(error) => {
-				console.log(error)
-				console.log("well that did not work out")
-			}
-		)
+		fixFieldDimensions()
+		updateScoreBoard()
+		updatePlayerBoard()
+		connectSocket()
+		window.addEventListener("resize", fixFieldDimensions)
+		fixDimensions = fixFieldDimensions
 	}
 
 	let cleanup = () => {

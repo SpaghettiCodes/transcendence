@@ -1,6 +1,6 @@
 import generateUserTabs from "../../components/userTab.js"
 import { fetchMod, getJwtToken } from "../../jwt.js"
-import { redirect, redirect_without_history } from "../../router.js"
+import { redirect, redirect_replace_history, redirect_without_history } from "../../router.js"
 import { everyElementContains, pairElements } from "../helpers.js"
 import { appendOngoingMatchup, appendTournamentScreen, generateTournamentScreen } from "./components/roundGenerator.js"
 
@@ -10,6 +10,8 @@ export default function tournament(prop={}) {
 
 	let tournamentSocket = undefined
 	let goingToBattle = false
+
+	let currentPathName = window.location.pathname
 
 	let yourName = undefined
 
@@ -133,11 +135,12 @@ export default function tournament(prop={}) {
 		}
 
 		const loadCurrentGameList = (games, previousRoundData) => {
-			if (!games.length)
-				return
-
 			let newRoundPlayers = undefined
 			if (previousRoundData === undefined){
+
+				if (!games.length)
+					return
+	
 				newRoundPlayers = games.map((game) => {
 					return game.players
 				})
@@ -147,6 +150,9 @@ export default function tournament(prop={}) {
 
 			appendTournamentScreen(tournamentScreen, newRoundPlayers)
 
+			if (!games.length)
+				return
+
 			const onClickGenerator = (gameID) => () => {
 				if (spectating) {
 					redirect(`/match/${gameID}/spectate`)
@@ -155,10 +161,9 @@ export default function tournament(prop={}) {
 				}
 			}
 
-			console.log(games)
 			for (let game of games) {
 				if (game.players.includes(yourName) && !game.ended) {
-					redirect(`/match/${game.game_id}`)
+					redirect(`/match/${game.game_id}`, {}, currentPathName)
 					return
 				}
 			}
@@ -215,7 +220,7 @@ export default function tournament(prop={}) {
 			let { started, players, ready, previousMatches, matches } = data
 
 			if (started)
-				setStatusMessage('Round have started')
+				setStatusMessage('Waiting for players to ready up...')
 			else
 				setStatusMessage("Waiting for players...")
 
@@ -266,8 +271,12 @@ export default function tournament(prop={}) {
 
 				const status = data["status"]
 
+				console.log(data)
 				switch (status)
 				{
+					case "loser":
+						redirect_replace_history(`/tournament/${tournamentID}/spectate`)
+						break
 					case "error":
 						setStatusMessage(data['message'])
 						break
@@ -287,7 +296,7 @@ export default function tournament(prop={}) {
 						history.back()
 						break
 					case "winner":
-						console.log('win')
+						setStatusMessage(`${data['winner']['username']} wins the tournament`)
 						break
 				}
 			}
