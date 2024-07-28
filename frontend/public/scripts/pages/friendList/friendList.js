@@ -17,43 +17,47 @@ export default function template(prop = {}) {
 
     let prerender = async () => {
         try {
-			const response = await fetchMod('http://localhost:8000/api/me');
-			if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
-			const user = await response.json();
-			me = user;
-			console.log('ME', user.username)
-			const friendsResponse = await fetchMod('http://localhost:8000/api/player/' + user.username + '/friends');
-			if (!friendsResponse.ok) throw new Error('Network response was not ok ' + friendsResponse.statusText);
-			const friendlist = await friendsResponse.json();
-		
-			const randomUsers = await fetchMod('http://localhost:8000/api/player/random?number=5');
-			if (!randomUsers.ok) throw new Error('Network response was not ok ' + randomUsers.statusText);
-			const randomUsersData = await randomUsers.json();
-		
-			const mergedList = [...friendlist, ...randomUsersData];
-			
-			const profile = Object.values(mergedList)[0];
-			const profileFetch = await fetchMod(`http://localhost:8000/api/player/${profile.username}`);
-			const profileData = await profileFetch.json();
-
-			const profileMatch = await fetchMod(`http://localhost:8000/api/player/${profile.username}/match`);
-			const profileMatchData = await profileMatch.json();
-
-			const block = await fetchMod(`http://localhost:8000/api/player/${user.username}/blocked`);
-			const blockList = await block.json();
-			console.log(blockList);
-
+            const response = await fetchMod('http://localhost:8000/api/me');
+            if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
+            const user = await response.json();
+            me = user;
+            console.log('ME', user.username);
+    
+            const friendsResponse = await fetchMod('http://localhost:8000/api/player/' + user.username + '/friends');
+            if (!friendsResponse.ok) throw new Error('Network response was not ok ' + friendsResponse.statusText);
+            const friendlist = await friendsResponse.json();
+    
+            const randomUsers = await fetchMod('http://localhost:8000/api/player/random?number=5');
+            if (!randomUsers.ok) throw new Error('Network response was not ok ' + randomUsers.statusText);
+            let randomUsersData = await randomUsers.json();
+    
+            // Filter out the current user from the random users list
+            randomUsersData = randomUsersData.filter(randomUser => randomUser.username !== me.username);
+    
+            const mergedList = [...friendlist, ...randomUsersData];
+    
+            const profile = Object.values(mergedList)[0];
+            const profileFetch = await fetchMod(`http://localhost:8000/api/player/${profile.username}`);
+            const profileData = await profileFetch.json();
+    
+            const profileMatch = await fetchMod(`http://localhost:8000/api/player/${profile.username}/match`);
+            const profileMatchData = await profileMatch.json();
+    
+            const block = await fetchMod(`http://localhost:8000/api/player/${user.username}/blocked`);
+            const blockList = await block.json();
+            console.log(blockList);
+    
             const Requests = await fetchMod(`http://localhost:8000/api/player/${user.username}/friends/request`);
             const friendRequests = await Requests.json();
             console.log('friendResquests', friendRequests);
-
-			 prop.data = { user: profileData, matches: profileMatchData, friends: mergedList, blocked: blockList, friendRequests : friendRequests};
+    
+            prop.data = { user: profileData, matches: profileMatchData, friends: mergedList, blocked: blockList, friendRequests: friendRequests };
             return true;
         } catch (error) {
             console.error('Fetch error:', error);
             return false;
         }
-    };
+    };    
 
     let render_code = () => {
         profile = prop.data.user;
