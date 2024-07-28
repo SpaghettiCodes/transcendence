@@ -75,8 +75,8 @@ export default function template(prop={}) {
 				</div>
 			</div>
 			<div class="bottom-left-buttons">
-				${createButton('Change Profile Pic', 'btn btn-secondary', 'button', 'pfp_button')}
-				${createButton('Change Email', 'btn btn-secondary', 'button', 'email_button')}
+				${createButton('btn btn-secondary', 'button', 'Change Profile Pic', 'pfp_button')}
+				${createButton('btn btn-secondary', 'button', 'Change Email', 'email_button')}
 			</div>
 		</div>
     `
