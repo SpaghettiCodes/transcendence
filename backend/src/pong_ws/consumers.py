@@ -15,7 +15,6 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
     # called when client connects to websocket
     async def connect(self):
         self.gameid = self.scope['url_route']['kwargs']['pongid']
-        self.subserverid = self.scope['url_route']['kwargs'].get('tournamentid')
 
         self.groupname = f"game-{self.gameid}" # gameid is guranteed to be unique
 
@@ -34,7 +33,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
     async def disconnect(self, code):
         if self.authorized or self.spectate:
             playerUsername = self.playerObject.username
-            await PongServer.player_left(playerUsername, self.gameid, self.subserverid)
+            await PongServer.player_left(playerUsername, self.gameid)
         await self.channel_layer.group_discard(
             self.groupname, self.channel_name
         )
@@ -49,7 +48,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
             match command:
                 case 'join':
-                    result = await PongServer.join_player(self.playerObject, self.gameid, self.subserverid)
+                    result = await PongServer.join_player(self.playerObject, self.gameid)
                     if not result[0]:
                         await self.send_json({
                             'status': 'error',
@@ -61,7 +60,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
                     self.authorized = True
                 case 'watch':
-                    result = await PongServer.new_spectator(self.playerObject, self.gameid, self.subserverid)
+                    result = await PongServer.new_spectator(self.playerObject, self.gameid)
                     if not result[0]:
                         await self.send_json({
                             'status': 'error',
@@ -82,7 +81,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
                 **content
             }
             if self.authorized:
-                PongServer.pass_info(content, self.gameid, self.subserverid)
+                PongServer.pass_info(content, self.gameid)
             return
 
     async def message(self, event):

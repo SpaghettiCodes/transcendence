@@ -15,8 +15,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from api.serializer import PublicPlayerSerializer
 
 class PongGame(Game):
-    def __init__(self, gameid, removalFunction, subserver_id=None, hidden=False, expectedPlayers=[]) -> None:
-        super().__init__(gameid, removalFunction, subserver_id, hidden, expectedPlayers)
+    def __init__(self, gameid, removalFunction, hidden=False, expectedPlayers=[]) -> None:
+        super().__init__(gameid, removalFunction, hidden, expectedPlayers)
 
         if len(expectedPlayers):
             assert len(expectedPlayers) == 2, "Expected Players MUST HAVE THE LENGTH OF 2"

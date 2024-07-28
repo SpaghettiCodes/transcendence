@@ -1,5 +1,5 @@
 import { fetchMod, getJwtToken } from "../jwt.js"
-import { redirect, redirect_replace_history } from "../router.js"
+import { redirect, redirect_replace_history, redirect_without_history } from "../router.js"
 import { ImageFromBackendUrl } from "./helpers.js"
 
 export default function match(prop={}) {
@@ -7,9 +7,8 @@ export default function match(prop={}) {
 	let currentPathName = window.location.pathname
 
 	let game_id = (prop["arguments"]) ? (prop["arguments"]["game_id"]) : undefined
-	let tournament_id = (prop["arguments"]) ? prop["arguments"]["tournament_id"] : undefined
 	let spectating = (prop["arguments"]) ? prop["arguments"]["spectate"] ? true : false : false
-	let apiURI = (tournament_id) ? `tournament/${tournament_id}/match/${game_id}` : `match/${game_id}`
+	let apiURI = `match/${game_id}`
 
 	let fixDimensions = undefined
 	let pongSocket = undefined
@@ -124,7 +123,7 @@ export default function match(prop={}) {
 				fixFieldDimensions()
 			} catch (reason) {
 				if (reason.status == 404) {
-					redirect('/error', {}, currentPathName)
+					redirect_without_history('/error', {})
 				} else {
 					errorMessage("Yeah idk also ¯\\_(ツ)_/¯")
 				}

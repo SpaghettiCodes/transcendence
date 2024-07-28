@@ -1,8 +1,6 @@
 import generateUserTabs from "../../components/userTab.js"
-import { getUserTab } from "../../components/userTab.js"
 import { fetchMod, getJwtToken } from "../../jwt.js"
 import { redirect, redirect_without_history } from "../../router.js"
-import drawPieChartData from "../profile/components/pieChartData.js"
 import { appendOngoingMatchup, appendTournamentScreen, generateTournamentScreen } from "./components/roundGenerator.js"
 
 export default function tournament(prop={}) {
@@ -169,6 +167,8 @@ export default function tournament(prop={}) {
 
 		const loadPlayedList = (previousRounds) => {
 			tournamentScreen.innerHTML = ''
+
+			console.log(previousRounds)
 		}
 
 		const loadTournamentData = (data) => {
