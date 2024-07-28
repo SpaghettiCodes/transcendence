@@ -4,5 +4,4 @@ from . import consumers
 
 websocket_urlpatterns = [
     path("match/<slug:pongid>", consumers.PongConsumer.as_asgi()),
-    path("tournament/<slug:tournamentid>/match/<slug:pongid>", consumers.PongConsumer.as_asgi())
 ]

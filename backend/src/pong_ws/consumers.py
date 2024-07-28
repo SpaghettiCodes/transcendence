@@ -15,7 +15,6 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
     # called when client connects to websocket
     async def connect(self):
         self.gameid = self.scope['url_route']['kwargs']['pongid']
-        self.subserverid = self.scope['url_route']['kwargs'].get('tournamentid')
 
         self.groupname = f"game-{self.gameid}" # gameid is guranteed to be unique
 
@@ -33,8 +32,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
     # called when websocket connection closed
     async def disconnect(self, code):
         if self.authorized or self.spectate:
-            playerUsername = self.playerObject.username
-            await PongServer.player_left(playerUsername, self.gameid, self.subserverid)
+            await PongServer.player_left(self.playerObject, self.gameid)
         await self.channel_layer.group_discard(
             self.groupname, self.channel_name
         )
@@ -46,11 +44,10 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
             playerJWT = content['jwt']
             validated_token = self.authenticator.get_validated_token(playerJWT)
             self.playerObject = await sync_to_async(self.authenticator.get_user)(validated_token)
-            player_name = self.playerObject.username
 
             match command:
                 case 'join':
-                    result = await PongServer.join_player(player_name, self.gameid, self.subserverid)
+                    result = await PongServer.join_player(self.playerObject, self.gameid)
                     if not result[0]:
                         await self.send_json({
                             'status': 'error',
@@ -62,7 +59,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
                     self.authorized = True
                 case 'watch':
-                    result = await PongServer.new_spectator(player_name, self.gameid, self.subserverid)
+                    result = await PongServer.new_spectator(self.playerObject, self.gameid)
                     if not result[0]:
                         await self.send_json({
                             'status': 'error',
@@ -79,11 +76,11 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
         else:
             content = {
-                'username': self.playerObject.username,
+                'player': self.playerObject,
                 **content
             }
             if self.authorized:
-                PongServer.pass_info(content, self.gameid, self.subserverid)
+                PongServer.pass_info(content, self.gameid)
             return
 
     async def message(self, event):

@@ -75,9 +75,9 @@ class MatchView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 @api_view(["GET"])
-def specificMatchGet(request, match_id, tournament_id=None):
+def specificMatchGet(request, match_id):
     try:
-        return Response(PongServer.getDetails(match_id, tournament_id))
+        return Response(PongServer.getDetails(match_id))
     except Exception as e:
         print("uh oh stinky")
         print(e)

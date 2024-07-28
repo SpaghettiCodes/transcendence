@@ -37,25 +37,20 @@ class TournamentManager:
         return result
 
     @classmethod
-    async def player_join(cls, username, id):
+    async def player_join(cls, playerObject, id):
         if id not in cls.servers.keys():
-            return (False, "Tournament does not exist")
+            return (False, "Tournament does not exist", '404')
         
-        success, message = await cls.servers[id].playerJoin(username)
-
-        if not success:
-            return (success, message)
-
-        return (True, "Nothing to see here, move along")
+        return await cls.servers[id].playerJoin(playerObject)
 
     @classmethod
-    async def player_left(cls, username, id):
+    async def player_left(cls, playerObject, id):
         if id not in cls.servers.keys():
-            return (False, "Tournament does not exist")
+            return (False, "Tournament does not exist", '404')
 
-        await cls.servers[id].playerLeft(username)
+        await cls.servers[id].playerLeft(playerObject)
 
-        return (True, "Everything is fine")
+        return (True, "Everything is fine", '')
 
     @classmethod 
     def getNewTournamentID(cls):
@@ -89,7 +84,7 @@ class TournamentManager:
     @classmethod
     async def passInfo(cls, id, data):
         if cls.servers.get(id) is None:
-            return (False, "Game not found")
+            return (False, "Game not found", 'not_found')
         return await cls.servers[id].processInfo(data)
 
     # hm, ptsd
@@ -119,10 +114,10 @@ class TournamentManager:
 
     @classmethod
     async def update_list(cls):
-        from tournamentList_ws.consumers import tournament_list_newslatter
+        # from tournamentList_ws.consumers import tournament_list_newslatter
 
-        await cls.channel_layer.group_send(tournament_list_newslatter, {
-                "type": "message",
-                "text": cls.get_server_list()
-        })
-
+        # await cls.channel_layer.group_send(tournament_list_newslatter, {
+        #         "type": "message",
+        #         "text": cls.get_server_list()
+        # })
+        pass

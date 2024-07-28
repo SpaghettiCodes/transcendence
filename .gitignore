@@ -2,7 +2,8 @@ data
 data/*
 node_modules/
 __pycache__/
-migrations/
+backend/src/database/migrations/*
+!backend/src/database/migrations/__init__.py
 .env
 *.pyc
 *.pyo

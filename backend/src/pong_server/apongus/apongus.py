@@ -2,15 +2,12 @@ from ..pong.pong import PongGame
 from .gameframe import GameFrame
 
 class APongUsGame(PongGame):
-    def __init__(self, gameid, removalFunction, subserver_id=None, hidden=False, expectedPlayers=[]) -> None:
-        super().__init__(gameid, removalFunction, subserver_id, hidden, expectedPlayers)
+    def __init__(self, gameid, removalFunction, hidden=False, expectedPlayers=[]) -> None:
+        super().__init__(gameid, removalFunction, hidden, expectedPlayers)
 
         self.type = "apong"
 
         self.field = GameFrame()
-
-        self.attackerid = None
-        self.defenderid = None
 
     def incrementGameCount(self, playerObject):
         playerObject.apong_matches_played += 1

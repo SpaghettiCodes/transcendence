@@ -12,7 +12,7 @@ class ProcessPhysics(State):
         self.gameInstance.field.renderFrame(frameRate)
         scored, whoScored = self.gameInstance.field.checkGoal()
         if (scored):
-            self.setforcedTransition(Score(whoScored, self, self.gameInstance))
+            self.setforcedTransition(Score(whoScored.username, self, self.gameInstance))
 
     def getData(self):
         return self.gameInstance.field.getFrame()

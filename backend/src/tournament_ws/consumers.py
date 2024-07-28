@@ -27,39 +27,49 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 
     async def disconnect(self, code):
         if self.authorized:
-            playerUsername = self.playerObject.username
-            await TournamentManager.player_left(playerUsername, self.tournament_id)
+            await TournamentManager.player_left(self.playerObject, self.tournament_id)
         await self.channel_layer.group_discard(
             self.groupName, self.channel_name
         )
 
     async def receive_json(self, content):
         command = content.get("command")
-        playerJWT = content.get('jwt')
-        validated_token = self.authenticator.get_validated_token(playerJWT)
-        self.playerObject = await sync_to_async(self.authenticator.get_user)(validated_token)
-        username = self.playerObject.username
+
         match command:
             case "join":
-                result, message = await TournamentManager.player_join(username, self.tournament_id)
+                playerJWT = content.get('jwt')
+                validated_token = self.authenticator.get_validated_token(playerJWT)
+                self.playerObject = await sync_to_async(self.authenticator.get_user)(validated_token)
+
+                result, message, code = await TournamentManager.player_join(self.playerObject, self.tournament_id)
                 if result:
-                    self.playerName = username
                     self.authorized = True
                     await self.send_json({
                         "status": "refresh"
                     })
+            case 'spectate':
+                self.spectate = True
+                return
             case _:
-                content = {
-                    'username': username,
-                    **content
-                }
-                result, message = await TournamentManager.passInfo(self.tournament_id, content)
-        
+                if (self.authorized):
+                    content = {
+                        'player': self.playerObject,
+                        **content
+                    }
+                    result, message, code = await TournamentManager.passInfo(self.tournament_id, content)
+                else:
+                    return
+
         if not result:
             await self.send_json({
                 'status': 'error',
                 'message': message
             })
+            match code:
+                case 'lost':
+                    await self.send_json({
+                        'status': 'loser'
+                    })
 
     async def message(self, event):
         try:

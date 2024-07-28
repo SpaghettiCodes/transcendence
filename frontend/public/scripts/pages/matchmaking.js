@@ -53,6 +53,10 @@ export default function template(prop={}) {
 				inMatchmaking = false
 				redirect_replace_history(`/match/${game_id}`)
 			} catch (e) {
+				if (e === 'redirected') {
+					// forget it
+					return
+				}
 				if (inMatchmaking) {
 					inMatchmaking = false
 					history.back()
@@ -74,6 +78,10 @@ export default function template(prop={}) {
 				inMatchmaking = false
 				redirect_replace_history(`/tournament/${tournamentID}`)
 			} catch (e) {
+				if (e === 'redirected') {
+					// forget it
+					return
+				}
 				if (inMatchmaking) {
 					inMatchmaking = false
 					history.back()

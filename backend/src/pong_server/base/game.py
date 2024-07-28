@@ -6,11 +6,14 @@ import asyncio
 import json
 
 from ..base.state import State
+from api.serializer import PlayerSerializer
+
+from datetime import datetime
 
 class Game(ABC):
     FRAME_RATE = 1/240
 
-    def __init__(self, gameid, removalFunction, subserver_id = None, hidden=False, expectedPlayers=[]) -> None:
+    def __init__(self, gameid, removalFunction, hidden=False, expectedPlayers=[]) -> None:
         # initial positions and shit
         self.gameid = gameid
         
@@ -32,6 +35,8 @@ class Game(ABC):
 
         self.type = None
         self.resultsUploadSuccessfully = False
+
+        self.ended = False
 
     def setPlayed(self):
         self.played = True
@@ -61,6 +66,9 @@ class Game(ABC):
     def has_begin(self):
         return self.begin
 
+    def set_ended(self):
+        self.ended = True
+
     def matchPlayed(self):
         return self.played
 
@@ -70,44 +78,64 @@ class Game(ABC):
             "player_count": len(self.players),
             "spectator_count": len(self.spectator),
             "begin": self.begin,
-            "players": self.expectedPlayers
+            'ended': self.ended,
+            "players": [ player.username for player in self.expectedPlayers ],
         }
 
-    async def playerLeft(self, username):
-        if username in self.spectator:
-            self.spectator.remove(username)
+    # grace period for removing the server 
+    # before we delete the entire game server
+    async def delayAndRemove(self, duration=3):
+        startTime = datetime.now()
+        totalDuration = duration
+        durationLeft = totalDuration
+
+        while (durationLeft > 0.25):
+            currentTime = datetime.now()
+            difference = (currentTime - startTime).total_seconds()
+            durationLeft = max(0, totalDuration - difference)
+
+            if len(self.players):
+                return
+
+            await asyncio.sleep(0.1)
+
+        await self.removeFromServer()
+
+    async def playerLeft(self, playerObject):
+        if playerObject in self.spectator:
+            self.spectator.remove(playerObject)
             # no one cares if a spectator leaves
             return
 
-        if username not in self.players:
+        if playerObject not in self.players:
             return
 
-        self.players.remove(username)
+        self.players.remove(playerObject)
 
         await self.channel_layer.group_send(self.gameid, {
             "type": "message",
             "text": json.dumps({
                 "status": "info",
-                "message": f"player ${username} left",
+                "message": f"player ${playerObject.username} left",
             })
         })
 
         if self.emptyLobby():
-            await self.removeFromServer()
+            await self.delayAndRemove()
 
-    async def playerJoin(self, username):
+    async def playerJoin(self, playerObject):
         if not self.has_begin():
-            if self.expectedPlayers and username not in self.expectedPlayers:
+            if self.expectedPlayers and playerObject not in self.expectedPlayers:
                 return (False, "You arent Invited!")
         else:
             # allow reconnection
-            if username not in self.expectedPlayers:
+            if playerObject not in self.expectedPlayers:
                 return (False, "Ongoing Match!")
 
         # anyone that come here should be
         # 1. a new player
         # 2. a reconnected old player
-        self.players.append(username)
+        self.players.append(playerObject)
 
         if not self.has_begin():
             if self.canStart():
@@ -122,8 +150,8 @@ class Game(ABC):
 
         return (True, "nothing to see here, move along")
 
-    def spectatorJoin(self, username):
-        self.spectator.append(username)
+    def spectatorJoin(self, playerObject):
+        self.spectator.append(playerObject)
         return (True, "yep, all good")
 
     async def start(self):
