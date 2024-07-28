@@ -8,6 +8,8 @@ import json
 from ..base.state import State
 from api.serializer import PlayerSerializer
 
+from datetime import datetime
+
 class Game(ABC):
     FRAME_RATE = 1/240
 
@@ -33,6 +35,8 @@ class Game(ABC):
 
         self.type = None
         self.resultsUploadSuccessfully = False
+
+        self.ended = False
 
     def setPlayed(self):
         self.played = True
@@ -62,6 +66,9 @@ class Game(ABC):
     def has_begin(self):
         return self.begin
 
+    def set_ended(self):
+        self.ended = True
+
     def matchPlayed(self):
         return self.played
 
@@ -71,8 +78,28 @@ class Game(ABC):
             "player_count": len(self.players),
             "spectator_count": len(self.spectator),
             "begin": self.begin,
+            'ended': self.ended,
             "players": [ player.username for player in self.expectedPlayers ],
         }
+
+    # grace period for removing the server 
+    # before we delete the entire game server
+    async def delayAndRemove(self, duration=3):
+        startTime = datetime.now()
+        totalDuration = duration
+        durationLeft = totalDuration
+
+        while (durationLeft > 0.25):
+            currentTime = datetime.now()
+            difference = (currentTime - startTime).total_seconds()
+            durationLeft = max(0, totalDuration - difference)
+
+            if len(self.players):
+                return
+
+            await asyncio.sleep(0.1)
+
+        await self.removeFromServer()
 
     async def playerLeft(self, playerObject):
         if playerObject in self.spectator:
@@ -94,7 +121,7 @@ class Game(ABC):
         })
 
         if self.emptyLobby():
-            await self.removeFromServer()
+            await self.delayAndRemove()
 
     async def playerJoin(self, playerObject):
         if not self.has_begin():

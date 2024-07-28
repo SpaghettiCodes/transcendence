@@ -21,6 +21,7 @@ class endGame(State):
 
         if (self.durationLeft < 0.25 and not self.removingFromServer):
             self.removingFromServer = True
+            self.gameInstance.set_ended()
             await self.gameInstance.removeFromServer()
             self.kickEveryoneOut = True
 

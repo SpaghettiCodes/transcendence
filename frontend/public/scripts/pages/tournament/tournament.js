@@ -1,6 +1,7 @@
 import generateUserTabs from "../../components/userTab.js"
 import { fetchMod, getJwtToken } from "../../jwt.js"
 import { redirect, redirect_without_history } from "../../router.js"
+import { everyElementContains, pairElements } from "../helpers.js"
 import { appendOngoingMatchup, appendTournamentScreen, generateTournamentScreen } from "./components/roundGenerator.js"
 
 export default function tournament(prop={}) {
@@ -78,6 +79,7 @@ export default function tournament(prop={}) {
 				redirect_without_history('/error')
 				throw 'redirected'
 			}
+			throw response
 		}
 	}
 
@@ -130,13 +132,18 @@ export default function tournament(prop={}) {
 			}
 		}
 
-		const loadCurrentGameList = (games) => {
+		const loadCurrentGameList = (games, previousRoundData) => {
 			if (!games.length)
 				return
 
-			let newRoundPlayers = games.map((game) => {
-				return game.players
-			})
+			let newRoundPlayers = undefined
+			if (previousRoundData === undefined){
+				newRoundPlayers = games.map((game) => {
+					return game.players
+				})
+			} else {
+				newRoundPlayers = pairElements((previousRoundData.map(previousMatch => previousMatch.result.winner)))
+			}
 
 			appendTournamentScreen(tournamentScreen, newRoundPlayers)
 
@@ -148,29 +155,60 @@ export default function tournament(prop={}) {
 				}
 			}
 
-			let newRoundMatches = []
-
+			console.log(games)
 			for (let game of games) {
-				let gameID = game.game_id
-				// if (game.players.includes(yourName)) {
-				// 	redirect(`/match/${gameID}`, {
-				// 		'arguments': {
-				// 			'tournament_id': tournamentID
-				// 		}
-				// 	})
-				// 	return
-				// }
-				newRoundMatches.push(gameID)
+				if (game.players.includes(yourName) && !game.ended) {
+					redirect(`/match/${game.game_id}`)
+					return
+				}
 			}
+			let newRoundMatches = newRoundPlayers.map(player => games.find(game => everyElementContains(game.players, player)).game_id)
 
 			appendOngoingMatchup(tournamentScreen, newRoundMatches, onClickGenerator)
 		}
 
 		const loadPlayedList = (previousRounds) => {
 			tournamentScreen.innerHTML = ''
-			
+
 			console.log('previously played')
 			console.log(previousRounds)
+
+			if (!previousRounds.length)
+				return
+
+			// prep data
+			let payload = []
+			let previousRoundData = undefined
+			previousRounds.forEach((round) => {
+				let roundData = []
+
+				if (previousRoundData) {
+					// need to do hocus pocus magic circus here
+					roundData = pairElements((previousRoundData.map(previousMatch => previousMatch.result.winner)))
+				} else {
+					round.forEach((match) => {
+						let matchData = []
+						let { result } = match
+						let { attacker, defender } = result
+						matchData.push(attacker.username)
+						matchData.push(defender.username)
+						roundData.push(matchData)
+					})
+				}
+
+				previousRoundData = round
+				payload.push(roundData)
+			})
+
+			console.log(payload)
+
+			// throw into function
+			generateTournamentScreen(
+				tournamentScreen,
+				payload
+			)
+
+			return previousRoundData
 		}
 
 		const loadTournamentData = (data) => {
@@ -183,8 +221,8 @@ export default function tournament(prop={}) {
 
 			console.log(players)
 			loadPlayerList(players, ready)
-			loadPlayedList(previousMatches)
-			loadCurrentGameList(matches)
+			let lastMatchDetails = loadPlayedList(previousMatches)
+			loadCurrentGameList(matches, lastMatchDetails)
 		}
 
 		const refreshTournamentData = () => {
@@ -225,7 +263,6 @@ export default function tournament(prop={}) {
 
 			tournamentSocket.onmessage = (e) => {
 				const data = JSON.parse(e.data)
-				console.log(data)
 
 				const status = data["status"]
 
