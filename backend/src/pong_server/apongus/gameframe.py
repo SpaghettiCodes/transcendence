@@ -104,10 +104,6 @@ class GameFrame(PongGameFrame):
             "status": "update",
             "balls": ballCoordinates,
             "vents": [vent.get_json_coord() for vent in self.vents],
-            "attacker": {
-                **attacker_cord
-            },
-            "defender": {
-                **defender_cord
-            }
+            "attacker": attacker_cord,
+            "defender": defender_cord
         }
