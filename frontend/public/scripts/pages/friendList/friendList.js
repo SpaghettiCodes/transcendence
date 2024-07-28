@@ -67,13 +67,13 @@ export default function template(prop = {}) {
             <div class="d-flex flex-row flex-grow-1 align-self-stretch overflow-auto">
                 <div class="d-flex flex-column list-section overflow-auto">
                     <div class="friend-list">
-                        ${generateListContainer("Colleagues", "Colleagues' ID", "Search", generateFriendList(friends))}
+                    ${generateListContainer("Colleagues", "Colleagues' ID", "Search", generateFriendList(friends), true)}
                     </div>
                     <div class="blocked-list">
-                        ${generateListContainer("Blocked Users", "Blocked Colleagues' ID", "Search", generateBlockedList(blockList))}
+                        ${generateListContainer("Blocked Users", "Blocked Colleagues' ID", "Search", generateBlockedList(blockList), false)}
                     </div>
                     <div class="friend-request-list">
-                        ${generateListContainer("Friend Requests", "Friend Requests' ID", "Search", generateFriendRequestList(friendRequests))}
+                        ${generateListContainer("Friend Requests", "Friend Requests' ID", "Search", generateFriendRequestList(friendRequests), false)}
                     </div>
                 </div>
                 <div class="d-flex flex-column profile-section overflow-auto">
@@ -81,8 +81,7 @@ export default function template(prop = {}) {
                         ${generateUserProfile(profile, matches)}
                     </div>
                     <div class="buttons-bottom">
-                        ${createButton('btn btn-success', 'button', 'Block', 'block')}
-                        ${createButton('btn btn-danger', 'button', 'Invite', 'invite')}
+                        ${createButton('btn btn-danger', 'button', 'Block', 'block')}
                         ${createButton('btn btn-primary', 'button', 'Send Friend Request', 'request')}
                     </div>
                 </div>
@@ -146,23 +145,33 @@ export default function template(prop = {}) {
             }
         });
 
+
         document.querySelector('.blocked-list').addEventListener('click', async (e) => {
-            if (e.target.classList.contains('unblock-button')) {
-                const blockedUsername = e.target.dataset.username;
+            if (e.target.classList.contains('unblock-button') || e.target.parentElement.classList.contains('unblock-button')) {
+                const button = e.target.classList.contains('unblock-button') ? e.target : e.target.parentElement;
+                const blockedUsername = button.dataset.username;
                 console.log('Unblock:', blockedUsername);
-    
-                const response = await fetchMod(`http://localhost:8000/api/player/${me.username}/blocked/${blockedUsername}`, {
+                console.log('me', me);
+        
+                const response = await fetchMod(`http://localhost:8000/api/player/${me.username}/blocked`, {
                     method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body : JSON.stringify({
+                        'target' : blockedUsername,
+                    })
                 });
-    
+        
                 if (response.ok) {
                     createAlert('success', 'User ' + blockedUsername + ' unblocked successfully');
-                    e.target.parentElement.remove();
+                    button.parentElement.remove();
                 } else {
                     createAlert('error', 'An error occurred while unblocking user');
                 }
             }
         });
+        
 
         document.querySelector('.friend-request-list').addEventListener('click', async (e) => {
             if (e.target.classList.contains('accept') || e.target.classList.contains('decline')) {
@@ -187,36 +196,37 @@ export default function template(prop = {}) {
 
         document.getElementById('block').addEventListener('click', async (e) => {
             console.log('Block button clicked', friend);
-            // call the api here to block the user
-
-			console.log('the friend to block', friend);
-
-			const response = await fetchMod(`http://localhost:8000/api/player/${me.username}/blocked`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body : JSON.stringify({
-					'target' : friend,
-				})
-			});
-
-			if (response.ok) return createAlert('success', 'User ' + friend + ' blocked successfully');
-			if (!response.ok) {
-				if (response.status === 409) return createAlert('info', 'User ' + friend + ' already blocked');
-				createAlert('error', 'An error occurred while blocking user');
-				throw new Error('Error :' + response.statusText);
-			}
-        });
-
-        document.getElementById('invite').addEventListener('click', (e) => {
-            console.log('Invite button clicked');
-            // call the api here to invite the user
-
-			console.log('the friend to invite', friend);
-
-			//rediect to chat with this user 
-			return redirect('/chat/' + friend);
+            
+            const response = await fetchMod(`http://localhost:8000/api/player/${me.username}/blocked`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    'target': friend,
+                })
+            });
+        
+            if (response.ok) {
+                createAlert('success', 'User ' + friend + ' blocked successfully');
+        
+                // Append the new blocked user to the block list
+                const blockListContainer = document.querySelector('.blocked-list .d-flex.flex-column.flex-grow-1.overflow-auto.mt-2.p-2');
+                const newBlockedItem = document.createElement('div');
+                newBlockedItem.classList.add('blocked-list-item');
+                newBlockedItem.innerHTML = `
+                    ${friend}
+                    ${createButton('btn btn-danger unblock-button', 'button', 'Unblock', '', { username: friend })}
+                `;
+                blockListContainer.appendChild(newBlockedItem);
+            } else {
+                if (response.status === 409) {
+                    createAlert('info', 'User ' + friend + ' already blocked');
+                } else {
+                    createAlert('error', 'An error occurred while blocking user');
+                    throw new Error('Error :' + response.statusText);
+                }
+            }
         });
 
         document.getElementById('request').addEventListener('click', async (e) => {
@@ -285,11 +295,13 @@ function generateFriendList(friends) {
 function generateBlockedList(blockedUsers) {
     return generateList(blockedUsers, blocked => `
         <div class="blocked-list-item">
-            ${blocked.username}
-            ${createButton('btn btn-danger unblock-button', 'button', 'Unblock', 'unblock', { 'data-username': blocked.username })}
+            <span>${blocked.username}</span>
+            ${createButton('btn btn-danger unblock-button', 'button', 'Unblock', '', { username: blocked.username })}
         </div>
     `);
 }
+
+
 
 function generateFriendRequestList(requests) {
     const { received, sent } = requests;
@@ -338,14 +350,16 @@ function sleep (ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 };
 
-function generateListContainer(title, inputPlaceholder, buttonLabel, listContent) {
+function generateListContainer(title, inputPlaceholder, buttonLabel, listContent, includeSearch = true) {
     return `
         <div class="d-flex flex-column list-container overflow-auto">
             <h4>${title}</h4>
+            ${includeSearch ? `
             <div class="input-group">
                 ${createInput("form-control rounded", "search", `${title.toLowerCase()}SearchInputBox`, "", inputPlaceholder)}
                 ${createButton('btn btn-dark', 'button', buttonLabel, 'search')}
             </div>
+            ` : ''}
             <div class="d-flex flex-column flex-grow-1 overflow-auto mt-2 p-2">
                 ${listContent}
             </div>
