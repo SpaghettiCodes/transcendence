@@ -27,8 +27,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 
     async def disconnect(self, code):
         if self.authorized:
-            playerUsername = self.playerObject.username
-            await TournamentManager.player_left(playerUsername, self.tournament_id)
+            await TournamentManager.player_left(self.playerObject, self.tournament_id)
         await self.channel_layer.group_discard(
             self.groupName, self.channel_name
         )
@@ -48,12 +47,16 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
                     await self.send_json({
                         "status": "refresh"
                     })
+            case 'spectate':
+                self.spectate = True
+                return
             case _:
-                content = {
-                    'player': self.playerObject,
-                    **content
-                }
-                result, message = await TournamentManager.passInfo(self.tournament_id, content)
+                if (self.authorized):
+                    content = {
+                        'player': self.playerObject,
+                        **content
+                    }
+                    result, message = await TournamentManager.passInfo(self.tournament_id, content)
         
         if not result:
             await self.send_json({

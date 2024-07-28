@@ -32,8 +32,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
     # called when websocket connection closed
     async def disconnect(self, code):
         if self.authorized or self.spectate:
-            playerUsername = self.playerObject.username
-            await PongServer.player_left(playerUsername, self.gameid)
+            await PongServer.player_left(self.playerObject, self.gameid)
         await self.channel_layer.group_discard(
             self.groupname, self.channel_name
         )

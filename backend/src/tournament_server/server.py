@@ -157,12 +157,10 @@ class TournamentServer:
             "players": PublicPlayerSerializer(self.currentPlayers, many=True).data,
             "ready": [player.username for player in self.readiedPlayers],
             "started": self.tournamentStarted,
-            "previousMatches": self.getSerializedCompleteResults(),
-            "matches": self.getMatches()
+            "previousMatches": MatchSerializer(self.completeResults, many=True).data,
+            "matches": [match.get_data() for match in self.currentlyRunningMatches]
         }
 
-    def getMatches(self):
-        return self.currentlyRunningMatches
 
     def canBeginTournament(self):
         return (
@@ -287,12 +285,13 @@ class TournamentServer:
             gameId = await sync_to_async(PongServer.new_game) (
                 expectedPlayers=[matchup[0], matchup[1]],
             )
-            self.currentlyRunningMatches.append(gameId)
 
             # i have only myself to blame for this situation
             gameInstance = PongServer.getGameInstance(gameId)
             gameInstance.setRemovalFunction(self.collectData(gameInstance))
-            await gameInstance.startImmediately()
+            # await gameInstance.startImmediately()
+
+            self.currentlyRunningMatches.append(gameInstance)
 
             self.matchesCount += 1
 
