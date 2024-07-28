@@ -133,11 +133,13 @@ class Game(ABC):
             if playerObject not in self.expectedPlayers:
                 return (False, "Ongoing Match!")
 
+        if (playerObject in self.players):
+            return
+
         # anyone that come here should be
         # 1. a new player
         # 2. a reconnected old player
-        if (playerObject not in self.players):
-            self.players.append(playerObject)
+        self.players.append(playerObject)
 
         if not self.has_begin():
             if self.canStart():
