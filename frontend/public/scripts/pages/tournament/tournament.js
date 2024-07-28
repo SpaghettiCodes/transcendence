@@ -89,7 +89,11 @@ export default function tournament(prop={}) {
 	let postrender = () => {
 		let tournamentScreen = document.getElementById('tournament-rounds')
 		let playerList = document.getElementById('playersList')
+
 		let readyButton = document.getElementById('readybutton')
+		if (spectating)
+			readyButton.remove()
+
 		let statusBar = document.getElementById('status')
 
 		const sendMessage = (data) => {
@@ -175,9 +179,6 @@ export default function tournament(prop={}) {
 		const loadPlayedList = (previousRounds) => {
 			tournamentScreen.innerHTML = ''
 
-			console.log('previously played')
-			console.log(previousRounds)
-
 			if (!previousRounds.length)
 				return
 
@@ -205,8 +206,6 @@ export default function tournament(prop={}) {
 				payload.push(roundData)
 			})
 
-			console.log(payload)
-
 			// throw into function
 			generateTournamentScreen(
 				tournamentScreen,
@@ -224,7 +223,6 @@ export default function tournament(prop={}) {
 			else
 				setStatusMessage("Waiting for players...")
 
-			console.log(players)
 			loadPlayerList(players, ready)
 			let lastMatchDetails = loadPlayedList(previousMatches)
 			loadCurrentGameList(matches, lastMatchDetails)
@@ -271,7 +269,6 @@ export default function tournament(prop={}) {
 
 				const status = data["status"]
 
-				console.log(data)
 				switch (status)
 				{
 					case "loser":
