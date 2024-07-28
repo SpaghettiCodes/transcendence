@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from database.models import Player, TwoFactorAuthentication
 from django.conf import settings
-from django.core.mail import send_mail
 from ..token import create_jwt_pair_for_user
+from .smtp import send_email
 
 @api_view(['POST'])
 def send_tfa_code(request):
@@ -32,11 +32,8 @@ def send_tfa_code(request):
 
     subject = 'Welcome for pong'
     message = f'Hi {player_username}, this is your verification code: {code}'
-    email_from = settings.EMAIL_HOST_USER
     recipient_list = [player_email]
-    print("hi")
-    send_mail( subject, message, email_from, recipient_list )
-    print("bye")
+    send_email(subject, message, recipient_list)
     return Response(
             {"Message": "Code sent through email"},
             status=status.HTTP_200_OK
