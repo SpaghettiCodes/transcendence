@@ -8,13 +8,9 @@ import { generateMatchHistory } from '../profile/components/matchHistory.js';
 import drawPieChartData from '../profile/components/pieChartData.js';
 import { createLoader } from "../../components/loader.js";
 
-
-// TODO - create a div for blocked list that show all the block
-// TODO - create a div for friend request that show all the friend request
-
 export default function template(prop = {}) {
     let friends, profile, matches ,friend, me, blockList, friendRequests;
-
+    
     let prerender = async () => {
         try {
             const response = await fetchMod('http://localhost:8000/api/me');
@@ -31,12 +27,13 @@ export default function template(prop = {}) {
             if (!randomUsers.ok) throw new Error('Network response was not ok ' + randomUsers.statusText);
             let randomUsersData = await randomUsers.json();
     
-            // Filter out the current user from the random users list
             randomUsersData = randomUsersData.filter(randomUser => randomUser.username !== me.username);
     
             const mergedList = [...friendlist, ...randomUsersData];
+            const uniqueMergedList = Array.from(new Set(mergedList.map(user => user.username)))
+                                          .map(username => mergedList.find(user => user.username === username));
     
-            const profile = Object.values(mergedList)[0];
+            const profile = uniqueMergedList[0];
             const profileFetch = await fetchMod(`http://localhost:8000/api/player/${profile.username}`);
             const profileData = await profileFetch.json();
     
@@ -49,15 +46,16 @@ export default function template(prop = {}) {
     
             const Requests = await fetchMod(`http://localhost:8000/api/player/${user.username}/friends/request`);
             const friendRequests = await Requests.json();
-            console.log('friendResquests', friendRequests);
+            console.log('friendRequests', friendRequests);
     
-            prop.data = { user: profileData, matches: profileMatchData, friends: mergedList, blocked: blockList, friendRequests: friendRequests };
+            prop.data = { user: profileData, matches: profileMatchData, friends: uniqueMergedList, blocked: blockList, friendRequests: friendRequests };
             return true;
         } catch (error) {
             console.error('Fetch error:', error);
             return false;
         }
-    };    
+    };
+       
 
     let render_code = () => {
         profile = prop.data.user;
@@ -176,27 +174,53 @@ export default function template(prop = {}) {
             }
         });
         
-
         document.querySelector('.friend-request-list').addEventListener('click', async (e) => {
-            if (e.target.classList.contains('accept') || e.target.classList.contains('decline')) {
-                const requestUsername = e.target.dataset.username;
-                const action = e.target.classList.contains('accept') ? 'accept' : 'decline';
-                console.log(`${action.charAt(0).toUpperCase() + action.slice(1)} friend request:`, requestUsername);
+            console.log('clicked on friend request list')
 
-                const endpoint = action === 'accept'
-                    ? `http://localhost:8000/api/player/${me.username}/friends/${requestUsername}/accept`
-                    : `http://localhost:8000/api/player/${me.username}/friends/${requestUsername}/decline`;
-
-                const response = await fetchMod(endpoint, { method: 'POST' });
-
+            if (e.target.classList.contains('accept-button')) {
+                const friendName = e.target.dataset.username;
+                console.log('Accept:', friendName);
+        
+                const response = await fetchMod(`http://localhost:8000/api/player/${friendName}/friends/request`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        'sender': me.username,
+                    })
+                });
+        
                 if (response.ok) {
-                    createAlert('success', `Friend request from ${requestUsername} ${action}ed successfully`);
+                    createAlert('success', 'Friend request from ' + friendName + ' accepted successfully');
                     e.target.parentElement.remove();
                 } else {
-                    createAlert('error', `An error occurred while ${action}ing friend request`);
+                    createAlert('error', 'An error occurred while accepting friend request');
+                }
+            } else if (e.target.classList.contains('decline-button')) {
+                const friendName = e.target.dataset.username;
+                console.log('Decline:', friendName);
+        
+                const response = await fetchMod(`http://localhost:8000/api/player/${friendName}/friends/request`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        'sender': me.username,
+                    })
+                });
+        
+                if (response.ok) {
+                    createAlert('success', 'Friend request from ' + friendName + ' declined successfully');
+                    e.target.parentElement.remove();
+                } else {
+                    createAlert('error', 'An error occurred while declining friend request');
                 }
             }
         });
+        
+        
 
         document.getElementById('block').addEventListener('click', async (e) => {
             console.log('Block button clicked', friend);
@@ -214,7 +238,6 @@ export default function template(prop = {}) {
             if (response.ok) {
                 createAlert('success', 'User ' + friend + ' blocked successfully');
         
-                // Append the new blocked user to the block list
                 const blockListContainer = document.querySelector('.blocked-list .d-flex.flex-column.flex-grow-1.overflow-auto.mt-2.p-2');
                 const newBlockedItem = document.createElement('div');
                 newBlockedItem.classList.add('blocked-list-item');
@@ -235,7 +258,6 @@ export default function template(prop = {}) {
 
         document.getElementById('request').addEventListener('click', async (e) => {
             console.log('Send Friend Request button clicked');
-            // call the api here to send friend request
 
 			console.log('the friend to send friend request', friend);
 
@@ -284,6 +306,79 @@ export default function template(prop = {}) {
             const matchHistory = await matchHistoryResponse.json();
             updateCharts(user, matchHistory);
         }
+        
+        document.querySelectorAll('.unblock-button').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const blockedUsername = button.dataset.username;
+                console.log('Unblock:', blockedUsername);
+                console.log('me', me);
+    
+                const response = await fetchMod(`http://localhost:8000/api/player/${me.username}/blocked`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        'target': blockedUsername,
+                    })
+                });
+    
+                if (response.ok) {
+                    createAlert('success', 'User ' + blockedUsername + ' unblocked successfully');
+                    button.parentElement.remove();
+                } else {
+                    createAlert('error', 'An error occurred while unblocking user');
+                }
+            });
+        });
+    
+        document.querySelectorAll('.accept-button').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const friendName = button.dataset.username;
+                console.log('Accept:', friendName);
+    
+                const response = await fetchMod(`http://localhost:8000/api/player/${friendName}/friends/request`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        'sender': me.username,
+                    })
+                });
+    
+                if (response.ok) {
+                    createAlert('success', 'Friend request from ' + friendName + ' accepted successfully');
+                    button.parentElement.remove();
+                } else {
+                    createAlert('error', 'An error occurred while accepting friend request');
+                }
+            });
+        });
+    
+        document.querySelectorAll('.decline-button').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const friendName = button.dataset.username;
+                console.log('Decline:', friendName);
+    
+                const response = await fetchMod(`http://localhost:8000/api/player/${friendName}/friends/request`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        'sender': me.username,
+                    })
+                });
+    
+                if (response.ok) {
+                    createAlert('success', 'Friend request from ' + friendName + ' declined successfully');
+                    button.parentElement.remove();
+                } else {
+                    createAlert('error', 'An error occurred while declining friend request');
+                }
+            });
+        });
     }
 
     let cleanup = () => {}
@@ -305,19 +400,16 @@ function generateBlockedList(blockedUsers) {
     `);
 }
 
-
-
 function generateFriendRequestList(requests) {
     const { received, sent } = requests;
     return generateList(received, request => `
         <div class="friend-request-list-item">
             ${request.sender}
-            ${createButton('btn btn-primary accept-button', 'button', 'Accept', 'accept', { 'data-username': request.sender })}
-            ${createButton('btn btn-danger decline-button', 'button', 'Decline', 'decline', { 'data-username': request.sender })}
+            ${createButton('btn btn-primary accept-button', 'button', 'Accept', '', { 'username': request.sender })}
+            ${createButton('btn btn-danger decline-button', 'button', 'Decline', '', { 'username': request.sender })}
         </div>
     `);
 }
-
 
 function generateUserProfile(profile, matches = []) {
     return `
