@@ -18,6 +18,7 @@ from django.conf import settings
 from ..serializer import PublicPlayerSerializer, PlayerCreator
 from rest_framework.serializers import StringRelatedField
 
+import random
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample,  OpenApiParameter
 
 class ViewPlayers(APIView):
@@ -175,6 +176,28 @@ def createPlayer(request):
             },
             status=status.HTTP_400_BAD_REQUEST
         )
+
+@api_view(['GET'])
+def selectNRandomPlayers(request: Request):
+    # apparantly order_by('?') is slow for some database
+    # i cba to check if postgres is slow, so
+
+    list_of_usernames = Player.objects.values_list('username', flat=True)
+    list_of_usernames = list(list_of_usernames)
+    number = request.GET.get('number')
+    if (not number):
+        number = 5
+    else:
+        try:
+            number = int(number)
+        except ValueError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    print(list_of_usernames)
+    rand_username = random.sample(list_of_usernames, number)
+    p_all = PublicPlayerSerializer(Player.objects.filter(username__in=rand_username), many=True)
+
+    return Response(p_all.data)
 
 """
 test:
