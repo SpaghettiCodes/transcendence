@@ -110,7 +110,8 @@ class Game(ABC):
         if playerObject not in self.players:
             return
 
-        self.players.remove(playerObject)
+        if (playerObject in self.players):
+            self.players.remove(playerObject)
 
         await self.channel_layer.group_send(self.gameid, {
             "type": "message",
@@ -135,7 +136,8 @@ class Game(ABC):
         # anyone that come here should be
         # 1. a new player
         # 2. a reconnected old player
-        self.players.append(playerObject)
+        if (playerObject not in self.players):
+            self.players.append(playerObject)
 
         if not self.has_begin():
             if self.canStart():
