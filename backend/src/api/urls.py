@@ -18,6 +18,7 @@ urlpatterns = [
 
     ## players
     path('player', player.ViewPlayers.as_view()),
+    path('player/random', player.selectNRandomPlayers),
     path('player/<player_username>', playerSpecific.SpecificPlayer),
     path('player/<player_username>/match', playerSpecific.SpecificPlayerMatches),
     path('player/<player_username>/chat', playerSpecific.SpecificPlayerChats),
