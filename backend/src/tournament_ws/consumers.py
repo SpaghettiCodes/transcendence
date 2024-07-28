@@ -41,7 +41,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
                 validated_token = self.authenticator.get_validated_token(playerJWT)
                 self.playerObject = await sync_to_async(self.authenticator.get_user)(validated_token)
 
-                result, message = await TournamentManager.player_join(self.playerObject, self.tournament_id)
+                result, message, code = await TournamentManager.player_join(self.playerObject, self.tournament_id)
                 if result:
                     self.authorized = True
                     await self.send_json({
@@ -56,13 +56,20 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
                         'player': self.playerObject,
                         **content
                     }
-                    result, message = await TournamentManager.passInfo(self.tournament_id, content)
-        
+                    result, message, code = await TournamentManager.passInfo(self.tournament_id, content)
+                else:
+                    return
+
         if not result:
             await self.send_json({
                 'status': 'error',
                 'message': message
             })
+            match code:
+                case 'lost':
+                    await self.send_json({
+                        'status': 'loser'
+                    })
 
     async def message(self, event):
         try:
