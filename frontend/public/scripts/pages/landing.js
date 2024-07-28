@@ -18,7 +18,7 @@ export default function landing(prop={}) {
 		</div>
 		<div class="d-flex flex-column align-items-stretch lowered gap-3 landingPageMain">
 			${createInputFields(
-				createInput('landing-ui-var input', 'username', 'username', 'Crewmate ID'),
+				createInput('landing-ui-var input', 'username', 'username', 'username','Crewmate ID'),
 				'ID',
 				'landing-ui-var inputText',
 				'input-fields gap-2',
@@ -26,7 +26,7 @@ export default function landing(prop={}) {
 				'usernameError'
 			)}
 			${createInputFields(
-				createInput('landing-ui-var input', 'password', 'password', 'Crewmate Password'),
+				createInput('landing-ui-var input', 'password', 'password', 'password','Crewmate Password'),
 				'Password',
 				'landing-ui-var inputText',
 				'input-fields gap-2',
@@ -35,10 +35,10 @@ export default function landing(prop={}) {
 			)}
 			<h3 class='hide landing-ui-var errorBoard fw-bold text-center text-danger' id='errorMsgBoard'>Test</h3>
 			<div class='d-flex gap-4'>
-				${createButton('Login', 'ui-btn btn-outline-light flex-grow-1', undefined, 'login')}
-				${createButton('Sign up', 'ui-btn btn-outline-light flex-grow-1', undefined, 'sign-up')}
+				${createButton('ui-btn btn-outline-light flex-grow-1', undefined, 'Login', 'login')}
+				${createButton('ui-btn btn-outline-light flex-grow-1', undefined ,'Sign up', 'sign-up')}
 			</div>
-			${createButton('Login via 42', 'ui-btn btn-outline-light btn-sm mt-5', undefined, '42login')}
+			${createButton('ui-btn btn-outline-light btn-sm mt-5', undefined, 'Login via 42','42login')}
 		</div>
 		`
 	}
