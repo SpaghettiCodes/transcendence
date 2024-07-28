@@ -2,29 +2,68 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden;
+    display: flex;
+    justify-content: flex-start; /* Align items to the left */
+    align-items: flex-start; /* Align items to the top */
+    height: 100vh;
 }
 
-.friend-list {
+.list-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Add gap between containers */
+    padding: 20px;
+}
+
+.list-container {
     background-color: darkgray; /* Slightly transparent background */
-	color: black;
+    color: black;
     border-radius: 5px;
     padding: 20px;
-	height: inherit;
-	overflow-y: auto;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.profile-section {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 20px;
 }
 
 .profile-details {
-	flex-grow: 3 !important;
+    flex-grow: 3 !important;
+    overflow-y: auto;
 }
 
-.friend-list-item {
+.friend-list-item, .blocked-list-item, .friend-request-list-item {
     background-color: #f8f9fa;
     margin-bottom: 10px;
     border-radius: 5px;
     padding: 10px;
-	direction: ltr;
+    direction: ltr;
 }
 
-.friend-list-item:hover {
+.friend-list-item:hover, .blocked-list-item:hover, .friend-request-list-item:hover {
     background-color: #e9ecef;
+}
+
+.buttons-bottom {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.input-group {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.input-group input {
+    flex: 1;
+    margin-right: 5px;
+}
+
+.input-group button {
+    flex-shrink: 0;
 }
