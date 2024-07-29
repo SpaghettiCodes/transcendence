@@ -134,7 +134,7 @@ class Game(ABC):
                 return (False, "Ongoing Match!")
 
         if (playerObject in self.players):
-            return
+            return (True, "Uhhhh dont worry about it i guess")
 
         # anyone that come here should be
         # 1. a new player

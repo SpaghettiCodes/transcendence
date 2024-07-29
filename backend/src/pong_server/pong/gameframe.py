@@ -38,12 +38,12 @@ class GameFrame:
 
         self.goalWidth = 1
 
-        # self.attackerGoal = scoreFrame(0, 0, width=self.goalWidth, height=self.height)
-        # self.defenderGoal = scoreFrame(self.width - self.goalWidth, 0, width=self.goalWidth, height=self.height)
+        self.attackerGoal = scoreFrame(0, 0, width=self.goalWidth, height=self.height)
+        self.defenderGoal = scoreFrame(self.width - self.goalWidth, 0, width=self.goalWidth, height=self.height)
 
         # TODO: REMEMBER TO CHANGE LATER
-        self.attackerGoal = scoreFrame(-5, 0, width=self.goalWidth, height=self.height)
-        self.defenderGoal = scoreFrame(-5, 0, width=self.goalWidth, height=self.height)
+        # self.attackerGoal = scoreFrame(-5, 0, width=self.goalWidth, height=self.height)
+        # self.defenderGoal = scoreFrame(-5, 0, width=self.goalWidth, height=self.height)
 
         self.attackerObject = None
         self.defenderObject = None
