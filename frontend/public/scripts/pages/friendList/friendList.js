@@ -332,7 +332,54 @@ export default function template(prop = {}) {
             });
         });
     
-<div class="button-container"><div class="button-container">
+        document.querySelectorAll('.accept-button').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const friendName = button.dataset.username;
+                console.log('Accept:', friendName);
+        
+                const response = await fetchMod(`http://localhost:8000/api/player/${friendName}/friends/request`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        'sender': me.username,
+                    })
+                });
+        
+                if (response.ok) {
+                    createAlert('success', 'Friend request from ' + friendName + ' accepted successfully');
+                    button.closest('.friend-request-list-item').remove(); // Remove the entire list item
+                } else {
+                    createAlert('error', 'An error occurred while accepting friend request');
+                }
+            });
+        });
+        
+        document.querySelectorAll('.decline-button').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const friendName = button.dataset.username;
+                console.log('Decline:', friendName);
+        
+                const response = await fetchMod(`http://localhost:8000/api/player/${friendName}/friends/request`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        'sender': me.username,
+                    })
+                });
+        
+                if (response.ok) {
+                    createAlert('success', 'Friend request from ' + friendName + ' declined successfully');
+                    button.closest('.friend-request-list-item').remove(); // Remove the entire list item
+                } else {
+                    createAlert('error', 'An error occurred while declining friend request');
+                }
+            });
+        });
+        
     }
 
     let cleanup = () => {}
