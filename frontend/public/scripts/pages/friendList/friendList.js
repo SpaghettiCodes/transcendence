@@ -71,10 +71,10 @@ export default function template(prop = {}) {
                     <div class="friend-list">
                     ${generateListContainer("Colleagues", "Colleagues' ID", "Search", generateFriendList(friends), true)}
                     </div>
-                    <div class="blocked-list">
+                    <div class="blocked-list scrollable">
                         ${generateListContainer("Blocked Users", "Blocked Colleagues' ID", "Search", generateBlockedList(blockList), false)}
                     </div>
-                    <div class="friend-request-list">
+                    <div class="friend-request-list scrollable">
                         ${generateListContainer("Friend Requests", "Friend Requests' ID", "Search", generateFriendRequestList(friendRequests), false)}
                     </div>
                 </div>
@@ -332,53 +332,7 @@ export default function template(prop = {}) {
             });
         });
     
-        document.querySelectorAll('.accept-button').forEach(button => {
-            button.addEventListener('click', async (e) => {
-                const friendName = button.dataset.username;
-                console.log('Accept:', friendName);
-    
-                const response = await fetchMod(`http://localhost:8000/api/player/${friendName}/friends/request`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        'sender': me.username,
-                    })
-                });
-    
-                if (response.ok) {
-                    createAlert('success', 'Friend request from ' + friendName + ' accepted successfully');
-                    button.parentElement.remove();
-                } else {
-                    createAlert('error', 'An error occurred while accepting friend request');
-                }
-            });
-        });
-    
-        document.querySelectorAll('.decline-button').forEach(button => {
-            button.addEventListener('click', async (e) => {
-                const friendName = button.dataset.username;
-                console.log('Decline:', friendName);
-    
-                const response = await fetchMod(`http://localhost:8000/api/player/${friendName}/friends/request`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        'sender': me.username,
-                    })
-                });
-    
-                if (response.ok) {
-                    createAlert('success', 'Friend request from ' + friendName + ' declined successfully');
-                    button.parentElement.remove();
-                } else {
-                    createAlert('error', 'An error occurred while declining friend request');
-                }
-            });
-        });
+<div class="button-container"><div class="button-container">
     }
 
     let cleanup = () => {}
@@ -404,9 +358,11 @@ function generateFriendRequestList(requests) {
     const { received, sent } = requests;
     return generateList(received, request => `
         <div class="friend-request-list-item">
-            ${request.sender}
-            ${createButton('btn btn-primary accept-button', 'button', 'Accept', '', { 'username': request.sender })}
-            ${createButton('btn btn-danger decline-button', 'button', 'Decline', '', { 'username': request.sender })}
+            <span>${request.sender}</span>
+            <div class="button-container">
+                ${createButton('btn btn-primary accept-button', 'button', 'Accept', '', { 'username': request.sender })}
+                ${createButton('btn btn-danger decline-button', 'button', 'Decline', '', { 'username': request.sender })}
+            </div>
         </div>
     `);
 }
@@ -452,7 +408,7 @@ function generateListContainer(title, inputPlaceholder, buttonLabel, listContent
             <h4>${title}</h4>
             ${includeSearch ? `
             <div class="input-group">
-                ${createInput("form-control rounded", "search", `${title.toLowerCase()}SearchInputBox`, "", inputPlaceholder)}
+                ${createInput("form-control rounded", "search", 'searchInputBox', "", inputPlaceholder)}
                 ${createButton('btn btn-dark', 'button', buttonLabel, 'search')}
             </div>
             ` : ''}

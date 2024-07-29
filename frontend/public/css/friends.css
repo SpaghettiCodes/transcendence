@@ -22,6 +22,7 @@ body {
     padding: 20px;
     overflow-y: auto;
     flex: 1;
+    max-height: 300px; /* Set a maximum height for scrollable lists */
 }
 
 .profile-section {
@@ -42,6 +43,9 @@ body {
     border-radius: 5px;
     padding: 10px;
     direction: ltr;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .friend-list-item:hover, .blocked-list-item:hover, .friend-request-list-item:hover {
@@ -68,7 +72,7 @@ body {
     flex-shrink: 0;
 }
 
-.blocked-list-item {
+.blocked-list-item, .friend-request-list-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -79,6 +83,19 @@ body {
     direction: ltr;
 }
 
-.blocked-list-item button {
+.blocked-list-item button, .friend-request-list-item button {
     margin-left: 10px; /* Add some space between the username and the button */
+}
+
+.friend-request-list-item .button-container {
+    display: flex;
+    gap: 1px; /* Add space between the buttons */
+    justify-content: flex-end;
+    align-items: center;
+    flex-shrink: 0; /* Prevent the container from shrinking */
+}
+
+.scrollable {
+    max-height: 250px; /* Set a maximum height for the scrollable area */
+    overflow-y: auto; /* Enable vertical scrolling */
 }
