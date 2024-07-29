@@ -2,7 +2,7 @@ import { generateList } from "../../../components/generateList.js"
 
 export function generateMatchHistory(items) {
 	if (!items.length) {
-		return `<li class="list-group-item">No matches to show, Try playing a Game!</li>`
+		return `<li class="list-group-item">No matches to show</li>`
 	}
 	return generateList(items, match => {
 		let resultData = match.result
