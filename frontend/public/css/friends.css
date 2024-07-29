@@ -9,8 +9,8 @@ body {
 }
 
 .list-section {
-    display: flex;
-    flex-direction: column;
+	display: grid;
+	grid-template-rows: 1fr 1fr 1fr;
     gap: 20px; /* Add gap between containers */
     padding: 20px;
 }
@@ -22,19 +22,16 @@ body {
     padding: 20px;
     overflow-y: auto;
     flex: 1;
-    max-height: 300px; /* Set a maximum height for scrollable lists */
+    /* max-height: 300px; Set a maximum height for scrollable lists */
 }
 
 .profile-section {
-    display: flex;
-    flex-direction: column;
     flex-grow: 1;
     padding: 20px;
 }
 
 .profile-details {
     flex-grow: 3 !important;
-    overflow-y: auto;
 }
 
 .friend-list-item, .blocked-list-item, .friend-request-list-item {
@@ -50,12 +47,6 @@ body {
 
 .friend-list-item:hover, .blocked-list-item:hover, .friend-request-list-item:hover {
     background-color: #e9ecef;
-}
-
-.buttons-bottom {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
 }
 
 .input-group {
@@ -96,6 +87,10 @@ body {
 }
 
 .scrollable {
-    max-height: 250px; /* Set a maximum height for the scrollable area */
+    /* max-height: 250px; Set a maximum height for the scrollable area */
     overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.stretch-height-fit {
+	height: 100%;
 }

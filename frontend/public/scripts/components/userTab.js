@@ -27,6 +27,24 @@ function generateUserTab(friendData, onClickFunction) {
 	return newFriendDiv
 }
 
+export function generateBlockedTab(fellaUsername,  onClickFunction) {
+	let newBlockedDiv = document.createElement('div')
+	newBlockedDiv.setAttribute('class', 'friend-list-item gap-3')
+
+	let youBlockedThisguy = document.createElement('div')
+	youBlockedThisguy.setAttribute('class', '')
+	youBlockedThisguy.style.fontWeight = 'bolder'
+	youBlockedThisguy.innerText = "Blocked User"
+
+	if (onClickFunction) {
+		newBlockedDiv.onclick = onClickFunction(newBlockedDiv)
+	}
+
+	newBlockedDiv.playerAssociated = fellaUsername
+	newBlockedDiv.append(youBlockedThisguy)
+	return newBlockedDiv
+}
+
 export default function generateUserTabs(friendList, onClickFunctionGenerator) {
 	if (onClickFunctionGenerator === undefined) {
 		onClickFunctionGenerator = () => undefined

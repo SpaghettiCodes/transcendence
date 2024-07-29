@@ -32,7 +32,13 @@ export default class messageDiv {
 			
 			this.content.appendChild(this.inviteContent)
 			this.content.appendChild(this.statusButton)
-		} else {
+		} else if (type === 'blocked') {
+			this.messageContent = document.createElement('div')
+			this.messageContent.setAttribute('class', 'messageContent text-break')
+
+			this.content.appendChild(this.messageContent)
+		}
+		else {
 			console.error("unkown type for message div")
 		}
 
@@ -68,6 +74,11 @@ export default class messageDiv {
 
 			this.inviteContent.innerText = message
 			messageDiv.setPlayButtonStatus(this.inviteContent, this.statusButton, status, matchID)
+		} else if (this.type === 'blocked') {
+			this.ImageHolder.remove()
+			let messageContent = data['content']
+			this.messageContent.innerText = messageContent
+			this.messageContent.style.fontWeight = 'bolder'
 		}
 	}
 

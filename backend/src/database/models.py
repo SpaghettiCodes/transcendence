@@ -47,8 +47,13 @@ class Player(models.Model):
     def block_player(self, player):
         if not player in self.blocked.all():
             self.blocked.add(player)
+
+            # remove friend
             if player in self.friends.all():
                 self.friends.remove(player)
+            if self in player.friends.all():
+                player.friends.remove(self)
+
             self.save()
 
     def unblock_player(self, player):

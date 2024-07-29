@@ -6,6 +6,7 @@ import endOfChatDiv from "./components/endOfChatDiv.js"
 import { createButton, createInput } from "../../components/elements.js"
 import { fetchMod } from "../../jwt.js"
 import generateUserTabs from "../../components/userTab.js"
+import { generateBlockedTab } from "../../components/userTab.js"
 
 export default function chat(prop={}) {
 	let		websocket = undefined
@@ -33,6 +34,17 @@ export default function chat(prop={}) {
 				throw response
 			value = await response.json()
 			prop.friendList = value
+
+			const blockedResponse = await fetchMod(
+				`https://localhost:8000/api/player/${yourName}/blocked`,
+				{
+					method: "GET",
+				}
+			)
+			if (!blockedResponse.ok)
+				throw response
+			value = await blockedResponse.json()
+			prop.blockList = value
 		} catch (e) {
 			console.log(e)
 			if (e === 'redirected')
@@ -104,8 +116,19 @@ export default function chat(prop={}) {
 		}
 
 		let friendTabs = generateUserTabs(prop.friendList, generateUserTabFunctions)
-		if (friendTabs.length)
-			friendList.appendChild(...friendTabs)
+		if (friendTabs.length) {
+			for (let friendTab of friendTabs) {
+				if (prop.blockList.find((playerData) => playerData.username === friendTab.playerAssociated)) {
+					let blockedUsername = friendTab.playerAssociated
+					console.log(blockedUsername)
+					friendList.appendChild(generateBlockedTab(blockedUsername, generateUserTabFunctions({username: blockedUsername})))
+					
+				} else {
+					friendList.appendChild(friendTab)
+				}
+			}
+		}
+		
 
 		const connectToNewChatroom = async (player_username, target_username) => {
 			if (!loadingNewChatroom) {

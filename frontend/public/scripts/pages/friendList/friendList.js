@@ -10,20 +10,22 @@ import { createLoader } from "../../components/loader.js";
 
 export default function template(prop = {}) {
     let friends, profile, matches ,friend, me, blockList, friendRequests;
-    
+	let searchParams = new URLSearchParams(window.location.search)
+	let searching = searchParams.get('search')
+
     let prerender = async () => {
         try {
-            const response = await fetchMod('http://localhost:8000/api/me');
+            const response = await fetchMod('https://localhost:8000/api/me');
             if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
             const user = await response.json();
             me = user;
             console.log('ME', user.username);
     
-            const friendsResponse = await fetchMod('http://localhost:8000/api/player/' + user.username + '/friends');
+            const friendsResponse = await fetchMod('https://localhost:8000/api/player/' + user.username + '/friends');
             if (!friendsResponse.ok) throw new Error('Network response was not ok ' + friendsResponse.statusText);
             const friendlist = await friendsResponse.json();
     
-            const randomUsers = await fetchMod('http://localhost:8000/api/player/random?number=5');
+            const randomUsers = await fetchMod('https://localhost:8000/api/player/random?number=5');
             if (!randomUsers.ok) throw new Error('Network response was not ok ' + randomUsers.statusText);
             let randomUsersData = await randomUsers.json();
     
@@ -32,19 +34,39 @@ export default function template(prop = {}) {
             const mergedList = [...friendlist, ...randomUsersData];
             const uniqueMergedList = Array.from(new Set(mergedList.map(user => user.username)))
                                           .map(username => mergedList.find(user => user.username === username));
-    
-            const profile = uniqueMergedList[0];
-            const profileFetch = await fetchMod(`http://localhost:8000/api/player/${profile.username}`);
-            const profileData = await profileFetch.json();
-    
-            const profileMatch = await fetchMod(`http://localhost:8000/api/player/${profile.username}/match`);
-            const profileMatchData = await profileMatch.json();
-    
-            const block = await fetchMod(`http://localhost:8000/api/player/${user.username}/blocked`);
+
+			let profileData = undefined
+			let profileMatchData = undefined
+			if (searching !== null) {
+				try {
+					const profileFetch = await fetchMod(`https://localhost:8000/api/player/${searching}`);
+					if (!profileFetch.ok)
+						throw profileFetch
+					profileData = await profileFetch.json();
+		
+					const profileMatch = await fetchMod(`https://localhost:8000/api/player/${searching}/match`);
+					profileMatchData = await profileMatch.json();
+				} catch (response) {
+					if (response.status === 404) {
+						console.log('forget it')
+					}
+				}
+			}
+
+			if (!profileData || !profileMatchData) {
+				const profile = uniqueMergedList[0]
+				const profileFetch = await fetchMod(`https://localhost:8000/api/player/${profile.username}`);
+				profileData = await profileFetch.json();
+
+				const profileMatch = await fetchMod(`https://localhost:8000/api/player/${profile.username}/match`);
+				profileMatchData = await profileMatch.json();
+			}
+
+            const block = await fetchMod(`https://localhost:8000/api/player/${user.username}/blocked`);
             const blockList = await block.json();
             console.log(blockList);
     
-            const Requests = await fetchMod(`http://localhost:8000/api/player/${user.username}/friends/request`);
+            const Requests = await fetchMod(`https://localhost:8000/api/player/${user.username}/friends/request`);
             const friendRequests = await Requests.json();
             console.log('friendRequests', friendRequests);
     
@@ -67,22 +89,22 @@ export default function template(prop = {}) {
     
         return `
             <div class="d-flex flex-row flex-grow-1 align-self-stretch overflow-auto">
-                <div class="d-flex flex-column list-section overflow-auto">
-                    <div class="friend-list">
+                <div class="list-section overflow-auto">
+                    <div class="d-flex friend-list">
                     ${generateListContainer("Colleagues", "Colleagues' ID", "Search", generateFriendList(friends), true)}
                     </div>
-                    <div class="blocked-list scrollable">
+                    <div class="d-flex blocked-list scrollable">
                         ${generateListContainer("Blocked Colleagues", "Blocked Colleagues' ID", "Search", generateBlockedList(blockList), false)}
                     </div>
-                    <div class="friend-request-list scrollable">
+                    <div class="d-flex friend-request-list scrollable">
                         ${generateListContainer("Colleague Requests", "Friend Requests' ID", "Search", generateFriendRequestList(friendRequests), false)}
                     </div>
                 </div>
-                <div class="d-flex flex-column profile-section overflow-auto">
-                    <div class="profile-details">
+                <div class="d-flex flex-column profile-section overflow-y-auto">
+                    <div class="d-flex flex-column profile-details overflow-y-auto">
                         ${generateUserProfile(profile, matches)}
                     </div>
-                    <div class="buttons-bottom">
+                    <div class="d-flex buttons-bottom mt-2 gap-5 align-self-center">
                         ${createButton('btn btn-danger', 'button', 'Block', 'block')}
                         ${createButton('btn btn-primary', 'button', 'Send Friend Request', 'request')}
                     </div>
@@ -101,17 +123,17 @@ export default function template(prop = {}) {
             console.log('Search:', search);
 
 			
-            const response = await fetchMod(`http://localhost:8000/api/player/${search}`);
+            const response = await fetchMod(`https://localhost:8000/api/player/${search}`);
             if (!response.ok) return createAlert('error', 'The user \'' + search + '\' does not exist');
             const user = await response.json();
-            const userMatchHistoryResponse = await fetchMod(`http://localhost:8000/api/player/${user.username}/match`);
+            const userMatchHistoryResponse = await fetchMod(`https://localhost:8000/api/player/${user.username}/match`);
             const matchHistory = await userMatchHistoryResponse.json();
             const profileDetails = document.querySelector('.profile-details');
 			profileDetails.innerHTML = createLoader();
 			await sleep(1000);
             profileDetails.innerHTML = generateUserProfile(user, matchHistory);
             updateCharts(user, matchHistory);
-            friend = user;
+            friend = user.username;
         });
 
 
@@ -125,14 +147,14 @@ export default function template(prop = {}) {
                 profileDetails.innerHTML = createLoader();
     
                 try {
-                    const response = await fetchMod(`http://localhost:8000/api/player/${friendName}`);
+                    const response = await fetchMod(`https://localhost:8000/api/player/${friendName}`);
                     if (!response.ok) {
                         createAlert('error', 'The user \'' + friendName + '\' does not exist');
                         profileDetails.innerHTML = ''; // Clear loading indicator
                         return;
                     }
                     const friendProfile = await response.json();
-                    const friendMatchHistoryResponse = await fetchMod(`http://localhost:8000/api/player/${friendProfile.username}/match`);
+                    const friendMatchHistoryResponse = await fetchMod(`https://localhost:8000/api/player/${friendProfile.username}/match`);
                     const matchHistory = await friendMatchHistoryResponse.json();
     
                     // Update profile details and charts
@@ -155,7 +177,7 @@ export default function template(prop = {}) {
                 console.log('Unblock:', blockedUsername);
                 console.log('me', me);
         
-                const response = await fetchMod(`http://localhost:8000/api/player/${me.username}/blocked`, {
+                const response = await fetchMod(`https://localhost:8000/api/player/${me.username}/blocked`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
@@ -181,7 +203,7 @@ export default function template(prop = {}) {
                 const friendName = e.target.dataset.username;
                 console.log('Accept:', friendName);
         
-                const response = await fetchMod(`http://localhost:8000/api/player/${friendName}/friends/request`, {
+                const response = await fetchMod(`https://localhost:8000/api/player/${friendName}/friends/request`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -201,7 +223,7 @@ export default function template(prop = {}) {
                 const friendName = e.target.dataset.username;
                 console.log('Decline:', friendName);
         
-                const response = await fetchMod(`http://localhost:8000/api/player/${friendName}/friends/request`, {
+                const response = await fetchMod(`https://localhost:8000/api/player/${friendName}/friends/request`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
@@ -225,7 +247,7 @@ export default function template(prop = {}) {
         document.getElementById('block').addEventListener('click', async (e) => {
             console.log('Block button clicked', friend);
             
-            const response = await fetchMod(`http://localhost:8000/api/player/${me.username}/blocked`, {
+            const response = await fetchMod(`https://localhost:8000/api/player/${me.username}/blocked`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -261,7 +283,7 @@ export default function template(prop = {}) {
 
 			console.log('the friend to send friend request', friend);
 
-			const response = await fetchMod(`http://localhost:8000/api/player/${friend}/friends/request`, {
+			const response = await fetchMod(`https://localhost:8000/api/player/${friend}/friends/request`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -302,7 +324,7 @@ export default function template(prop = {}) {
         }
 
         if (user) {
-            const matchHistoryResponse = await fetchMod(`http://localhost:8000/api/player/${user.username}/match`);
+            const matchHistoryResponse = await fetchMod(`https://localhost:8000/api/player/${user.username}/match`);
             const matchHistory = await matchHistoryResponse.json();
             updateCharts(user, matchHistory);
         }
@@ -313,7 +335,7 @@ export default function template(prop = {}) {
                 console.log('Unblock:', blockedUsername);
                 console.log('me', me);
     
-                const response = await fetchMod(`http://localhost:8000/api/player/${me.username}/blocked`, {
+                const response = await fetchMod(`https://localhost:8000/api/player/${me.username}/blocked`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
@@ -337,7 +359,7 @@ export default function template(prop = {}) {
                 const friendName = button.dataset.username;
                 console.log('Accept:', friendName);
         
-                const response = await fetchMod(`http://localhost:8000/api/player/${friendName}/friends/request`, {
+                const response = await fetchMod(`https://localhost:8000/api/player/${friendName}/friends/request`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -361,7 +383,7 @@ export default function template(prop = {}) {
                 const friendName = button.dataset.username;
                 console.log('Decline:', friendName);
         
-                const response = await fetchMod(`http://localhost:8000/api/player/${friendName}/friends/request`, {
+                const response = await fetchMod(`https://localhost:8000/api/player/${friendName}/friends/request`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
@@ -451,7 +473,7 @@ function sleep (ms) {
 
 function generateListContainer(title, inputPlaceholder, buttonLabel, listContent, includeSearch = true) {
     return `
-        <div class="d-flex flex-column list-container overflow-auto">
+        <div class="flex-grow-1 d-flex flex-column list-container overflow-auto">
             <h4>${title}</h4>
             ${includeSearch ? `
             <div class="input-group">
