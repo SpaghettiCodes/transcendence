@@ -182,7 +182,9 @@ def selectNRandomPlayers(request: Request):
     # apparantly order_by('?') is slow for some database
     # i cba to check if postgres is slow, so
 
-    list_of_usernames = Player.objects.values_list('username', flat=True)
+    callerUsername = request.user.username
+
+    list_of_usernames = Player.objects.exclude(username=callerUsername).values_list('username', flat=True)
     list_of_usernames = list(list_of_usernames)
     number = request.GET.get('number')
     if (not number):
@@ -194,6 +196,7 @@ def selectNRandomPlayers(request: Request):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     print(list_of_usernames)
+    number = min(len(list_of_usernames), number)
     rand_username = random.sample(list_of_usernames, number)
     p_all = PublicPlayerSerializer(Player.objects.filter(username__in=rand_username), many=True)
 
