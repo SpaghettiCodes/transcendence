@@ -50,7 +50,7 @@ export default function ftlogin(prop={}) {
 			}
 
 			const response = await fetch(
-				"http://localhost:8000/api/ft/auth",
+				"https://localhost:8000/api/ft/auth",
 				{
 					method: "POST",
 					headers: {
@@ -80,7 +80,7 @@ export default function ftlogin(prop={}) {
 		try
 		{
 			const response = await fetch(
-				"http://localhost:8000/api/ft",
+				"https://localhost:8000/api/ft",
 				{
 					method: "GET",
 					headers: {
@@ -122,7 +122,7 @@ export default function ftlogin(prop={}) {
 			const data = Object.fromEntries(formData)
 
 			const response = await fetch(
-				"http://localhost:8000/api/register", {
+				"https://localhost:8000/api/register", {
 					method: "POST",
 					headers: {
 						'Content-Type': 'application/json',
@@ -155,7 +155,7 @@ export default function ftlogin(prop={}) {
 		try
 		{
 			const response = await fetch(
-				"http://localhost:8000/api/ft", {
+				"https://localhost:8000/api/ft", {
 					method: "POST",
 					headers: {
 						'Content-Type': 'application/json',

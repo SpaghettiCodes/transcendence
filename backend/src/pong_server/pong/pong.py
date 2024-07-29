@@ -123,9 +123,9 @@ class PongGame(Game):
         )
 
         if self.isForfeit():
+            # forfeit overrides everything
             newResult.reason = 2
-
-        if attacker_score == defender_score:
+        elif attacker_score == defender_score:
             # draw
             newResult.reason = 3
             # no one wins and no one loses i guess?

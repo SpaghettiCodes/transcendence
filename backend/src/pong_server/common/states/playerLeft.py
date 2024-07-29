@@ -5,7 +5,8 @@ from .endGame import endGame
 from math import ceil
 
 class PlayerLeft(State):
-    def __init__(self, previousState, gameInstance, duration=100) -> None:
+    # TODO: Change the wait timing to something else more suitable
+    def __init__(self, previousState, gameInstance, duration=10) -> None:
         super().__init__(gameInstance)
         self.paused = True
         self.killTheGame = False

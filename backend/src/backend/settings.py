@@ -33,7 +33,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,11 +45,8 @@ INSTALLED_APPS = [
 	'rest_framework_simplejwt',
     'corsheaders',
     'pong_ws',
-    # 'pongList_ws',
     'chat_ws',
     'tournament_ws',
-    # 'tournamentList_ws',
-    # 'drf_spectacular',
 ]
 
 SPECTACULAR_SETTINGS = {
@@ -179,6 +175,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -193,7 +190,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ORIGIN_ALLOW_ALL = True
 ALLOWED_HOSTS = ('*', )
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8080',
+    'https://localhost',
 ]
 
 # email stuff

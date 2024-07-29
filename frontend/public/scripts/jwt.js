@@ -93,7 +93,7 @@ export async function fetchMod(url, request) {
 	}
 
 	// verify access token in localStorage
-	const response_verify = await fetch('http://localhost:8000/api/token/verify', {
+	const response_verify = await fetch('https://localhost:8000/api/token/verify', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
@@ -104,7 +104,7 @@ export async function fetchMod(url, request) {
 	// access token in locallStorage invalid/expired, request new one and sets the new one in localStorage
 	if (response_verify.status == 401) {
 		console.log("access token invalid/expired, requesting new one using refresh token...")
-		const response_refresh = await fetch('http://localhost:8000/api/token/refresh', {
+		const response_refresh = await fetch('https://localhost:8000/api/token/refresh', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'

@@ -45,7 +45,7 @@ export default class messageDiv {
 
 	setData = (data) => {
 		let authorID = data['sender']['username']
-		let imageURL = `http://localhost:8000/api${data['sender']['profile_pic']}`
+		let imageURL = `https://localhost:8000/api${data['sender']['profile_pic']}`
 		this.ImageHolder.src = imageURL
 
 		if (this.type === 'message') {

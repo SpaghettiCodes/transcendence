@@ -7,7 +7,7 @@ export function generateProfileInfo(profile) {
 	else
 		winLostRatio = 'Cant be calculated yet'
 
-	let imageSrc = `http://localhost:8000${profile.profile_pic}`
+	let imageSrc = `https://localhost:8000${profile.profile_pic}`
 
 	return `
 		<h2 class="mt-3">${profile.username}</h2>

@@ -43,7 +43,7 @@ export default function auth2fa(prop={}) {
 
 		const sendEmail = async () => {
 			try {
-				const response = await fetch('http://localhost:8000/api/2fa/send', {
+				const response = await fetch('https://localhost:8000/api/2fa/send', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
@@ -81,7 +81,7 @@ export default function auth2fa(prop={}) {
 					return
 				}
 
-				const response = await fetch('http://localhost:8000/api/2fa/verify', {
+				const response = await fetch('https://localhost:8000/api/2fa/verify', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({

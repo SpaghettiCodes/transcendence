@@ -101,7 +101,7 @@ export default function testChat(prop={}) {
 					console.log(`connecting you to ${newRoomId}`)
 					
 					roomid = newRoomId
-					connectToNewSocket(`ws://localhost:8000/chat/${roomid}`)
+					connectToNewSocket(`wss://localhost:8000/chat/${roomid}`)
 				}
 
 				newDiv.appendChild(titleDiv)
@@ -113,7 +113,7 @@ export default function testChat(prop={}) {
 
 		const getInServerList = () => {
 			fetch(
-				`http://localhost:8000/api/player/${name}/chat`, {
+				`https://localhost:8000/api/player/${name}/chat`, {
 					method: "GET"
 				}
 			).then((value) => {
@@ -236,9 +236,9 @@ export default function testChat(prop={}) {
 		const getPreviousMessages = async () => {
 			let url = undefined
 			if (lastmsgid === undefined)
-				url = `http://localhost:8000/api/chat/${roomid}/history?user=${name}`
+				url = `https://localhost:8000/api/chat/${roomid}/history?user=${name}`
 			else
-				url = `http://localhost:8000/api/chat/${roomid}/history?start_id=${lastmsgid}&user=${name}`
+				url = `https://localhost:8000/api/chat/${roomid}/history?start_id=${lastmsgid}&user=${name}`
 
 			try {
 				const response = await fetch(url)
@@ -436,7 +436,7 @@ export default function testChat(prop={}) {
 			console.log(payload)
 			try {
 				let result = await fetch(
-					"http://localhost:8000/api/chat", {
+					"https://localhost:8000/api/chat", {
 						method: "POST",
 						headers: {
 							'Content-Type': 'application/json', // wtf
@@ -449,7 +449,7 @@ export default function testChat(prop={}) {
 					console.log(data)
 	
 					roomid = data["roomid"]
-					connectToNewSocket(`ws://localhost:8000/chat/${roomid}`)
+					connectToNewSocket(`wss://localhost:8000/chat/${roomid}`)
 				}
 
 				// refresh server list
@@ -473,7 +473,7 @@ export default function testChat(prop={}) {
 
 			try {
 				fetch(
-					`http://localhost:8000/api/chat/${roomid}`,
+					`https://localhost:8000/api/chat/${roomid}`,
 					{
 						method: "POST",
 						headers: {
@@ -501,7 +501,7 @@ export default function testChat(prop={}) {
 
 			try {
 				fetch(
-					`http://localhost:8000/api/chat/${roomid}`,
+					`https://localhost:8000/api/chat/${roomid}`,
 					{
 						method: "POST",
 						headers: {

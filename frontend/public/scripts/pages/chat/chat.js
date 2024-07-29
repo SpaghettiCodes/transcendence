@@ -17,14 +17,14 @@ export default function chat(prop={}) {
 	// attach all pre-rendering code here (like idk, fetch request or something)
 	let prerender = async () => {
 		try {
-			const me_response = await fetchMod(`http://localhost:8000/api/me`)
+			const me_response = await fetchMod(`https://localhost:8000/api/me`)
 			if (!me_response.ok)
 				throw me_response
 			let value = await me_response.json()
 			yourName = value.username
 
 			const response = await fetchMod(
-				`http://localhost:8000/api/player/${yourName}/friends`,
+				`https://localhost:8000/api/player/${yourName}/friends`,
 				{
 					method: "GET",
 				}
@@ -116,8 +116,8 @@ export default function chat(prop={}) {
 				sendMessageButton.classList.add('disabled')
 				sendInviteButton.classList.add('disabled')
 
-				let chatID = await getChatRoomData(`http://localhost:8000/api/player/${player_username}/chat/${target_username}`)
-				connectToWebsocket(`ws://localhost:8000/chat/${chatID}`)
+				let chatID = await getChatRoomData(`https://localhost:8000/api/player/${player_username}/chat/${target_username}`)
+				connectToWebsocket(`wss://localhost:8000/chat/${chatID}`)
 
 				urlParams.set('friend', target_username)
 				// reenable sending message
@@ -130,9 +130,9 @@ export default function chat(prop={}) {
 			let url = undefined
 			let didWeGetAllMessagesBefore = gotAllMessages
 			if (lastMSGID === undefined)
-				url = `http://localhost:8000/api/chat/${chatID}/history`
+				url = `https://localhost:8000/api/chat/${chatID}/history`
 			else
-				url = `http://localhost:8000/api/chat/${chatID}/history?start_id=${lastMSGID}`
+				url = `https://localhost:8000/api/chat/${chatID}/history?start_id=${lastMSGID}`
 
 			try {
 				const response = await fetchMod(url)
@@ -285,7 +285,7 @@ export default function chat(prop={}) {
 
 			try {
 				await fetchMod(
-					`http://localhost:8000/api/chat/${currentlyViewingChatID}`,
+					`https://localhost:8000/api/chat/${currentlyViewingChatID}`,
 					{
 						method: "POST",
 						headers: {
@@ -316,7 +316,7 @@ export default function chat(prop={}) {
 
 			try {
 				await fetchMod(
-					`http://localhost:8000/api/chat/${currentlyViewingChatID}`,
+					`https://localhost:8000/api/chat/${currentlyViewingChatID}`,
 					{
 						method: "POST",
 						headers: {

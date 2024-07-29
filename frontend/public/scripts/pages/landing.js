@@ -88,7 +88,7 @@ export default function landing(prop={}) {
 				return
 
 			loginButton.disabled = true
-			fetch('http://localhost:8000/api/login', {
+			fetch('https://localhost:8000/api/login', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -128,7 +128,7 @@ export default function landing(prop={}) {
 				return
 
 			signUpButton.disabled = true
-			fetch('http://localhost:8000/api/register', {
+			fetch('https://localhost:8000/api/register', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -161,7 +161,7 @@ export default function landing(prop={}) {
 
 			// get environmental variables
 			const response = await fetch(
-				"http://localhost:8000/api/ft/env",
+				"https://localhost:8000/api/ft/env",
 				{
 					method: "GET",
 				}

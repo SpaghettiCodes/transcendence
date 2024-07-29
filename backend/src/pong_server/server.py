@@ -162,7 +162,7 @@ class PongServer:
     async def player_left(cls, username, game_id, ):
         server = cls.servers.get(game_id)
         if (not server):
-            print("Probably a funny bug happened")
+            print("Probably removed via removalFunction")
             return
 
         await server.playerLeft(username)

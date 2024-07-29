@@ -8,6 +8,10 @@ https://docs.djangoproject.com/en/4.1/howto/deployment/asgi/
 """
 
 import os
+import django
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
+django.setup()
 
 from channels.auth import AuthMiddlewareStack
 from channels.security.websocket import AllowedHostsOriginValidator
@@ -20,7 +24,6 @@ from chat_ws.routing import websocket_urlpatterns as chat_ws_url
 from tournament_ws.routing import websocket_urlpatterns as tournament_ws_url
 # from tournamentList_ws.routing import websocket_urlpatterns as tournamentList_ws_url
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),

@@ -36,7 +36,7 @@ export default function match(prop={}) {
 	const getGameData = async () => {
 		try {
 			let value = await fetchMod (
-				`http://localhost:8000/api/${apiURI}`,
+				`https://localhost:8000/api/${apiURI}`,
 				{
 					method: "GET",
 				}
@@ -484,7 +484,7 @@ export default function match(prop={}) {
 		}
 
 		const connectSocket = () => {
-			pongSocket = new WebSocket(`ws://localhost:8000/${apiURI}`)
+			pongSocket = new WebSocket(`wss://localhost:8000/${apiURI}`)
 	
 			pongSocket.onopen = function(e) {
 				let commandToSend = 'join'
