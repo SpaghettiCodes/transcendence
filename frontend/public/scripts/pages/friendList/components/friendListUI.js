@@ -12,7 +12,7 @@ export function generateListContainer(title, inputPlaceholder, buttonLabel, list
             <h4>${title}</h4>
             ${includeSearch ? `
             <div class="input-group">
-                ${createInput("form-control rounded", "search", 'searchInputBox', "", inputPlaceholder)}
+                ${createInput("form-control rounded", "search", `${title.toLowerCase()}SearchInputBox`, "", inputPlaceholder)}
                 ${createButton('btn btn-dark', 'button', buttonLabel, 'search')}
             </div>
             ` : ''}
