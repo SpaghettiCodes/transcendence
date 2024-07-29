@@ -1,7 +1,7 @@
 import generateUserTabs from "../../components/userTab.js"
 import { fetchMod, getJwtToken } from "../../jwt.js"
 import { redirect, redirect_replace_history, redirect_without_history } from "../../router.js"
-import { everyElementContains, pairElements } from "../helpers.js"
+import { everyElementContains, getMatchWinnerData, pairElements } from "../helpers.js"
 import { appendOngoingMatchup, appendTournamentScreen, generateTournamentScreen } from "./components/roundGenerator.js"
 
 export default function tournament(prop={}) {
@@ -78,7 +78,7 @@ export default function tournament(prop={}) {
 		} catch (response) {
 			console.log(response)
 			if (response.status === 404) {
-				redirect_without_history('/error')
+				redirect_replace_history(`/tournament/${tournamentID}/results`)
 				throw 'redirected'
 			}
 			throw response
@@ -149,7 +149,7 @@ export default function tournament(prop={}) {
 					return game.players
 				})
 			} else {
-				newRoundPlayers = pairElements((previousRoundData.map(previousMatch => previousMatch.result.winner)))
+				newRoundPlayers = pairElements((previousRoundData.map(previousMatch => getMatchWinnerData(previousMatch.result))))
 			}
 
 			appendTournamentScreen(tournamentScreen, newRoundPlayers)
@@ -171,6 +171,7 @@ export default function tournament(prop={}) {
 					return
 				}
 			}
+
 			let newRoundMatches = newRoundPlayers.map(player => games.find(game => everyElementContains(game.players, player)).game_id)
 
 			appendOngoingMatchup(tournamentScreen, newRoundMatches, onClickGenerator)
@@ -190,7 +191,7 @@ export default function tournament(prop={}) {
 
 				if (previousRoundData) {
 					// need to do hocus pocus magic circus here
-					roundData = pairElements((previousRoundData.map(previousMatch => previousMatch.result.winner)))
+					roundData = pairElements((previousRoundData.map(previousMatch => getMatchWinnerData(previousMatch.result))))
 				} else {
 					round.forEach((match) => {
 						let matchData = []

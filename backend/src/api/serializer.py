@@ -108,7 +108,13 @@ class MatchSerializer(serializers.ModelSerializer):
 
 class TournamentRoundSerializer(serializers.ModelSerializer):
     # match = serializers.SlugRelatedField(queryset=Match, many=True, slug_field='matchid')
-    match = MatchSerializer(many=True)
+    match = serializers.SerializerMethodField()
+
+    def get_match(self, obj):
+        # the smaller one gets launched first i.e. left
+        matches = obj.match.all().order_by('id')
+        return MatchSerializer(matches, many=True).data
+
 
     class Meta:
         model = TournamentRound

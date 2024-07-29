@@ -14,3 +14,18 @@ export function pairElements(arr) {
 }
 
 export let everyElementContains = (a, b) => a.every(value => b.includes(value))
+
+// this function exist because i do not want to send two of the exact same copy of data
+// :)
+export function getMatchWinnerData(matchData) {
+	let { attacker, defender, winner } = matchData
+	let attackerUsername = attacker.username
+	let defenderUsername = defender.username
+
+	if (winner === attackerUsername)
+		return attacker
+	else if (winner === defenderUsername)
+		return defender
+	else
+		return undefined
+}
