@@ -24,7 +24,7 @@ export default function tournamentList(prop={}) {
 
 	// attach all event listeners here (or do anything that needs to be done AFTER attaching the html code)
 	let postrender = () => {
-		const tournamentListWebsocket = new WebSocket("ws://localhost:8000/tournament")
+		const tournamentListWebsocket = new WebSocket("wss://localhost:8000/tournament")
 
 		const generateHtmlTags = (tournaments) => {
 			listOfTournaments.innerHTML = ''

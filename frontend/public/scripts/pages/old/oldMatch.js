@@ -239,7 +239,7 @@ export default function oldMatch(prop={}) {
 		}
 
 		const connectSocket = () => {
-			pongSocket = new WebSocket(`ws://localhost:8000/${apiURI}`)
+			pongSocket = new WebSocket(`wss://localhost:8000/${apiURI}`)
 	
 			pongSocket.onopen = function(e) {
 				sendMessage({

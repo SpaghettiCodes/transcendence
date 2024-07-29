@@ -101,7 +101,7 @@ export default function testChat(prop={}) {
 					console.log(`connecting you to ${newRoomId}`)
 					
 					roomid = newRoomId
-					connectToNewSocket(`ws://localhost:8000/chat/${roomid}`)
+					connectToNewSocket(`wss://localhost:8000/chat/${roomid}`)
 				}
 
 				newDiv.appendChild(titleDiv)
@@ -449,7 +449,7 @@ export default function testChat(prop={}) {
 					console.log(data)
 	
 					roomid = data["roomid"]
-					connectToNewSocket(`ws://localhost:8000/chat/${roomid}`)
+					connectToNewSocket(`wss://localhost:8000/chat/${roomid}`)
 				}
 
 				// refresh server list

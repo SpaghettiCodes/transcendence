@@ -117,7 +117,7 @@ export default function chat(prop={}) {
 				sendInviteButton.classList.add('disabled')
 
 				let chatID = await getChatRoomData(`https://localhost:8000/api/player/${player_username}/chat/${target_username}`)
-				connectToWebsocket(`ws://localhost:8000/chat/${chatID}`)
+				connectToWebsocket(`wss://localhost:8000/chat/${chatID}`)
 
 				urlParams.set('friend', target_username)
 				// reenable sending message

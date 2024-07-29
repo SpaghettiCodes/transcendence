@@ -230,7 +230,7 @@ export default function tournament(prop={}) {
 		}
 
 		const connectToWebsocket = async () => {
-			tournamentSocket = new WebSocket(`ws://localhost:8000/tournament/${tournamentID}`)
+			tournamentSocket = new WebSocket(`wss://localhost:8000/tournament/${tournamentID}`)
 			
 			tournamentSocket.onerror = () => {
 				console.log("uh oh stinky")

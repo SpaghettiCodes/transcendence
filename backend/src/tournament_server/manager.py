@@ -18,11 +18,15 @@ class TournamentManager:
         server_to_join = None
         
         if len(cls.servers):
-            for server_id, server in cls.servers.items():
-                if (not server.isFull()):
-                    if (not server.isHidden() and not server.hasStarted()):
-                        server_to_join = server_id
-                        break
+            try:
+                for server_id, server in cls.servers.items():
+                    if (not server.isFull()):
+                        if (not server.isHidden() and not server.hasStarted()):
+                            server_to_join = server_id
+                            break
+            except RuntimeError:
+                print("fucking list changing during runtime bah")
+                return cls.randomMatchmake()
 
         if server_to_join is None:
             server_to_join = cls.new_tournament()

@@ -39,7 +39,7 @@ export default function matchListing(prop={}) {
 		const new_apong = document.getElementById("newapongame")
 		const save_button = document.getElementById("save")
 		const matchmake_button = document.getElementById("matchmake")
-		const matchSocket = new WebSocket("ws://localhost:8000/match")
+		const matchSocket = new WebSocket("wss://localhost:8000/match")
 
 		sendMatchSocket = (message) => {
 			matchSocket.send(JSON.stringify(message))
