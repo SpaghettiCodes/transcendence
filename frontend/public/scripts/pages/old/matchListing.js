@@ -63,7 +63,7 @@ export default function matchListing(prop={}) {
 			try
 			{
 				response = await fetchMod(
-					"http://localhost:8000/api/match",
+					"https://localhost:8000/api/match",
 					{
 						method: "POST",
 						headers: {
@@ -97,7 +97,7 @@ export default function matchListing(prop={}) {
 			try
 			{
 				response = await fetchMod(
-					"http://localhost:8000/api/match",
+					"https://localhost:8000/api/match",
 					{
 						method: "POST",
 						headers: {
@@ -170,7 +170,7 @@ export default function matchListing(prop={}) {
 			try
 			{
 				response = await fetchMod(
-					"http://localhost:8000/api/match?type=pong",
+					"https://localhost:8000/api/match?type=pong",
 					{
 						method: "GET",
 						headers: {

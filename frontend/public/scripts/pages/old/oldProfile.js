@@ -12,7 +12,7 @@ export default function template(prop={}) {
 	let prerender = async () => {
 		try {
 			// get user data
-			const response = await fetchMod("http://localhost:8000/api/me"); //change to the correct endpoint
+			const response = await fetchMod("https://localhost:8000/api/me"); //change to the correct endpoint
 			if (!response.ok)
 				throw new Error('Network response was not ok ' + response.statusText);
 			const data = await response.json();
@@ -23,7 +23,7 @@ export default function template(prop={}) {
 			// get match history
 			// i may throw this in /players and /me also
 			// see first
-			const matchHistoryResponse = await fetchMod(`http://localhost:8000/api/player/${yourName}/match`)
+			const matchHistoryResponse = await fetchMod(`https://localhost:8000/api/player/${yourName}/match`)
 			if (!matchHistoryResponse.ok)
 				throw new Error('Server responded with ' + matchHistoryResponse.statusText)
 			const matchData = await matchHistoryResponse.json()
@@ -111,19 +111,19 @@ export default function template(prop={}) {
 			const formData = new FormData();
 			formData.append("profile_pic", file);
 		
-			const url = `http://localhost:8000/api/player/${yourName}`;
+			const url = `https://localhost:8000/api/player/${yourName}`;
 			const response = await fetchMod(url, {
 				method: "PATCH",
 				body: formData,
 			});
 			const json = await response.json();
-			document.getElementById("pfp").src = `http://localhost:8000/api${json.profile_pic}`;
+			document.getElementById("pfp").src = `https://localhost:8000/api${json.profile_pic}`;
 		});
 
 		document.getElementById("email_button").addEventListener("click", async () => {
 			const newEmail = prompt("Enter new email:");
 			if (newEmail) {
-				const url = `http://localhost:8000/api/player/${yourName}`;
+				const url = `https://localhost:8000/api/player/${yourName}`;
 				const response = await fetchMod(url, {
 					method: "PATCH",
 					body: JSON.stringify({
@@ -144,7 +144,7 @@ export default function template(prop={}) {
 }
 
 // async function player_test() {
-// 	const response = await fetch("http://localhost:8000/api/me");
+// 	const response = await fetch("https://localhost:8000/api/me");
 // 	const json = await response.json();
 // 	console.log(json);
 // 	yourName = json.username
@@ -152,7 +152,7 @@ export default function template(prop={}) {
 // 	document.getElementById("stats").innerHTML = `<p>Games Played: ${json.matches_played}</p>
 // 				<p>Games Won: ${json.matches_won}</p>
 // 				<p>Win/Lost Ratio: 1.5</p>`
-// 	document.getElementById("pfp").src = `http://localhost:8000/api${json.profile_pic}`;
+// 	document.getElementById("pfp").src = `https://localhost:8000/api${json.profile_pic}`;
 // 	let matchHistory = [];
 // 	MHTemp.forEach(match => {
 // 		let matchDiv = `<li class="list-group-item">${match.result.attacker.username} vs ${match.result.defender.username} - ${match.result.winner} WON</li>`;

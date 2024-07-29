@@ -36,7 +36,7 @@ export default function match(prop={}) {
 	const getGameData = async () => {
 		try {
 			let value = await fetchMod (
-				`http://localhost:8000/api/${apiURI}`,
+				`https://localhost:8000/api/${apiURI}`,
 				{
 					method: "GET",
 				}

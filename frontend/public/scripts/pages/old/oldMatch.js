@@ -60,7 +60,7 @@ export default function oldMatch(prop={}) {
 
 		const getGameData = () => {
 			fetchMod (
-				`http://localhost:8000/api/${apiURI}`,
+				`https://localhost:8000/api/${apiURI}`,
 				{
 					method: "GET",
 				}

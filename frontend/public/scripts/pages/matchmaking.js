@@ -33,9 +33,9 @@ export default function template(prop={}) {
 	let postrender = () => {
 		const matchmakingGame = async (type) => {
 			try {
-				disconnectUrl = `http://localhost:8000/api/match?type=${type}`
+				disconnectUrl = `https://localhost:8000/api/match?type=${type}`
 
-				const response = await fetchMod(`http://localhost:8000/api/match?type=${type}`, {
+				const response = await fetchMod(`https://localhost:8000/api/match?type=${type}`, {
 					method: "GET"
 				})
 				if (!response.ok) {
@@ -66,7 +66,7 @@ export default function template(prop={}) {
 
 		const matchmakingTournament = async () => {
 			try {
-				const response = await fetchMod('http://localhost:8000/api/tournament', {
+				const response = await fetchMod('https://localhost:8000/api/tournament', {
 					method: "GET"
 				})
 				if (!response.ok) {

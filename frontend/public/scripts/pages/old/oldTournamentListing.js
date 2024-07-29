@@ -93,7 +93,7 @@ export default function tournamentList(prop={}) {
 			let response
 			try {
 				response = await fetchMod(
-					"http://localhost:8000/api/tournament",
+					"https://localhost:8000/api/tournament",
 					{
 						method: "POST"
 					}
@@ -115,7 +115,7 @@ export default function tournamentList(prop={}) {
 			let response
 			try {
 				response = await fetchMod(
-					"http://localhost:8000/api/tournament",
+					"https://localhost:8000/api/tournament",
 					{
 						method: "GET"
 					}

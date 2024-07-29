@@ -39,7 +39,7 @@ export default function tfa(prop={}) {
         form_send.addEventListener('submit', async function (e) {
             e.preventDefault();
             const data_send = new FormData(form_send).entries()
-            const response_send = await fetch('http://localhost:8000/api/2fa/send', {
+            const response_send = await fetch('https://localhost:8000/api/2fa/send', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(Object.fromEntries(data_send))
@@ -53,7 +53,7 @@ export default function tfa(prop={}) {
         form_verify.addEventListener('submit', async function (ee) {
             ee.preventDefault();
             const data_verify = new FormData(form_verify).entries()
-            const response_verify = await fetch('http://localhost:8000/api/2fa/verify', {
+            const response_verify = await fetch('https://localhost:8000/api/2fa/verify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(Object.fromEntries(data_verify))

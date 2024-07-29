@@ -31,7 +31,7 @@ export default function login(prop={}) {
         form.addEventListener('submit', async function (e) {
             e.preventDefault();
             const formData = new FormData(form).entries()
-            const response = await fetch('http://localhost:8000/api/login', {
+            const response = await fetch('https://localhost:8000/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(Object.fromEntries(formData))

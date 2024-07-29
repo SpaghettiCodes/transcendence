@@ -24,7 +24,7 @@ export default function tournament(prop={}) {
 		}
 
 		try {
-			const me_response = await fetchMod(`http://localhost:8000/api/me`)
+			const me_response = await fetchMod(`https://localhost:8000/api/me`)
 			if (!me_response.ok)
 				throw me_response
 			let value = await me_response.json()
@@ -66,7 +66,7 @@ export default function tournament(prop={}) {
 	const getTournamentData = async() => {
 		try {
 			const response = await fetchMod(
-				`http://localhost:8000/api/tournament/${tournamentID}`
+				`https://localhost:8000/api/tournament/${tournamentID}`
 			)
 
 			if (!response.ok) {

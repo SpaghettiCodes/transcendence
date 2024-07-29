@@ -9,3 +9,6 @@ backend/src/database/migrations/*
 *.pyo
 requirements.in
 .vscode/
+sslcert/
+static/
+media/

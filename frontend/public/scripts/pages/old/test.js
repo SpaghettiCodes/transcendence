@@ -25,7 +25,7 @@ export default function test(prop={}) {
 	let postrender = () => {
 		// const jwtToken = getJwtToken();
 		// if (!jwtToken) {
-		// 	window.location.href = 'http://localhost:8080/login';
+		// 	window.location.href = 'https://localhost:8080/login';
 		// }
 
         var form = document.getElementById("profile");
@@ -33,7 +33,7 @@ export default function test(prop={}) {
         form.addEventListener('submit', async function (e) {
             e.preventDefault();
             const formData = new FormData(form).entries()
-            const response = await fetchMod('http://localhost:8000/api/player/e', {
+            const response = await fetchMod('https://localhost:8000/api/player/e', {
                 method: 'GET',
                 headers: {
 					'Content-Type': 'application/json',

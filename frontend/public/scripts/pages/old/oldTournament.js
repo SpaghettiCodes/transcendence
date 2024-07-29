@@ -213,7 +213,7 @@ export default function tournament(prop={}) {
 		const getData = async () => {
 			try {
 				const response = await fetch(
-					`http://localhost:8000/api/tournament/${tournamentID}`
+					`https://localhost:8000/api/tournament/${tournamentID}`
 				)
 
 				if (!response.ok) {
