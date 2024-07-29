@@ -15,10 +15,9 @@ export default function home(prop={}) {
             <div class="col-md-4 mb-3 align-self-center" id="pongGame">${createButton('flex-grow-1 ui-btn btn-block', 'button',  'Pong',undefined)}</div>
             <div class="col-md-4 mb-3 align-self-center" id="apongUsGame">${createButton('flex-grow-1 ui-btn btn-block', 'button', 'APong Us',undefined)}</div>
             <div class="col-md-4 mb-3 align-self-center" id="tournament">${createButton('flex-grow-1 ui-btn btn-block', 'button', 'Tournament',undefined)}</div>
-            <div class="col-md-4 mb-3 align-self-center" id="language">${createButton('flex-grow-1 ui-btn btn-block', 'button', 'Language',undefined)}</div>
             <div class="col-md-4 mb-3 align-self-center" id="profile">${createButton('flex-grow-1 ui-btn btn-block', 'button', 'Profile', undefined)}</div>
             <div class="col-md-4 mb-3 align-self-center" id="friends">${createButton('flex-grow-1 ui-btn btn-block', 'button','Friends....?', undefined)}</div>
-            <div class="col-md-12 mb-3 align-self-center" id="chat">${createButton('flex-grow-1 ui-btn btn-block', 'button', 'Send distress signal', undefined)}</div>
+            <div class="col-md-4 mb-3 align-self-center" id="chat">${createButton('flex-grow-1 ui-btn btn-block', 'button', 'Send distress signal', undefined)}</div>
         </div>
 		`
 	}
@@ -67,9 +66,6 @@ export default function home(prop={}) {
 
 		const tournament_button = document.getElementById("tournament")
 		tournament_button.addEventListener('click', matchmakeTournamnet)
-
-		const language_button = document.getElementById("language")
-		language_button.addEventListener('click', changeLanguage)
 
 		const chat_button = document.getElementById("chat")
 		chat_button.addEventListener('click', chatWithFriends)
