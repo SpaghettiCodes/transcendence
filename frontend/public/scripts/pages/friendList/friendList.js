@@ -295,7 +295,10 @@ export default function template(prop = {}) {
 
 			if (response.ok) return createAlert('success', 'Friend request to ' + friend + ' sent successfully');
 			if (!response.ok) {
-				if (response.status === 409) return createAlert('info', 'Friend request to ' + friend + ' already sent');
+				if (response.status === 409) {
+					let errMsg = await response.json()
+					return createAlert('info', errMsg.message);
+				}
 				createAlert('error', 'An error occurred while sending friend request');
 				throw new Error('Error :' + response.statusText);
 			}

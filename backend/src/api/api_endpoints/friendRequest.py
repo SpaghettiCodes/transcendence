@@ -55,10 +55,22 @@ class ViewFriendRequest(APIView):
         p_receiver = get_object_or_404(Player.objects, username=player_username)
         p_sender = get_object_or_404(Player.objects, username=sender_username)
 
+        # check if already friends
+        if (p_receiver.is_friends_with(p_sender)):
+            return Response({
+                    'message': f"You are already friends with {p_receiver.username}"
+                },
+                status=status.HTTP_409_CONFLICT
+            )
+
         # check if already has a request
         existingRequest = p_sender.friend_request_sender.all().filter(receiver=p_receiver)
         if (existingRequest.exists()):
-            return Response(status=status.HTTP_409_CONFLICT)
+            return Response({
+                    'message': f"Friend request already sent!"
+                },
+                status=status.HTTP_409_CONFLICT
+            )
 
         # check if receiver once sent a friend req to 
         existingFriendRequest = p_sender.friend_request_receiver.all().filter(sender=p_receiver)

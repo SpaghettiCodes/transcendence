@@ -10,7 +10,7 @@ body {
 
 .list-section {
 	display: grid;
-	grid-template-rows: 1fr 1fr 1fr;
+	grid-template-rows: 2fr 1fr 1fr;
     gap: 20px; /* Add gap between containers */
     padding: 20px;
 }

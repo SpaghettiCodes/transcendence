@@ -116,7 +116,7 @@ class TournamentRoundSerializer(serializers.ModelSerializer):
 
 class TournamentResultSerializer(serializers.ModelSerializer):
     winner = PublicPlayerSerializer()
-    players = serializers.SlugRelatedField(queryset=Player, many=True, slug_field='username')
+    players = PublicPlayerSerializer(many=True)
     rounds = TournamentRoundSerializer(many=True)
 
     class Meta:

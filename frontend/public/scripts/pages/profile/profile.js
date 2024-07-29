@@ -1,3 +1,4 @@
+import { createAlert } from "../../components/alert.js";
 import { createButton } from "../../components/elements.js";
 import { generateProfileInfo } from "../../components/generateProfileInfo.js";
 import { fetchMod } from "../../jwt.js";
@@ -146,34 +147,55 @@ export default function template(prop={}) {
 
 		// Add change event listener to the file input
 		fileInput.addEventListener('change', async (event) => {
-			const file = event.target.files[0];
-			if (!file) return;
-		
-			const formData = new FormData();
-			formData.append("profile_pic", file);
-		
-			const url = `https://localhost:8000/api/player/${yourName}`;
-			const response = await fetchMod(url, {
-				method: "PATCH",
-				body: formData,
-			});
-			const json = await response.json();
-			document.getElementById("pfp").src = `https://localhost:8000/api${json.profile_pic}`;
+			try {
+				const file = event.target.files[0];
+				if (!file) return;
+			
+				const formData = new FormData();
+				formData.append("profile_pic", file);
+			
+				const url = `https://localhost:8000/api/player/${yourName}`;
+				const response = await fetchMod(url, {
+					method: "PATCH",
+					body: formData,
+				});
+				if (!response.ok)
+					throw response
+				const json = await response.json();
+				document.getElementById("pfp").src = `https://localhost:8000/api${json.profile_pic}`;	
+			} catch (e) {
+				createAlert('error', 'Invalid Image!')
+			}
 		});
 
 		document.getElementById("email_button").addEventListener("click", async () => {
 			const newEmail = prompt("Enter new email:");
 			if (newEmail) {
-				const url = `https://localhost:8000/api/player/${yourName}`;
-				const response = await fetchMod(url, {
-					method: "PATCH",
-					body: JSON.stringify({
-						"email": newEmail
-					}),
-					headers: {
-						"Content-Type": "application/json",
+				try {
+					const url = `https://localhost:8000/api/player/${yourName}`;
+					const response = await fetchMod(url, {
+						method: "PATCH",
+						body: JSON.stringify({
+							"email": newEmail
+						}),
+						headers: {
+							"Content-Type": "application/json",
+						}
+					});
+
+					if (!response.ok)
+						throw response
+				} catch (e) {
+					console.log(e)
+					if (e.status === 400) {
+						let errorList = await e.json()
+						let emailErrorList = errorList['email']
+						if (!emailErrorList)
+							return
+						createAlert('error', emailErrorList.join('and '))
 					}
-				});
+
+				}
 			}
 		});
 	}

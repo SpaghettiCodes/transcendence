@@ -69,9 +69,13 @@ def editSpecificPlayer(request, player_username):
         serializer.save()
     else:
         print(serializer.errors)
+        errors = {}
+        for aspect, errorList in serializer.errors.items():
+            errors[aspect] = [str(error).capitalize() for error in errorList]
+        print(errors)
         return Response(
-            {"Error": "Failed to update player"},
-            status=status.HTTP_400_BAD_REQUEST
+            errors,
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
     return Response(serializer.data)

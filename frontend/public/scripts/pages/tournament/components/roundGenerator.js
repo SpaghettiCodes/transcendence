@@ -1,10 +1,30 @@
 import { redirect } from "../../../router.js";
+import { ImageFromBackendUrl } from "../../helpers.js";
 
 let spaceGenerator = () => {
 	let spacer = document.createElement('li')
 	spacer.setAttribute('class', 'spacer')
 	spacer.innerText = '\xa0';
 	return spacer
+}
+
+function playerDiv(playerData) {
+	let { username, profile_pic } = playerData
+	
+	let newDiv = document.createElement('div')
+	newDiv.setAttribute('class', 'd-flex gap-2 align-items-center tournamentPlayerDiv rounded p-1 m-1')
+
+	let imageDiv = document.createElement('img')
+	imageDiv.setAttribute('class', 'pfp-pic rounded')
+	imageDiv.src = ImageFromBackendUrl(profile_pic)
+
+	let userNameDiv = document.createElement('div')
+	userNameDiv.setAttribute('class', 'flex-grow-1 username-div')
+	userNameDiv.innerText = username
+
+	newDiv.appendChild(imageDiv)
+	newDiv.appendChild(userNameDiv)
+	return newDiv
 }
 
 function playerMatchupDiv(matchCount, players){
@@ -18,7 +38,8 @@ function playerMatchupDiv(matchCount, players){
 
 		let topPlayer = document.createElement('li')
 		topPlayer.setAttribute('class', 'game game-top')
-		topPlayer.innerText = players[0][0]
+		console.log(players)
+		topPlayer.appendChild(playerDiv(players[0]))
 
 		fragment.appendChild(topPlayer)
 
@@ -29,14 +50,14 @@ function playerMatchupDiv(matchCount, players){
 	
 			let topPlayer = document.createElement('li')
 			topPlayer.setAttribute('class', 'game game-top')
-			topPlayer.innerText = players[i][0]
+			topPlayer.appendChild(playerDiv(players[i][0]))
 
 			let middleSpace = document.createElement('li')
 			middleSpace.setAttribute('class', 'game game-spacer')
 
 			let bottomPlayer = document.createElement('li')
 			bottomPlayer.setAttribute('class', 'game game-bottom')
-			bottomPlayer.innerText = players[i][1]
+			bottomPlayer.appendChild(playerDiv(players[i][1]))
 	
 			fragment.appendChild(topPlayer)
 			fragment.appendChild(middleSpace)

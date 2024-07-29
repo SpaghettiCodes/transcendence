@@ -8,8 +8,8 @@ import os
 
 # Create your models here.
 class Player(models.Model):
-    username = models.CharField(max_length=35, unique=True)
-    password = models.CharField(max_length=256)
+    username = models.CharField(max_length=35, unique=True, blank=False, null=False)
+    password = models.CharField(max_length=256, blank=False, null=False)
     email = models.EmailField(max_length=100, unique=True, blank=True, null=True, default=None)
     profile_pic = models.ImageField(default="./firefly.png")
     date_joined = models.DateTimeField(auto_now_add=True)
@@ -43,6 +43,9 @@ class Player(models.Model):
 
     def verify_password(self, raw_password):
         return pbkdf2_sha256.verify(raw_password, self.password)
+
+    def is_friends_with(self, player):
+        return player in self.friends.all()
 
     def block_player(self, player):
         if not player in self.blocked.all():

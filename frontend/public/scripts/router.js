@@ -27,6 +27,7 @@ import test from "./pages/old/test.js"
 import tfa from "./pages/old/tfa.js"
 import matchListing from "./pages/old/matchListing.js"
 import tournamentListing from "./pages/old/oldTournamentListing.js"
+import tournamentResult from "./pages/tournamentResults/tournamentResults.js"
 
 const routes = {
 	'/': landing,
@@ -37,7 +38,7 @@ const routes = {
 	'/match/<game_id>': match,
 	'/chat': chat,
 	'/tournament/<tournament_id>/spectate': tournament,
-	'/tournament/<tournament_id>/results': fourofour,
+	'/tournament/<tournament_id>/results': tournamentResult,
 	'/tournament/<tournament_id>': tournament,
 	'/profile': profile,
 	'/matchmaking/<game_type>': matchmaking,

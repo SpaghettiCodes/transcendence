@@ -196,8 +196,8 @@ export default function tournament(prop={}) {
 						let matchData = []
 						let { result } = match
 						let { attacker, defender } = result
-						matchData.push(attacker.username)
-						matchData.push(defender.username)
+						matchData.push(attacker)
+						matchData.push(defender)
 						roundData.push(matchData)
 					})
 				}
@@ -290,7 +290,7 @@ export default function tournament(prop={}) {
 						setStatusMessage("Waiting for enough people to ready up...")
 						break
 					case "leave":
-						history.back()
+						redirect_replace_history(`/tournament/${tournamentID}/results`)
 						break
 					case "winner":
 						setStatusMessage(`${data['winner']['username']} wins the tournament`)

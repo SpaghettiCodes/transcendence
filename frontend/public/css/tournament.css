@@ -1,4 +1,4 @@
-.tournamentContents .tournamentProgress .round{
+.tournamentProgress .round{
 	display:flex;
 	flex-direction:column;
 	justify-content:center;
@@ -6,50 +6,50 @@
 	padding:0;
 }
 
-.tournamentContents .tournamentProgress .round {
+.tournamentProgress .round {
 	flex-grow: 1;
 }
 
-.tournamentContents .tournamentProgress .round .spacer { 
+.tournamentProgress .round .spacer { 
 	flex-grow: 1;
 }
 
-.tournamentContents .tournamentProgress .round .spacer:first-child,
-.tournamentContents .tournamentProgress .round .spacer:last-child { 
-	flex-grow: .5;
+.tournamentProgress .round .spacer:first-child,
+.tournamentProgress .round .spacer:last-child { 
+	flex-grow: .20;
 }
 
-.tournamentContents .tournamentProgress .round .game-spacer {
+.tournamentProgress .round .game-spacer {
 	flex-grow: 1;
 }
 
-.tournamentContents .tournamentProgress li.game {
+.tournamentProgress li.game {
 	padding-left:20px;  
 }
 
-.tournamentContents .tournamentProgress li.game.winner {
+.tournamentProgress li.game.winner {
 	font-weight:bold;
 }
 
-.tournamentContents .tournamentProgress li.game span {
+.tournamentProgress li.game span {
 	float:right;
 	margin-right:5px;
 }
 
-.tournamentContents .tournamentProgress li.game-top {
+.tournamentProgress li.game-top {
 	border-bottom:1px solid #aaa;
 }
 
-.tournamentContents .tournamentProgress li.game-spacer { 
+.tournamentProgress li.game-spacer { 
 	border-right:1px solid #aaa;
 	min-height:40px;
 }
 
-.tournamentContents .tournamentProgress li.game-bottom { 
+.tournamentProgress li.game-bottom { 
 	border-top:1px solid #aaa;
 }
 
-.tournamentContents .player-list {
+.player-list {
 	background-color: darkgray;
 	padding: 20px;
 	overflow-y: auto;
@@ -58,10 +58,22 @@
 	width: 20vw;
 }
 
-.tournamentContents .player-list .friend-list-item.ready {
+.player-list .friend-list-item.ready {
 	background-color: rgb(120, 255, 94);
 }
 
-.tournamentContents .player-list .friend-list-item:hover {
+.player-list .friend-list-item:hover {
 	cursor: default;
+}
+
+.tournamentPlayerDiv {
+}
+
+.tournamentPlayerDiv .pfp-pic {
+	width: 35px;
+	height: 35px;
+}
+
+.tournamentPlayerDiv .username-div {
+	
 }
