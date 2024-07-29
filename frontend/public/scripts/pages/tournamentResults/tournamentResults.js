@@ -1,6 +1,7 @@
 import generateUserTabs from "../../components/userTab.js"
 import { fetchMod } from "../../jwt.js"
 import { redirect } from "../../router.js"
+import { pairElements } from "../helpers.js"
 import { appendTournamentScreen, generateTournamentScreen } from "../tournament/components/roundGenerator.js"
 
 export default function tournamentResult(prop={}) {
@@ -95,23 +96,29 @@ export default function tournamentResult(prop={}) {
 			let tournamentHistory = document.getElementById('tournamentHistory')
 
 			let payload = []
+			let previousRoundData = undefined
 			matchHistory.forEach((round) => {
 				let roundData = []
-				let roundMatches = round.match
-				roundMatches.forEach((match) => {
-					let matchData = []
-					let { result } = match
-					let { attacker, defender } = result
-					matchData.push(attacker)
-					matchData.push(defender)
-					roundData.push(matchData)
-				})
+
+				console.log(previousRoundData)
+				if (previousRoundData) {
+					roundData = pairElements((previousRoundData.map(previousMatch => previousMatch.result.winner)))
+				} else {
+					let roundMatches = round.match
+					roundMatches.forEach((match) => {
+						let matchData = []
+						let { result } = match
+						let { attacker, defender } = result
+						matchData.push(attacker.username)
+						matchData.push(defender.username)
+						roundData.push(matchData)
+					})
+				}
+				previousRoundData = round.match
 				payload.push(roundData)
 			})
 			// push winner as last data
-			payload.push([
-				winner
-			])
+			payload.push([[winner.username]])
 
 			// throw into function
 			generateTournamentScreen(

@@ -78,7 +78,7 @@ export default function tournament(prop={}) {
 		} catch (response) {
 			console.log(response)
 			if (response.status === 404) {
-				redirect_without_history('/error')
+				redirect_replace_history(`/tournament/${tournamentID}/results`)
 				throw 'redirected'
 			}
 			throw response
@@ -196,8 +196,8 @@ export default function tournament(prop={}) {
 						let matchData = []
 						let { result } = match
 						let { attacker, defender } = result
-						matchData.push(attacker)
-						matchData.push(defender)
+						matchData.push(attacker.username)
+						matchData.push(defender.username)
 						roundData.push(matchData)
 					})
 				}
