@@ -297,9 +297,12 @@ export default function template(prop = {}) {
 			if (!response.ok) {
 				if (response.status === 409) {
 					let errMsg = await response.json()
-					return createAlert('info', errMsg.message);
+					return createAlert('info', errMsg.error);
+				} else if (response.status === 400) {
+					let errMsg = await response.json()
+					return createAlert('error', errMsg.error);						
 				}
-				createAlert('error', 'An error occurred while sending friend request');
+				createAlert('error', `Error occured while sending friend request: ${response.status}`)
 				throw new Error('Error :' + response.statusText);
 			}
         });

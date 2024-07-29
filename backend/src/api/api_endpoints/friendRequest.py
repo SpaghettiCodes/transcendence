@@ -41,14 +41,14 @@ class ViewFriendRequest(APIView):
 
         if sender_username is None:
             return Response(
-                {"error": "target username not given"},
+                {"error": "Target username not given"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         if player_username == sender_username:
             # y u try to be friends with urself
             return Response(
-                {"error": "you are already friends with yourself"},
+                {"error": "You are already friends with yourself"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -58,7 +58,7 @@ class ViewFriendRequest(APIView):
         # check if already friends
         if (p_receiver.is_friends_with(p_sender)):
             return Response({
-                    'message': f"You are already friends with {p_receiver.username}"
+                    'error': f"You are already friends with {p_receiver.username}"
                 },
                 status=status.HTTP_409_CONFLICT
             )
@@ -67,7 +67,7 @@ class ViewFriendRequest(APIView):
         existingRequest = p_sender.friend_request_sender.all().filter(receiver=p_receiver)
         if (existingRequest.exists()):
             return Response({
-                    'message': f"Friend request already sent!"
+                    'error': f"Friend request already sent!"
                 },
                 status=status.HTTP_409_CONFLICT
             )
@@ -91,7 +91,7 @@ class ViewFriendRequest(APIView):
             sender_username = request.data.get('sender')
         except FieldDoesNotExist:
             return Response(
-                {"error": "sender username not give"},
+                {"error": "Sender username not given"},
                 status=status.HTTP_400_BAD_REQUEST
             )
  
