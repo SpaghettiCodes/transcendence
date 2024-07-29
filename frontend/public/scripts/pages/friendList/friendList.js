@@ -72,10 +72,10 @@ export default function template(prop = {}) {
                     ${generateListContainer("Colleagues", "Colleagues' ID", "Search", generateFriendList(friends), true)}
                     </div>
                     <div class="blocked-list scrollable">
-                        ${generateListContainer("Blocked Users", "Blocked Colleagues' ID", "Search", generateBlockedList(blockList), false)}
+                        ${generateListContainer("Blocked Colleagues", "Blocked Colleagues' ID", "Search", generateBlockedList(blockList), false)}
                     </div>
                     <div class="friend-request-list scrollable">
-                        ${generateListContainer("Friend Requests", "Friend Requests' ID", "Search", generateFriendRequestList(friendRequests), false)}
+                        ${generateListContainer("Colleague Requests", "Friend Requests' ID", "Search", generateFriendRequestList(friendRequests), false)}
                     </div>
                 </div>
                 <div class="d-flex flex-column profile-section overflow-auto">
@@ -407,8 +407,8 @@ function generateFriendRequestList(requests) {
         <div class="friend-request-list-item">
             <span>${request.sender}</span>
             <div class="button-container">
-                ${createButton('btn btn-primary accept-button', 'button', 'Accept', '', { 'username': request.sender })}
-                ${createButton('btn btn-danger decline-button', 'button', 'Decline', '', { 'username': request.sender })}
+                ${createButton('btn btn-primary accept-button btn-sm', 'button', 'Accept', '', { 'username': request.sender })}
+                ${createButton('btn btn-danger decline-button btn-sm', 'button', 'Decline', '', { 'username': request.sender })}
             </div>
         </div>
     `);

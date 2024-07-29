@@ -89,7 +89,7 @@ body {
 
 .friend-request-list-item .button-container {
     display: flex;
-    gap: 1px; /* Add space between the buttons */
+    gap: 0px; /* Add space between the buttons */
     justify-content: flex-end;
     align-items: center;
     flex-shrink: 0; /* Prevent the container from shrinking */
