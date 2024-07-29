@@ -50,15 +50,15 @@ export default function template(prop = {}) {
     
         return `
             <div class="d-flex flex-row flex-grow-1 align-self-stretch overflow-auto">
-                <div class="d-flex flex-column list-section">
+                <div class="d-flex flex-column list-section overflow-auto">
                     <div class="friend-list">
                         ${generateListContainer("Colleagues", "Colleagues' ID", "Search", generateFriendList(friends), true)}
                     </div>
-                    <div class="blocked-list scrollable">
-                        ${generateListContainer("Blocked Colleagues", "Blocked Colleagues' ID", "Search", generateBlockedList(blockList), false)}
+                    <div class="blocked-list">
+                        ${generateListContainer("Blocked Users", "Blocked Colleagues' ID", "Search", generateBlockedList(blockList), false)}
                     </div>
-                    <div class="friend-request-list scrollable">
-                        ${generateListContainer("Colleague Requests", "Friend Requests' ID", "Search", generateFriendRequestList(friendRequests), false)}
+                    <div class="friend-request-list">
+                        ${generateListContainer("Friend Requests", "Friend Requests' ID", "Search", generateFriendRequestList(friendRequests), false)}
                     </div>
                 </div>
                 <div class="d-flex flex-column profile-section overflow-auto">
@@ -87,83 +87,4 @@ export default function template(prop = {}) {
     let cleanup = () => {}
 
     return [prerender, render_code, postrender, cleanup]
-}
-
-function generateFriendList(friends) {
-    return generateList(friends, friend => `<div class="friend-list-item">${friend.username}</div>`);
-}
-
-
-function generateBlockedList(blockedUsers) {
-    return generateList(blockedUsers, blocked => `
-        <div class="blocked-list-item">
-            <span>${blocked.username}</span>
-            ${createButton('btn btn-danger unblock-button', 'button', 'Unblock', '', { username: blocked.username })}
-        </div>
-    `);
-}
-
-function generateFriendRequestList(requests) {
-    const { received, sent } = requests;
-    return generateList(received, request => `
-        <div class="friend-request-list-item">
-            <span>${request.sender}</span>
-            <div class="button-container">
-                ${createButton('btn btn-primary accept-button btn-sm', 'button', 'Accept', '', { 'username': request.sender })}
-                ${createButton('btn btn-danger decline-button btn-sm', 'button', 'Decline', '', { 'username': request.sender })}
-            </div>
-        </div>
-    `);
-}
-
-function generateUserProfile(profile, matches = []) {
-    return `
-    <div class="d-flex justify-content-center flex-grow-1 gap-5 text-white overflow-y-hidden profile p-4">
-        <div class='d-flex flex-column overflow-y-auto gap-1 profile-stuff'>
-            <div class="profile-info p-3">
-                ${generateProfileInfo(profile)}
-            </div>
-            <div class="d-flex flex-column match-history flex-grow-1 overflow-y-auto p-3 rounded">
-                <h3>Match History</h3>
-                <div class="d-flex overflow-y-auto tab-content mt-3 tab-pane fade show active" id="recent" role="tabpanel" aria-labelledby="recent-tab" id="matchHistoryTabContent">
-                    <ul class="d-flex w-100 flex-column overflow-y-auto list-group">
-                        ${generateMatchHistory(matches)}
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="d-flex flex-column chartArea scroll-y-auto">
-            <div class="chartBox1">
-                <canvas id="myChart1"></canvas>
-            </div>
-            <div class="chartBox2">
-                <canvas id="myChart2"></canvas>
-            </div>
-            <div class="chartBox3">
-                <canvas id="myChart3"></canvas>
-            </div>
-        </div>
-    </div>
-    `;
-}
-
-function sleep (ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-};
-
-function generateListContainer(title, inputPlaceholder, buttonLabel, listContent, includeSearch = true) {
-    return `
-        <div class="d-flex flex-column list-container overflow-auto">
-            <h4>${title}</h4>
-            ${includeSearch ? `
-            <div class="input-group">
-                ${createInput("form-control rounded", "search", 'searchInputBox', "", inputPlaceholder)}
-                ${createButton('btn btn-dark', 'button', buttonLabel, 'search')}
-            </div>
-            ` : ''}
-            <div class="d-flex flex-column flex-grow-1 overflow-auto mt-2 p-2">
-                ${listContent}
-            </div>
-        </div>
-    `;
 }
