@@ -1,0 +1,35 @@
+1. Installation
+	You need to install 3 things:
+		- node exporter
+		- prometheus 
+		- grafana
+
+	Sources:
+	https://prometheus.io/download/#prometheus
+
+
+2. Django setup
+	You need to set up django for prometheus
+
+	Guides:
+	https://medium.com/swlh/a-guide-to-using-prometheus-and-grafana-for-logging-api-metrics-in-django-43863eebe5b7
+
+
+3. Node Exporter, Prometheus and Grafana setup
+
+	Guides:
+	https://youtu.be/yrscZ-kGc_Y?si=w9VfaJg0vG6tiPiN
+
+
+!. CONNECTION REFUSED ISSUE
+	neiggah im stuck here for several days ald
+
+
+Changes:
+	backend/src/backend/settings.py
+	backend/src/backend/urls.py
+	backend/src/database/models.py (might needa add more things: ExportModelOperationsMixin("dataset") on every model)
+	backend/src/requirements.txt
+	docker_compose.yml
+New files/folders:
+	prometheus/prometheus.yml

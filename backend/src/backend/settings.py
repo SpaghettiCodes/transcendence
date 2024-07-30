@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'chat_ws',
     'tournament_ws',
     'tournamentList_ws',
+	"django_prometheus",
     # 'drf_spectacular',
 ]
 
@@ -62,6 +63,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 MIDDLEWARE = [
+	"django_prometheus.middleware.PrometheusBeforeMiddleware",
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -70,6 +72,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+	"django_prometheus.middleware.PrometheusAfterMiddleware",
 	# 'backend.middleware.AuthenticateJWTMiddleware',
 ]
 

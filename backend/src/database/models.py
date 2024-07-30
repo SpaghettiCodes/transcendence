@@ -4,10 +4,11 @@ from django.conf import settings
 from django.utils import timezone
 from passlib.hash import pbkdf2_sha256
 from random import randint
+from django_prometheus.models import ExportModelOperationsMixin
 import os
 
 # Create your models here.
-class Player(models.Model):
+class Player(ExportModelOperationsMixin("dataset"), models.Model):
     username = models.CharField(max_length=35, unique=True)
     password = models.CharField(max_length=256)
     email = models.EmailField(max_length=100, unique=True, blank=True, null=True)

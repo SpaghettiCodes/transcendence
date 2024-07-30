@@ -27,6 +27,7 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include("api.urls")),
+	path("", include("django_prometheus.urls"), name="django-prometheus"),
     # path('api/docs/schema', SpectacularAPIView.as_view(), name='schema'),
     # path('', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 ]
