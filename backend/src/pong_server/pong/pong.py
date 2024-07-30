@@ -25,7 +25,7 @@ class PongGame(Game):
 
         self.field = GameFrame()
 
-        self.maxScore = 1 # TODO: PLEASE CHANGE LATER
+        self.maxScore = 2 # TODO: PLEASE CHANGE LATER
 
         self.attackerObject = None
         self.defenderObject = None

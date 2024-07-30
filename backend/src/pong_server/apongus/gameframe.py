@@ -91,6 +91,7 @@ class GameFrame(PongGameFrame):
 
     def initialization(self):
         super().initialization()
+        self.lastMadeFakeBall = datetime.now()
         self.fakeBalls.clear()
 
     def getFrame(self):
