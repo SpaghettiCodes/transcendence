@@ -92,7 +92,6 @@ export async function fetchMod(url, request) {
 		throw 'redirected'
 	}
 
-	console.log("test")
 	// verify access token in localStorage
 	const response_verify = await fetch('https://localhost:8000/api/token/verify', {
 		method: 'POST',
@@ -102,8 +101,6 @@ export async function fetchMod(url, request) {
 		},
 		body: JSON.stringify({'token' : `${jwt_access_token}`})
 	})
-	console.log(response_verify.status)
-	console.log('im going to jump off a building')
 
 	// access token in locallStorage invalid/expired, request new one and sets the new one in localStorage
 	if (response_verify.status == 401) {
