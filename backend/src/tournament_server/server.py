@@ -25,9 +25,9 @@ class TournamentServer:
             id,
             removalFunction,
             hidden=False,
-            minPlayers=2, # TODO: CHANGE THESE VALUE TO SOMETHING APPROPRIATE
+            minPlayers=[2, 4, 8], # TODO: CHANGE THESE VALUE TO SOMETHING APPROPRIATE
             maxPlayers=8, # TODO: CHANGE THESE VALUE TO SOMETHING APPROPRIATE
-            minRequiredReady=2, # TODO: CHANGE THESE VALUE TO SOMETHING APPROPRIATE
+            minRequiredReady=[2, 4, 8], # TODO: CHANGE THESE VALUE TO SOMETHING APPROPRIATE
         ) -> None:
 
         # server settings
@@ -165,13 +165,16 @@ class TournamentServer:
 
 
     def canBeginTournament(self):
-        return (
-            len(self.currentPlayers) >= self.minPlayers
-        )
+        return len(self.currentPlayers) in self.minPlayers
 
     def canStart(self):
+        threshold = 0
+        if len(self.currentPlayers) in self.minPlayers:
+            threshold = self.minPlayers.index(len(self.currentPlayers))
+        else:
+            return False
         return (
-            len(self.readiedPlayers) >= self.minRequiredReady and
+            len(self.readiedPlayers) == threshold,
             not self.onGoingMatch
         )
 

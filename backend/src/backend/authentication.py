@@ -17,7 +17,6 @@ import re
 JWT_AUTH_EXEMPT_PARTIAL = [
     '/admin/',
     '/api/ft/',
-    '/api/token/',
     '/api/2fa/',
 ]
 
@@ -34,6 +33,8 @@ class AuthenticateJWT(JWTAuthentication):
         self.user_model = Player
 
     def authenticate(self, request: Request):
+        print('auth for ---')
+        print(request.path)
         for exempt in JWT_AUTH_EXEMPT_PARTIAL:
             if request.path.startswith(exempt):
                 return None

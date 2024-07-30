@@ -12,3 +12,4 @@ def create_jwt_pair_for_user(user: Player):
     tokens = {"access": str(refresh.access_token), "refresh": str(refresh)}
 
     return tokens
+
