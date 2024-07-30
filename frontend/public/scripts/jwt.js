@@ -108,8 +108,7 @@ export async function fetchMod(url, request) {
 		const response_refresh = await fetch('https://localhost:8000/api/token/refresh', {
 			method: 'POST',
 			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${getJwtToken()}`
+				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({'refresh' : `${jwt_refresh_token}`})
 		})

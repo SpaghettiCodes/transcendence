@@ -53,22 +53,22 @@ export default function home(prop={}) {
 		}
 
 		const profile_button = document.getElementById("profile")
-		profile_button.addEventListener('click', go_profile)
+		profile_button.onclick = go_profile
 
 		const friend_button = document.getElementById("friends")
-		friend_button.addEventListener('click', go_friends)
+		friend_button.onclick = go_friends
 
 		const pong_button = document.getElementById("pongGame")
-		pong_button.addEventListener('click', matchmakePong)
+		pong_button.onclick = matchmakePong
 
 		const apong_button = document.getElementById("apongUsGame")
-		apong_button.addEventListener('click', matchmakeApong)
+		apong_button.onclick = matchmakeApong
 
 		const tournament_button = document.getElementById("tournament")
-		tournament_button.addEventListener('click', matchmakeTournamnet)
+		tournament_button.onclick = matchmakeTournamnet
 
 		const chat_button = document.getElementById("chat")
-		chat_button.addEventListener('click', chatWithFriends)
+		chat_button.onclick = chatWithFriends
 	}
 
 	let cleanup = () => {

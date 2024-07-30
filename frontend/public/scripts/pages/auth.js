@@ -76,7 +76,6 @@ export default function auth2fa(prop={}) {
 				const code = Object.fromEntries(data).code.trim()
 
 				if (!code.match(/^[0-9]{6,6}$/)) {
-					console.log('womp womp')
 					showErrorMsg(errorBoard, 'Invalid Code!')
 					return
 				}

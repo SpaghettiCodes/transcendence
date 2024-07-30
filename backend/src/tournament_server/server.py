@@ -118,14 +118,14 @@ class TournamentServer:
             if playerObject in self.currentPlayers:
                 self.currentPlayers.remove(playerObject)
 
-            if playerObject in self.readiedPlayers:
-                self.readiedPlayers.remove(playerObject)
-
             if not len(self.currentPlayers):
                 await self.removalFunction()
 
-            await self.refresh_PlayerList()
-            await self.update_list()
+        if playerObject in self.readiedPlayers:
+            self.readiedPlayers.remove(playerObject)
+
+        await self.refresh_PlayerList()
+        await self.update_list()
 
     async def readyUp(self, playerObject):
         if playerObject not in self.currentPlayers:

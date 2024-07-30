@@ -18,7 +18,7 @@ import matchmaking from "./pages/matchmaking.js"
 import chat from "./pages/chat/chat.js"
 import friendlist from "./pages/friendList/friendList.js"
 import match from "./pages/match.js"
-import { check_token_exists } from "./jwt.js"
+import { check_token_exists, getJwtToken } from "./jwt.js"
 import auth2fa from "./pages/auth.js"
 
 // remove later
@@ -28,6 +28,7 @@ import tfa from "./pages/old/tfa.js"
 import matchListing from "./pages/old/matchListing.js"
 import tournamentListing from "./pages/old/oldTournamentListing.js"
 import tournamentResult from "./pages/tournamentResults/tournamentResults.js"
+import { connectToPlayerNotificationWebsocket, disconnectPlayerNotificationWebsocket } from "./pages/playerNoti.js"
 
 const routes = {
 	'/': landing,
@@ -141,7 +142,6 @@ const render_html = (which, prop={}, originator=undefined, rightBefore=undefined
 		let callerLocation = rightBefore
 		if (rightBefore === undefined)
 			callerLocation = window.location.pathname
-		console.log(callerLocation)
 		if (callerLocation !== originator)
 			// the caller location is not the same as where the redirect is called
 			// this probably means we have already been redirected away
@@ -158,6 +158,7 @@ const render_html = (which, prop={}, originator=undefined, rightBefore=undefined
 	clean_up_function()
 	clean_up_function = cleanup
 
+	disconnectPlayerNotificationWebsocket()
 	prerender().then(
 		(success) => {
 			if (success) {
@@ -170,11 +171,11 @@ const render_html = (which, prop={}, originator=undefined, rightBefore=undefined
 					mainContainer.innerHTML = render_code()
 				postrender()
 			} else {
-				// abort
 				// oh fuck it, prerender is expected to handle the fails
 			}
 		}
 	)
+	connectToPlayerNotificationWebsocket(getJwtToken())
 }
 
 const navigate = (e, prop={}) => {

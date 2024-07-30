@@ -188,7 +188,7 @@ export default function landing(prop={}) {
 
 		loginButton.onclick = login_action
 		signUpButton.onclick = sign_up_behavior
-		ftlogin.addEventListener('click', fortytwo_login)
+		ftlogin.onclick = fortytwo_login
 	}
 
 	let cleanup = () => {

@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'pong_ws',
     'chat_ws',
     'tournament_ws',
+    'player_ws',
 ]
 
 SPECTACULAR_SETTINGS = {
