@@ -35,17 +35,20 @@ class PongServer:
         server_to_join = None
 
         if len(cls.servers):
-            for server_id, server in cls.servers.items():
-                # should not be able to join a hidden server
-                # nor a server with player restriction
-                # nor a server that already started playing
-                if (not server.is_hidden() and 
-                    not server.has_begin() and 
-                    not server.is_restricted() and
-                    server.getType() == type
-                    ):
-                    server_to_join = server_id
-                    break
+            try:
+                for server_id, server in cls.servers.items():
+                    # should not be able to join a hidden server
+                    # nor a server with player restriction
+                    # nor a server that already started playing
+                    if (not server.is_hidden() and 
+                        not server.has_begin() and 
+                        not server.is_restricted() and
+                        server.getType() == type
+                        ):
+                        server_to_join = server_id
+                        break
+            except RuntimeError: # fuckin size changing again
+                return cls.random_matchmake(type)
 
         return server_to_join
 

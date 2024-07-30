@@ -11,7 +11,8 @@ class GameFrame(PongGameFrame):
         super().__init__(width, height)
 
         self.realBallColor = self.ball.getColorValue()
-        self.lastMadeFakeBall = datetime.now()
+
+        self.startTimeFrame = None
 
         # TODO: please change this later, i just need it to test
         self.coolDownSec = 5
@@ -60,8 +61,11 @@ class GameFrame(PongGameFrame):
     def renderFrame(self, delta):
         super().renderFrame(delta)
 
-        if (len(self.fakeBalls) < self.fakeBallMax and self.canMakeFakeBall()):
-            self.generateFakeBall()
+        if (not self.startTimeFrame):
+            self.startTimeFrame = datetime.now()
+        else:
+            if (len(self.fakeBalls) < self.fakeBallMax and self.canMakeFakeBall()):
+                self.generateFakeBall()
 
         for fakeBall in self.fakeBalls:
             fakeBall.move_Component(delta)
@@ -75,7 +79,7 @@ class GameFrame(PongGameFrame):
 
     def canMakeFakeBall(self):
         currentTime = datetime.now()
-        difference = currentTime - self.lastMadeFakeBall
+        difference = currentTime - self.startTimeFrame
         if (difference.seconds >= self.coolDownSec):
             return True
         return False
@@ -87,11 +91,11 @@ class GameFrame(PongGameFrame):
             newFakeBall.random_velocity(0, 90)
             self.fakeBalls.append(newFakeBall)
 
-        self.lastMadeFakeBall = datetime.now()
+        self.startTimeFrame = None
 
     def initialization(self):
         super().initialization()
-        self.lastMadeFakeBall = datetime.now()
+        self.startTimeFrame = None
         self.fakeBalls.clear()
 
     def getFrame(self):
