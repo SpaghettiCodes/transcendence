@@ -1,6 +1,6 @@
 import generateUserTabs from "../../components/userTab.js"
 import { fetchMod } from "../../jwt.js"
-import { redirect } from "../../router.js"
+import { redirect, redirect_without_history } from "../../router.js"
 import { pairElements } from "../helpers.js"
 import { appendTournamentScreen, generateTournamentScreen } from "../tournament/components/roundGenerator.js"
 
@@ -27,8 +27,12 @@ export default function tournamentResult(prop={}) {
 					method: "GET",
 				}
 			)
-			if (!resultResponse.ok) 
-				throw resultResponse
+			if (!resultResponse.ok) {
+				if (resultResponse.status === 404) {
+					redirect_without_history('/error')
+					return false
+				}
+			}
 			let resultData = await resultResponse.json()
 			console.log(resultData)
 			prop.data = {
