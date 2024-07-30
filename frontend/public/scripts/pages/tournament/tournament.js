@@ -194,11 +194,16 @@ export default function tournament(prop={}) {
 				} else {
 					round.forEach((match) => {
 						let matchData = []
-						let { result } = match
-						let { attacker, defender } = result
-						matchData.push(attacker.username)
-						matchData.push(defender.username)
-						roundData.push(matchData)
+						if (match !== undefined) {
+							let { result } = match
+							let { attacker, defender } = result
+							matchData.push(attacker.username)
+							matchData.push(defender.username)
+							roundData.push(matchData)
+						} else {
+							// match did not play out
+							
+						}
 					})
 				}
 

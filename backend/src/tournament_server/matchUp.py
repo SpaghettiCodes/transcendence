@@ -6,7 +6,10 @@ class MatchUps():
         self.matchObject = None
 
     def getExpectedPlayers(self):
-        return [self.left, self.right]
+        retArr = []
+        if (self.left): retArr.append(self.left)
+        if (self.right): retArr.append(self.right)
+        return retArr
 
     def __str__(self) -> str:
         return f"L - {self.left} | R - {self.right}"
@@ -20,13 +23,16 @@ class MatchUps():
     def getCurrentMatchUps(self):
         matchUps = []
 
+        leftMatchUp = []
+        rightMatchUp = []
+        if (not isinstance(self.left, MatchUps) and not isinstance(self.right, MatchUps)):
+            return [self]
         if (isinstance(self.left, MatchUps)):
             leftMatchUp = self.left.getCurrentMatchUps()
+        if (isinstance(self.right, MatchUps)):
             rightMatchUp = self.right.getCurrentMatchUps()
-            matchUps.extend(leftMatchUp)
-            matchUps.extend(rightMatchUp)
-        else:
-            return [self]
+        matchUps.extend(leftMatchUp)
+        matchUps.extend(rightMatchUp)
         return matchUps
 
     def getMatchUpNode(self, expectedPlayers):

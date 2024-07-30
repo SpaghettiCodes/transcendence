@@ -151,7 +151,7 @@ class TournamentServer:
         return (True, "", '')
 
     def getSerializedCompleteResults(self):
-        data = [ [ match.matchid for match in round ] for round in self.completeResults ]
+        data = [ [ MatchSerializer(match) if isinstance(match, Match) else match for match in round ] for round in self.completeResults ]
         return data
 
     def getDetails(self):
@@ -203,6 +203,9 @@ class TournamentServer:
             first_half = [temp[x] for x in range(half)]
             second_half = [temp[x] for x in range(half, len(temp))]
             matchups = [[first_half[x], second_half[x]] for x in range(len(first_half))]
+            if (len(second_half) != len(first_half)):
+                # bitch
+                matchups.append([second_half.pop(), None])
 
             temp = matchups
 
@@ -303,19 +306,30 @@ class TournamentServer:
 
     async def matchUp(self) -> None:
         matchups = self.innerMatchUps.getCurrentMatchUps()
+        print(matchups)
         for matchup in matchups:
-            gameId = await sync_to_async(PongServer.new_game) (
-                expectedPlayers=matchup.getExpectedPlayers(),
-            )
+            if (len(matchup.getExpectedPlayers()) == 2):
+                gameId = await sync_to_async(PongServer.new_game) (
+                    expectedPlayers=matchup.getExpectedPlayers(),
+                )
 
-            # i have only myself to blame for this situation
-            gameInstance = PongServer.getGameInstance(gameId)
-            gameInstance.setRemovalFunction(self.collectData(gameInstance, matchup))
-            # await gameInstance.startImmediately()
+                # i have only myself to blame for this situation
+                gameInstance = PongServer.getGameInstance(gameId)
+                gameInstance.setRemovalFunction(self.collectData(gameInstance, matchup))
+                # await gameInstance.startImmediately()
 
-            self.currentlyRunningMatches.append(gameInstance)
+                self.currentlyRunningMatches.append(gameInstance)
 
-            self.matchesCount += 1
+                self.matchesCount += 1
+            else:
+                print("Solo player, push him to the front ig?")
+                soloPlayer = matchup.getExpectedPlayers()[0]
+                matchup.winner = soloPlayer
+                matchup.setMatchObject({
+                    'attacker': soloPlayer,
+                    'defender': None,
+                    'winner': soloPlayer
+                })
 
     async def panicRemove(self):
         tournamentObject = await Tournament.objects.aget(tournamentid=self.id)
