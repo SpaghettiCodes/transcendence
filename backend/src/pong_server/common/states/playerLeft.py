@@ -1,7 +1,7 @@
 from ...base.state import State
 from .countDown import CountDown
 from datetime import datetime
-from .endGame import endGame
+from .saveGameData import saveGameData
 from math import ceil
 
 class PlayerLeft(State):
@@ -31,7 +31,7 @@ class PlayerLeft(State):
     def nextState(self):
         if self.killTheGame:
             self.gameInstance.setForfeit()
-            return endGame(self.gameInstance)
+            return saveGameData(self.gameInstance)
         return CountDown(self.previousState, 3, self.gameInstance)
 
     def getData(self):
