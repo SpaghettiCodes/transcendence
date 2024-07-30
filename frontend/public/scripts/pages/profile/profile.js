@@ -97,7 +97,7 @@ export default function template(prop={}) {
 
 		drawPieChartData(document.getElementById('myChart1'), {
 			labels: ['Losses', 'Wins'],
-			rawData: [pong_matches_won, pong_matches_lost],
+			rawData: [pong_matches_lost, pong_matches_won],
 			id: 'pong',
 			gameName: 'Pong'
 		})
