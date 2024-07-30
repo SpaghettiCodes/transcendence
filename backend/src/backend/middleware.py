@@ -34,12 +34,9 @@ class AuthenticateJWTMiddleware(JWTAuthentication):
         header = self.get_header(request)
         try:
             raw_token = self.get_raw_token(header)
-            print("authenticating... ")
             post_jwt_auth = self.get_validated_token(raw_token)
             user = self.get_user(post_jwt_auth)
-            print("username: ", user)
         except:
-            print("authentication failed")
             return JsonResponse({'error': 'unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
 
         return None

@@ -171,10 +171,15 @@ class TournamentServer:
         threshold = 0
         if len(self.currentPlayers) in self.minPlayers:
             threshold = self.minPlayers.index(len(self.currentPlayers))
+            threshold = self.minRequiredReady[threshold]
         else:
             return False
+
+        print(self.readiedPlayers)
+        print(threshold)
+
         return (
-            len(self.readiedPlayers) == threshold,
+            len(self.readiedPlayers) == threshold and
             not self.onGoingMatch
         )
 
