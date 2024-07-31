@@ -1,0 +1,44 @@
+groups:
+  - name: High_CPU_Utilization
+    rules:
+    - alert: HighCPUUtilization
+      expr: avg(node_cpu{mode="system"}) > 80
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: High CPU utilization on host {{ $labels.instance }}
+        description: The CPU utilization on host {{ $labels.instance }} has exceeded 80% for 5 minutes.
+
+  - name: Low_Disk_Space
+    rules:
+    - alert: LowDiskSpace
+      expr: node_filesystem_free{fstype="ext4"} < 1e9
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: Low disk space on host {{ $labels.instance  }}
+        description: The free disk space on host {{$labels.instance }} has dropped below 1G
+
+  - name: High_Memory_Utilization
+    rules:
+    - alert: HighMemoryUtilization
+      expr: node_memory_MemTotal - node_memory_MemFree < 0.8 *node_memory_MemTotal
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: High memory utilization on host {{$labels.instance }}
+        description: The memory utilization on host {{$labels.instance }} has exceeded 80% for 5 minutes.
+
+  - name: High_Request_Error_Rate
+    rules:
+    - alert: HighRequestErrorRate
+      expr: (sum(rate(http_requests_total{status="500"}[5m])) / sum(rate(http_requests_total[5m]))) > 0.05
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: High request error rate
+        description: The error rate for HTTP requests has exceeded5% for 5 minutes.

@@ -15,7 +15,7 @@
 		}
 	  ]
 	},
-	"description": "testing out",
+	"description": "Version 1.0 of the dashboard for transcendence",
 	"editable": true,
 	"fiscalYearStartMonth": 0,
 	"graphTooltip": 0,
@@ -27,6 +27,7 @@
 		  "type": "prometheus",
 		  "uid": "P3FEB00294C5CB577"
 		},
+		"description": "Statuses as in status codes (i.e. 404 NOT FOUND, 200 OK)",
 		"fieldConfig": {
 		  "defaults": {
 			"color": {
@@ -87,6 +88,363 @@
 		  "x": 0,
 		  "y": 0
 		},
+		"id": 4,
+		"options": {
+		  "legend": {
+			"calcs": [],
+			"displayMode": "list",
+			"placement": "bottom",
+			"showLegend": true
+		  },
+		  "tooltip": {
+			"mode": "single",
+			"sort": "none"
+		  }
+		},
+		"targets": [
+		  {
+			"datasource": {
+			  "type": "prometheus",
+			  "uid": "P3FEB00294C5CB577"
+			},
+			"disableTextWrap": false,
+			"editorMode": "builder",
+			"expr": "django_http_responses_total_by_status_total",
+			"fullMetaSearch": false,
+			"includeNullMetadata": true,
+			"instant": false,
+			"legendFormat": "__auto",
+			"range": true,
+			"refId": "A",
+			"useBackend": false
+		  }
+		],
+		"title": "Total statuses responded",
+		"type": "timeseries"
+	  },
+	  {
+		"datasource": {
+		  "type": "prometheus",
+		  "uid": "P3FEB00294C5CB577"
+		},
+		"description": "Segregated by methods (i.e. GET, POST)",
+		"fieldConfig": {
+		  "defaults": {
+			"color": {
+			  "mode": "palette-classic"
+			},
+			"custom": {
+			  "axisBorderShow": false,
+			  "axisCenteredZero": false,
+			  "axisColorMode": "text",
+			  "axisLabel": "",
+			  "axisPlacement": "auto",
+			  "barAlignment": 0,
+			  "drawStyle": "line",
+			  "fillOpacity": 0,
+			  "gradientMode": "none",
+			  "hideFrom": {
+				"legend": false,
+				"tooltip": false,
+				"viz": false
+			  },
+			  "insertNulls": false,
+			  "lineInterpolation": "linear",
+			  "lineWidth": 1,
+			  "pointSize": 5,
+			  "scaleDistribution": {
+				"type": "linear"
+			  },
+			  "showPoints": "auto",
+			  "spanNulls": false,
+			  "stacking": {
+				"group": "A",
+				"mode": "none"
+			  },
+			  "thresholdsStyle": {
+				"mode": "off"
+			  }
+			},
+			"mappings": [],
+			"thresholds": {
+			  "mode": "absolute",
+			  "steps": [
+				{
+				  "color": "green",
+				  "value": null
+				},
+				{
+				  "color": "red",
+				  "value": 80
+				}
+			  ]
+			}
+		  },
+		  "overrides": []
+		},
+		"gridPos": {
+		  "h": 8,
+		  "w": 12,
+		  "x": 0,
+		  "y": 8
+		},
+		"id": 3,
+		"options": {
+		  "legend": {
+			"calcs": [],
+			"displayMode": "list",
+			"placement": "bottom",
+			"showLegend": true
+		  },
+		  "tooltip": {
+			"mode": "single",
+			"sort": "none"
+		  }
+		},
+		"targets": [
+		  {
+			"datasource": {
+			  "type": "prometheus",
+			  "uid": "P3FEB00294C5CB577"
+			},
+			"disableTextWrap": false,
+			"editorMode": "builder",
+			"expr": "django_http_requests_total_by_method_total",
+			"fullMetaSearch": false,
+			"includeNullMetadata": true,
+			"instant": false,
+			"legendFormat": "__auto",
+			"range": true,
+			"refId": "A",
+			"useBackend": false
+		  }
+		],
+		"title": "Total requests done",
+		"type": "timeseries"
+	  },
+	  {
+		"datasource": {
+		  "type": "prometheus",
+		  "uid": "P3FEB00294C5CB577"
+		},
+		"description": "Deletes, insertions and updates to models in database are here",
+		"fieldConfig": {
+		  "defaults": {
+			"color": {
+			  "mode": "palette-classic"
+			},
+			"custom": {
+			  "axisBorderShow": false,
+			  "axisCenteredZero": false,
+			  "axisColorMode": "text",
+			  "axisLabel": "",
+			  "axisPlacement": "auto",
+			  "barAlignment": 0,
+			  "drawStyle": "line",
+			  "fillOpacity": 0,
+			  "gradientMode": "none",
+			  "hideFrom": {
+				"legend": false,
+				"tooltip": false,
+				"viz": false
+			  },
+			  "insertNulls": false,
+			  "lineInterpolation": "linear",
+			  "lineWidth": 1,
+			  "pointSize": 5,
+			  "scaleDistribution": {
+				"type": "linear"
+			  },
+			  "showPoints": "auto",
+			  "spanNulls": false,
+			  "stacking": {
+				"group": "A",
+				"mode": "none"
+			  },
+			  "thresholdsStyle": {
+				"mode": "off"
+			  }
+			},
+			"mappings": [],
+			"thresholds": {
+			  "mode": "absolute",
+			  "steps": [
+				{
+				  "color": "green",
+				  "value": null
+				},
+				{
+				  "color": "red",
+				  "value": 80
+				}
+			  ]
+			}
+		  },
+		  "overrides": []
+		},
+		"gridPos": {
+		  "h": 8,
+		  "w": 12,
+		  "x": 0,
+		  "y": 16
+		},
+		"id": 2,
+		"options": {
+		  "legend": {
+			"calcs": [],
+			"displayMode": "list",
+			"placement": "bottom",
+			"showLegend": true
+		  },
+		  "tooltip": {
+			"mode": "single",
+			"sort": "none"
+		  }
+		},
+		"targets": [
+		  {
+			"datasource": {
+			  "type": "prometheus",
+			  "uid": "P3FEB00294C5CB577"
+			},
+			"disableTextWrap": false,
+			"editorMode": "builder",
+			"expr": "django_model_deletes_total",
+			"fullMetaSearch": false,
+			"includeNullMetadata": true,
+			"instant": false,
+			"legendFormat": "__auto",
+			"range": true,
+			"refId": "A",
+			"useBackend": false
+		  },
+		  {
+			"datasource": {
+			  "type": "prometheus",
+			  "uid": "P3FEB00294C5CB577"
+			},
+			"disableTextWrap": false,
+			"editorMode": "builder",
+			"expr": "django_model_inserts_total",
+			"fullMetaSearch": false,
+			"hide": false,
+			"includeNullMetadata": true,
+			"instant": false,
+			"legendFormat": "__auto",
+			"range": true,
+			"refId": "B",
+			"useBackend": false
+		  },
+		  {
+			"datasource": {
+			  "type": "prometheus",
+			  "uid": "P3FEB00294C5CB577"
+			},
+			"disableTextWrap": false,
+			"editorMode": "builder",
+			"expr": "django_model_updates_total",
+			"fullMetaSearch": false,
+			"hide": false,
+			"includeNullMetadata": true,
+			"instant": false,
+			"legendFormat": "__auto",
+			"range": true,
+			"refId": "C",
+			"useBackend": false
+		  }
+		],
+		"title": "Total changes to models recorded",
+		"type": "timeseries"
+	  },
+	  {
+		"datasource": {
+		  "type": "prometheus",
+		  "uid": "P3FEB00294C5CB577"
+		},
+		"fieldConfig": {
+		  "defaults": {
+			"color": {
+			  "mode": "palette-classic"
+			},
+			"custom": {
+			  "axisBorderShow": false,
+			  "axisCenteredZero": false,
+			  "axisColorMode": "text",
+			  "axisLabel": "",
+			  "axisPlacement": "auto",
+			  "barAlignment": 0,
+			  "drawStyle": "line",
+			  "fillOpacity": 0,
+			  "gradientMode": "none",
+			  "hideFrom": {
+				"legend": false,
+				"tooltip": false,
+				"viz": false
+			  },
+			  "insertNulls": false,
+			  "lineInterpolation": "linear",
+			  "lineWidth": 1,
+			  "pointSize": 5,
+			  "scaleDistribution": {
+				"type": "linear"
+			  },
+			  "showPoints": "auto",
+			  "spanNulls": false,
+			  "stacking": {
+				"group": "A",
+				"mode": "none"
+			  },
+			  "thresholdsStyle": {
+				"mode": "off"
+			  }
+			},
+			"mappings": [],
+			"thresholds": {
+			  "mode": "absolute",
+			  "steps": [
+				{
+				  "color": "green"
+				},
+				{
+				  "color": "red",
+				  "value": 80
+				}
+			  ]
+			}
+		  },
+		  "overrides": [
+			{
+			  "__systemRef": "hideSeriesFrom",
+			  "matcher": {
+				"id": "byNames",
+				"options": {
+				  "mode": "exclude",
+				  "names": [
+					"{__name__=\"django_http_ajax_requests_total\", instance=\"host.docker.internal:8000\", job=\"transcendence\"}"
+				  ],
+				  "prefix": "All except:",
+				  "readOnly": true
+				}
+			  },
+			  "properties": [
+				{
+				  "id": "custom.hideFrom",
+				  "value": {
+					"legend": false,
+					"tooltip": false,
+					"viz": true
+				  }
+				}
+			  ]
+			}
+		  ]
+		},
+		"gridPos": {
+		  "h": 8,
+		  "w": 12,
+		  "x": 0,
+		  "y": 24
+		},
 		"id": 1,
 		"options": {
 		  "legend": {
@@ -116,54 +474,25 @@
 			"range": true,
 			"refId": "A",
 			"useBackend": false
-		  },
-		  {
-			"datasource": {
-			  "type": "prometheus",
-			  "uid": "P3FEB00294C5CB577"
-			},
-			"disableTextWrap": false,
-			"editorMode": "builder",
-			"expr": "django_model_updates_total",
-			"fullMetaSearch": false,
-			"hide": false,
-			"includeNullMetadata": true,
-			"instant": false,
-			"legendFormat": "__auto",
-			"range": true,
-			"refId": "B",
-			"useBackend": false
-		  },
-		  {
-			"datasource": {
-			  "type": "prometheus",
-			  "uid": "P3FEB00294C5CB577"
-			},
-			"expr": "",
-			"hide": false,
-			"instant": false,
-			"range": true,
-			"refId": "C"
 		  }
 		],
-		"title": "Panel Title",
+		"title": "Total requests done",
 		"type": "timeseries"
 	  }
 	],
-	"refresh": "",
 	"schemaVersion": 39,
 	"tags": [],
 	"templating": {
 	  "list": []
 	},
 	"time": {
-	  "from": "now-24h",
+	  "from": "now-6h",
 	  "to": "now"
 	},
 	"timepicker": {},
 	"timezone": "browser",
 	"title": "Dashboard_v1",
 	"uid": "fdtdusa4bgphcb",
-	"version": 1,
+	"version": 3,
 	"weekStart": ""
   }

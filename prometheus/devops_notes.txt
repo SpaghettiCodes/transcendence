@@ -26,9 +26,9 @@
 
 
 Changes:
-	backend/src/backend/settings.py
-	backend/src/backend/urls.py (prometheus middleware needs to be top n bottom of the list so dun change positions)
-	backend/src/database/models.py (might needa add more things: ExportModelOperationsMixin("dataset") on every model)
+	backend/src/backend/settings.py (prometheus middleware needs to be top n bottom of the list so dun change positions)
+	backend/src/backend/urls.py
+	backend/src/database/models.py
 	backend/src/requirements.txt
 	docker_compose.yml
 
