@@ -60,6 +60,11 @@ export function setJwtToken(token) {
     localStorage.setItem("jwtToken", token)
 }
 
+export function removeJWTPair() {
+	localStorage.removeItem('jwtToken')
+	localStorage.removeItem('refreshToken')
+}
+
 export function getRefreshToken() {
     return localStorage.getItem("refreshToken")
 }
@@ -103,7 +108,7 @@ export async function fetchMod(url, request) {
 	})
 
 	// access token in locallStorage invalid/expired, request new one and sets the new one in localStorage
-	if (response_verify.status == 401) {
+	if (response_verify.status === 401) {
 		console.log("access token invalid/expired, requesting new one using refresh token...")
 		const response_refresh = await fetch('https://localhost:8000/api/token/refresh', {
 			method: 'POST',
@@ -117,11 +122,17 @@ export async function fetchMod(url, request) {
 			setJwtToken(result.access)
 			console.log("access token refreshed using refresh token")
 		}
-	else {
-			console.log("access token invalid, refresh token not working, wallahi its over bijoever")
-			redirect('/')
-			throw 'redirected'
-		}
+		else {
+				console.log("access token invalid, refresh token not working, wallahi its over bijoever")
+				removeJWTPair()
+				redirect('/')
+				throw 'redirected'
+			}
+	} else if (response_verify.status === 404) {
+		console.log('what kind of code are you using')
+		removeJWTPair()
+		redirect('/')
+		throw 'redirected'
 	};
 
 	// adds access token to header and calls fetch

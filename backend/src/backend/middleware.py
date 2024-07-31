@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from database.models import Player
 from django.http import JsonResponse
 from rest_framework import status
+from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from .authentication import JWT_AUTH_EXEMPT_FULL, JWT_AUTH_EXEMPT_PARTIAL
 import re
 
@@ -32,10 +33,21 @@ class AuthenticateJWTMiddleware(JWTAuthentication):
             
         print(request.path)
         header = self.get_header(request)
+        if header is None:
+            return JsonResponse({'error': 'unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
+
         try:
             raw_token = self.get_raw_token(header)
+            if raw_token is None:
+                return JsonResponse({'error': 'unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
+
             post_jwt_auth = self.get_validated_token(raw_token)
-            user = self.get_user(post_jwt_auth)
+
+            self.get_user(post_jwt_auth)
+        except AuthenticationFailed as e:
+            if (e.get_full_details()['code']['message'] == 'user_not_found'):
+                return JsonResponse({'error': 'user associated to this token not found'}, status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse({'error': 'unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
         except:
             return JsonResponse({'error': 'unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
 

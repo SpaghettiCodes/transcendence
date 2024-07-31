@@ -54,8 +54,8 @@ export default function match(prop={}) {
 				defender = data["sides"]["defender"]
 
 				// no idea where to put score first sooo
-				scores[attacker] = data["score"]["attacker"]
-				scores[defender] = data["score"]["defender"]
+				scores[attacker.username] = data["score"]["attacker"]
+				scores[defender.username] = data["score"]["defender"]
 			}
 
 			let settings = data["settings"]
@@ -164,10 +164,10 @@ export default function match(prop={}) {
 		}
 
 		const updateScoreBoard = () => {
-			if (scores[attacker] !== undefined)
-				document.getElementById("attackerScoreBoard").innerText = scores[attacker]
-			if (scores[defender] !== undefined)
-				document.getElementById("defenderScoreBoard").innerText = scores[defender]
+			if (attacker !== undefined && scores[attacker.username] !== undefined)
+				document.getElementById("attackerScoreBoard").innerText = scores[attacker.username]
+			if (defender !== undefined && scores[defender.username] !== undefined)
+				document.getElementById("defenderScoreBoard").innerText = scores[defender.username]
 		}
 
 		const fixPaddlePosition = ({
@@ -540,7 +540,9 @@ export default function match(prop={}) {
 						break
 					case "score":
 						let whoScored  = data["scorer"]
+						console.log(whoScored)
 						if (data["update"]) {
+							console.log(scores)
 							++scores[whoScored]
 							updateScoreBoard()
 						}

@@ -74,6 +74,8 @@ export default function template(prop = {}) {
             return true;
         } catch (error) {
             console.error('Fetch error:', error);
+			if (error === 'redirected')
+				return false
 			history.back()
             return false;
         }
