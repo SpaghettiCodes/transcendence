@@ -115,6 +115,8 @@ export default function landing(prop={}) {
 				} else if (error.status === 403) {
 					// forbidden, guy has 2fa on
 					redirect_without_history('/auth/2fa', {username: username})
+				} else if (error.status === 500) {
+					showErrorMsg(errorMsgBoard, 'The server has failed you')
 				}
 				loginButton.disabled = false
 			})
