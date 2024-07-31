@@ -75,6 +75,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./grafana/provisioning/datasources/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - ./grafana/provisioning/dashboards/dashboard.yml:/etc/grafana/provisioning/dashboards/
       - grafana-storage:/var/lib/grafana
 
 volumes:
