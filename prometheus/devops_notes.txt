@@ -20,10 +20,7 @@
 	Guides:
 	https://docs.techdox.nz/node-exporter/
 	https://youtu.be/yrscZ-kGc_Y?si=w9VfaJg0vG6tiPiN
-
-
-!. CONNECTION REFUSED ISSUE
-	neiggah im stuck here for several days ald
+	https://stackoverflow.com/questions/76919074/how-to-use-prometheus-to-monitor-all-containers-in-a-docker-compose
 
 
 Changes:

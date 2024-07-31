@@ -83,4 +83,3 @@ volumes:
 networks:
   frontend_net:
   backend_net:
-  prometheus:
