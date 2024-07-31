@@ -30,7 +30,9 @@ class TournamentView(APIView):
 
     # random matchmaking
     def get(self, request: Request, format = None):
-        server_id = TournamentManager.randomMatchmake()
+        user = request.user
+
+        server_id = TournamentManager.randomMatchmake(user)
 
         return Response({
             "tournament_id": server_id

@@ -97,6 +97,9 @@ class TournamentServer:
     def spectatorLeft(self, playerObject):
         self.spectators.remove(playerObject)
 
+    def isExpected(self, playerObject):
+        return playerObject in self.expectedPlayers
+
     async def playerJoin(self, playerObject):
         if playerObject in self.losers:
             return (False, "You lost!", 'lost')

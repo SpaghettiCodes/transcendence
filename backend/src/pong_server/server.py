@@ -54,7 +54,7 @@ class PongServer:
                         server_to_join = server_id
                         break
             except RuntimeError: # fuckin size changing again
-                return cls.random_matchmake(type)
+                return cls.random_matchmake(playerObject, type)
 
         return server_to_join
 
