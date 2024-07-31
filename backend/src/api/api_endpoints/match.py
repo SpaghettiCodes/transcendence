@@ -8,6 +8,10 @@ from rest_framework.views import APIView
 from pong_server.server import PongServer
 from rest_framework import status
 
+from asgiref.sync import async_to_sync
+import asyncio
+from time import sleep
+
 from datetime import datetime
 
 class MatchView(APIView):
@@ -30,15 +34,15 @@ class MatchView(APIView):
     # RANDOM MATCHMAKING
     def get(self, request: Request, format = None):
         type = request.GET.get("type")
-        username = request.user.username
+        userObject = request.user
 
-        server_id = PongServer.random_matchmake(type)
+        server_id = PongServer.random_matchmake(userObject, type)
         if server_id is not None:
             return Response({
                 "game_id": server_id
             }, status=status.HTTP_200_OK)
         
-        if not PongServer.matchMaking(username, type):
+        if not PongServer.matchMaking(userObject, type):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         # wait for 10 seconds
@@ -47,19 +51,20 @@ class MatchView(APIView):
         durationLeft = duration
         timeStart = datetime.now()
 
-        while (durationLeft >= 0.25 and PongServer.inMatchMaking(username, type)):
+        while (durationLeft >= 0.25 and PongServer.inMatchMaking(userObject, type)):
             currentTime = datetime.now()
             difference = (currentTime - timeStart).total_seconds()
             durationLeft = max(0, duration - difference)
 
-            server_id = PongServer.random_matchmake(type)
+            server_id = PongServer.random_matchmake(userObject, type)
             if server_id is not None:
                 break
-
-        if (not PongServer.inMatchMaking(username, type)):
+            sleep(0.1) # here is a gamble
+            
+        if (not PongServer.inMatchMaking(userObject, type)):
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-        PongServer.dismatchMaking(username, type)
+        PongServer.dismatchMaking(userObject, type)
         if server_id == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -69,9 +74,9 @@ class MatchView(APIView):
     
     def delete(self, request: Request, format = None):
         type = request.GET.get('type')
-        username = request.user.username
+        userObject = request.user
 
-        PongServer.dismatchMaking(username, type)
+        PongServer.dismatchMaking(userObject, type)
         return Response(status=status.HTTP_200_OK)
 
 @api_view(["GET"])

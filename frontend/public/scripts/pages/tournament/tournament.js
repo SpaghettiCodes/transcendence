@@ -233,7 +233,7 @@ export default function tournament(prop={}) {
 				(data) => {
 					loadTournamentData(data)
 				}
-			)
+			).catch(e => console.log(e)) 
 		}
 
 		const setStatusMessage = (msg) => {
@@ -304,7 +304,7 @@ export default function tournament(prop={}) {
 				loadTournamentData(data)
 				connectToWebsocket()
 			}
-		)
+		).catch(e => console.log(e))
 	}
 
 	let cleanup = () => {

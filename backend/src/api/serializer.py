@@ -27,6 +27,16 @@ class PublicPlayerDetailsSerializer(serializers.ModelSerializer):
                 )
 
 class PlayerCreator(serializers.ModelSerializer):
+
+    def validate_username(self, username):
+        for character in username:
+            if character.isspace():
+                raise serializers.ValidationError('No whitespaces in username')
+            if not character.isalnum():
+                if character is not '-' and character is not '_':
+                    raise serializers.ValidationError('No symbols in username, except for - and _')
+        return username
+
     class Meta:
         model = Player
         fields = ('username', 'password')
@@ -178,6 +188,11 @@ class InviteMessageSerializer(serializers.ModelSerializer):
         if ret['status'] != 'expired':
             ret['match'] = MatchSerializer(instance.match).data
         return ret
+
+class ChatMessageSaver(serializers.ModelSerializer):
+    class Meta:
+        model = ChatMessage
+        fields = ['room', 'type', 'sender', 'content']
 
 class ChatMessageSerializer(serializers.ModelSerializer):
     def __init__(self, playerObject, instance=None, **kwargs):

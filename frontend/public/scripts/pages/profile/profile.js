@@ -147,54 +147,46 @@ export default function template(prop={}) {
 
 		// Add change event listener to the file input
 		fileInput.addEventListener('change', async (event) => {
-			try {
-				const file = event.target.files[0];
-				if (!file) return;
-			
-				const formData = new FormData();
-				formData.append("profile_pic", file);
-			
-				const url = `https://localhost:8000/api/player/${yourName}`;
-				const response = await fetchMod(url, {
-					method: "PATCH",
-					body: formData,
-				});
-				if (!response.ok)
-					throw response
-				const json = await response.json();
-				document.getElementById("pfp").src = `https://localhost:8000/api${json.profile_pic}`;	
-			} catch (e) {
-				createAlert('error', 'Invalid Image!')
+			const file = event.target.files[0];
+			if (!file) return;
+		
+			const formData = new FormData();
+			formData.append("profile_pic", file);
+		
+			const url = `https://localhost:8000/api/player/${yourName}`;
+			const response = await fetchMod(url, {
+				method: "PATCH",
+				body: formData,
+			});
+			if (!response.ok) {
+				return createAlert('error', 'Invalid Image!')
 			}
+			const json = await response.json();
+			document.getElementById("pfp").src = `https://localhost:8000/api${json.profile_pic}`;	
 		});
 
 		document.getElementById("email_button").addEventListener("click", async () => {
 			const newEmail = prompt("Enter new email:");
 			if (newEmail) {
-				try {
-					const url = `https://localhost:8000/api/player/${yourName}`;
-					const response = await fetchMod(url, {
-						method: "PATCH",
-						body: JSON.stringify({
-							"email": newEmail
-						}),
-						headers: {
-							"Content-Type": "application/json",
-						}
-					});
+				const url = `https://localhost:8000/api/player/${yourName}`;
+				const response = await fetchMod(url, {
+					method: "PATCH",
+					body: JSON.stringify({
+						"email": newEmail
+					}),
+					headers: {
+						"Content-Type": "application/json",
+					}
+				});
 
-					if (!response.ok)
-						throw response
-				} catch (e) {
-					console.log(e)
-					if (e.status === 400) {
-						let errorList = await e.json()
+				if (!response.ok) {
+					if (response.status === 400) {
+						let errorList = await response.json()
 						let emailErrorList = errorList['email']
 						if (!emailErrorList)
 							return
 						createAlert('error', emailErrorList.join('and '))
 					}
-
 				}
 			}
 		});

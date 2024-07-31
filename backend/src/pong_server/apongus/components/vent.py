@@ -11,6 +11,8 @@ class Vent(Component):
         self.teleportOut = []
         self.teleportIn = []
 
+        self.ventEffect = 0.1 # TODO: change this to a appropriate value
+
     def setExit(self, exit: Vent):
         self.exit = exit
 
@@ -44,6 +46,13 @@ class Vent(Component):
                 # having all the balls at a constant color makes it trivially easy
                 ball.swapToAnotherColor()
                 self.exit.teleportOut.append(ball)
+
+                x_velo, y_velo = ball.get_velocity()
+
+                affect_velo = -1 if x_velo < 0 else 1
+                print(ball.get_velocity())
+                ball.set_velocity(x_velo + affect_velo * self.ventEffect, y_velo)
+                print(ball.get_velocity())
 
         elif (ball in self.teleportOut):
             self.teleportOut.remove(ball)

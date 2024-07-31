@@ -17,41 +17,44 @@ export default function chat(prop={}) {
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
 	let prerender = async () => {
-		try {
-			const me_response = await fetchMod(`https://localhost:8000/api/me`)
-			if (!me_response.ok)
-				throw me_response
-			let value = await me_response.json()
-			yourName = value.username
-
-			const response = await fetchMod(
-				`https://localhost:8000/api/player/${yourName}/friends`,
-				{
-					method: "GET",
-				}
-			)
-			if (!response.ok)
-				throw response
-			value = await response.json()
-			prop.friendList = value
-
-			const blockedResponse = await fetchMod(
-				`https://localhost:8000/api/player/${yourName}/blocked`,
-				{
-					method: "GET",
-				}
-			)
-			if (!blockedResponse.ok)
-				throw response
-			value = await blockedResponse.json()
-			prop.blockList = value
-		} catch (e) {
-			console.log(e)
-			if (e === 'redirected')
-				return false
+		const me_response = await fetchMod(`https://localhost:8000/api/me`)
+		if (!me_response.ok) {
+			console.log(me_response)
 			history.back()
 			return false
 		}
+		let value = await me_response.json()
+		yourName = value.username
+
+		const response = await fetchMod(
+			`https://localhost:8000/api/player/${yourName}/friends`,
+			{
+				method: "GET",
+			}
+		)
+		if (!response.ok) {
+			console.log(me_response)
+			history.back()
+			return false
+		}
+
+		value = await response.json()
+		prop.friendList = value
+
+		const blockedResponse = await fetchMod(
+			`https://localhost:8000/api/player/${yourName}/blocked`,
+			{
+				method: "GET",
+			}
+		)
+		if (!blockedResponse.ok) {
+			console.log(me_response)
+			history.back()
+			return false
+		}
+
+		value = await blockedResponse.json()
+		prop.blockList = value
 		return true // return true to continue to render_code
 		// return false to abort (usually used with redirect)
 	}
@@ -140,12 +143,14 @@ export default function chat(prop={}) {
 				sendInviteButton.classList.add('disabled')
 
 				let chatID = await getChatRoomData(`https://localhost:8000/api/player/${player_username}/chat/${target_username}`)
-				connectToWebsocket(`wss://localhost:8000/chat/${chatID}`)
+				if (chatID) {
+					connectToWebsocket(`wss://localhost:8000/chat/${chatID}`)
 
-				urlParams.set('friend', target_username)
-				// reenable sending message
-				sendMessageButton.classList.remove('disabled')
-				sendInviteButton.classList.remove('disabled')
+					urlParams.set('friend', target_username)
+					// reenable sending message
+					sendMessageButton.classList.remove('disabled')
+					sendInviteButton.classList.remove('disabled')
+				}
 			}
 		}
 
@@ -157,79 +162,69 @@ export default function chat(prop={}) {
 			else
 				url = `https://localhost:8000/api/chat/${chatID}/history?start_id=${lastMSGID}`
 
-			try {
-				const response = await fetchMod(url)
+			const response = await fetchMod(url)
 
-				if (!response.ok)
-					throw response
+			if (!response.ok)
+				return -1
 
-				const data = await response.json()
+			const data = await response.json()
 
-				const messageList = data["history"]
-				const haveMore =  data["haveMore"]
+			const messageList = data["history"]
+			const haveMore =  data["haveMore"]
 
-				if (resetChat) {
-					resetChatContent()
-				}
-
-				if (!messageList.length) {
-					gotAllMessages = true
-					if (!didWeGetAllMessagesBefore && gotAllMessages) {
-						let newEOFdiv = new endOfChatDiv()
-						chatContentField.append(newEOFdiv.mainDiv)
-					}
-					return 0
-				}
-
-				lastMSGID = messageList.at(-1)["chatid"]
-				messageList.forEach((pastMessage) => {
-					let type = pastMessage["type"]
-					let messageBlock = new messageDiv(type)
-					messageBlock.setData(pastMessage)
-					chatContentField.append(messageBlock.mainDiv)
-				})
-
-				if (!haveMore) {
-					gotAllMessages = true
-					if (!didWeGetAllMessagesBefore && gotAllMessages) {
-						let newEOFdiv = new endOfChatDiv()
-						chatContentField.append(newEOFdiv.mainDiv)
-					}
-				}
-
-				return messageList.length
-			} catch (e) {
-				console.log(e)
+			if (resetChat) {
+				resetChatContent()
 			}
-			return -1
+
+			if (!messageList.length) {
+				gotAllMessages = true
+				if (!didWeGetAllMessagesBefore && gotAllMessages) {
+					let newEOFdiv = new endOfChatDiv()
+					chatContentField.append(newEOFdiv.mainDiv)
+				}
+				return 0
+			}
+
+			lastMSGID = messageList.at(-1)["chatid"]
+			messageList.forEach((pastMessage) => {
+				let type = pastMessage["type"]
+				let messageBlock = new messageDiv(type)
+				messageBlock.setData(pastMessage)
+				chatContentField.append(messageBlock.mainDiv)
+			})
+
+			if (!haveMore) {
+				gotAllMessages = true
+				if (!didWeGetAllMessagesBefore && gotAllMessages) {
+					let newEOFdiv = new endOfChatDiv()
+					chatContentField.append(newEOFdiv.mainDiv)
+				}
+			}
+
+			return messageList.length
 		}
 
 		const getChatRoomData = async (url) => {
-			try {
-				let results = await fetchMod(
-					url, {
-						method: "GET",
-					}
-				)
-
-				if (!results.ok) {
-					throw results
+			let results = await fetchMod(
+				url, {
+					method: "GET",
 				}
+			)
 
-				let data = await results.json()
-				let roomid = data['roomid']
-
-				currentlyViewingChatID = roomid
-
-				let messageGotten = await getPreviousMessages(roomid, true)
-				while (chatContentField.clientHeight >= chatContentField.scrollHeight && messageGotten) {
-					messageGotten = await getPreviousMessages(roomid)
-				}
-				return roomid
-			} catch (e) {
-				console.log('uh oh poopy')
+			if (!results.ok) {
+				return undefined
 			}
 
+			let data = await results.json()
+			let roomid = data['roomid']
+
+			currentlyViewingChatID = roomid
+
+			let messageGotten = await getPreviousMessages(roomid, true)
+			while (chatContentField.clientHeight >= chatContentField.scrollHeight && messageGotten) {
+				messageGotten = await getPreviousMessages(roomid)
+			}
+			return roomid
 		}
 
 		const sendMessage = (data) => {

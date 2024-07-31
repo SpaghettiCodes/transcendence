@@ -12,6 +12,8 @@ from django.core.exceptions import FieldDoesNotExist
 from django.core.files.images import ImageFile
 from django.db.models import Q
 
+from passlib.exc import PasswordSizeError
+
 import os
 
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample,  OpenApiParameter
@@ -56,7 +58,16 @@ def editSpecificPlayer(request, player_username):
     print(data)
     if 'password' in data.keys():
         raw_password = data.get('password')
-        data['password'] = Player.encrypt_password(raw_password)
+        try:
+            data['password'] = Player.encrypt_password(raw_password)
+        except PasswordSizeError:
+            return Response(
+                {'error': "Password is too long"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     if 'profile_pic' in request.FILES:
         profile_pic = ImageFile(request.FILES['profile_pic'])

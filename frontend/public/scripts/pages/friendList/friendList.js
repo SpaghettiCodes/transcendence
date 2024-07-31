@@ -25,7 +25,7 @@ export default function template(prop = {}) {
             if (!friendsResponse.ok) throw new Error('Network response was not ok ' + friendsResponse.statusText);
             const friendlist = await friendsResponse.json();
     
-            const randomUsers = await fetchMod('https://localhost:8000/api/player/random?number=5');
+            const randomUsers = await fetchMod('https://localhost:8000/api/player?number=5');
             if (!randomUsers.ok) throw new Error('Network response was not ok ' + randomUsers.statusText);
             let randomUsersData = await randomUsers.json();
     
@@ -49,6 +49,8 @@ export default function template(prop = {}) {
 				} catch (response) {
 					if (response.status === 404) {
 						console.log('forget it')
+						profileData = undefined
+						profileMatchData = undefined
 					}
 				}
 			}

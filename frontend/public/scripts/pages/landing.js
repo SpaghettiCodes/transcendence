@@ -115,6 +115,8 @@ export default function landing(prop={}) {
 				} else if (error.status === 403) {
 					// forbidden, guy has 2fa on
 					redirect_without_history('/auth/2fa', {username: username})
+				} else if (error.status === 500) {
+					showErrorMsg(errorMsgBoard, 'The server has failed you')
 				}
 				loginButton.disabled = false
 			})
@@ -145,11 +147,20 @@ export default function landing(prop={}) {
 					setRefreshToken(result.data.refresh)
 					redirect('/home')
 				}
-			).catch((error) => {
+			).catch(async (error) => {
 				console.log(error)
 				if (error.status === 404) {
 				} else if (error.status === 409) {
 					showErrorMsg(errorMsgBoard, 'Player with that username already exist')
+				} else if (error.status === 400) {
+					let response = await error.json()
+					console.log(response)
+					let reason = response.reason
+					let { password, username } = reason
+					if (username) 
+						showErrorMsg(usernameError, username[0])
+					else if (password)
+						showErrorMsg(passwordError, password[0])
 				}
 				signUpButton.disabled = false
 			})

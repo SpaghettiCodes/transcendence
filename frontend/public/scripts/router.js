@@ -12,6 +12,7 @@ import fourofour from "./pages/404.js"
 import ftlogin from "./pages/42auth.js"
 import home from "./pages/home.js"
 import tournament from "./pages/tournament/tournament.js"
+import tournamentResult from "./pages/tournamentResults/tournamentResults.js"
 import result from "./pages/result/result.js"
 import profile from "./pages/profile/profile.js"
 import matchmaking from "./pages/matchmaking.js"
@@ -20,14 +21,6 @@ import friendlist from "./pages/friendList/friendList.js"
 import match from "./pages/match.js"
 import { check_token_exists, getJwtToken } from "./jwt.js"
 import auth2fa from "./pages/auth.js"
-
-// remove later
-import login from "./pages/old/login.js"
-import test from "./pages/old/test.js"
-import tfa from "./pages/old/tfa.js"
-import matchListing from "./pages/old/matchListing.js"
-import tournamentListing from "./pages/old/oldTournamentListing.js"
-import tournamentResult from "./pages/tournamentResults/tournamentResults.js"
 import { connectToPlayerNotificationWebsocket, disconnectPlayerNotificationWebsocket } from "./pages/playerNoti.js"
 
 const routes = {
@@ -46,14 +39,6 @@ const routes = {
 	'/friends': friendlist,
 	'/auth/2fa': auth2fa,
 	'/ftlogin': ftlogin,
-
-	// temp, remove when done
-
-	'/tournament': tournamentListing,
-	'/match': matchListing,
-	'/login': login,
-	'/tfa': tfa,
-	'/test': test,
 }
 
 let clean_up_function = () => {}

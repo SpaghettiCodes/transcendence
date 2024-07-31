@@ -18,6 +18,8 @@ from django.conf import settings
 from ..serializer import PublicPlayerSerializer, PlayerCreator
 from rest_framework.serializers import StringRelatedField
 
+from passlib.exc import PasswordSizeError
+
 import random
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample,  OpenApiParameter
 
@@ -144,7 +146,16 @@ def createPlayer(request):
 
     if 'password' in data.keys():
         raw_password = data.get('password')
-        data['password'] = Player.encrypt_password(raw_password)
+        try:
+            data['password'] = Player.encrypt_password(raw_password)
+        except PasswordSizeError:
+            return Response(
+                {'error': "Password is too long"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
