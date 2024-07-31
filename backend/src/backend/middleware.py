@@ -30,8 +30,7 @@ class AuthenticateJWTMiddleware(JWTAuthentication):
         for exempt in JWT_AUTH_EXEMPT_FULL:
             if request.path == (exempt):
                 return None
-            
-        print(request.path)
+
         header = self.get_header(request)
         if header is None:
             return JsonResponse({'error': 'unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
