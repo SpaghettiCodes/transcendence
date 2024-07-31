@@ -76,58 +76,54 @@ export default function match(prop={}) {
 		let scores = {}
 
 		const getGameData = async () => {
-			try {
-				let value = await fetchMod (
-					`https://localhost:8000/api/${apiURI}`,
-					{
-						method: "GET",
-					}
-				)
-
-				if (!value.ok)
-					throw value
-
-				let data = await value.json()
-				console.log(data)
-				matchStarted = data["started"]
-				if (matchStarted)
+			let value = await fetchMod (
+				`https://localhost:8000/api/${apiURI}`,
 				{
-					attacker = data["sides"]["attacker"]
-					defender = data["sides"]["defender"]
-
-					document.getElementById("attackerNameField").innerText = attacker
-					document.getElementById("defenderNameField").innerText = defender
-
-					// no idea where to put score first sooo
-					scores[attacker] = data["score"]["attacker"]
-					scores[defender] = data["score"]["defender"]
-
-					updateScoreBoard()
+					method: "GET",
 				}
+			)
 
-				let settings = data["settings"]
-
-				serverFieldWidth = settings["width"]
-				serverFieldHeight = settings["height"]
-				serverAspectRatio = serverFieldWidth / serverFieldHeight
-
-				serverBallRadius = settings["ball"]["radius"],
-				serverPaddleWidth = settings["paddle"]["width"],
-				serverPaddleHeight = settings["paddle"]["height"]
-
-				if (settings["vent"])
-					serverVentWidth = settings["vent"]["width"]
-
-				fixFieldDimensions()
-			} catch (reason) {
-				if (reason.status == 404) {
+			if (!value.ok) {
+				if (value.status === 404) {
 					redirect('/error')
 				} else {
-					errorMessage("Yeah idk also ¯\\_(ツ)_/¯")
+					console.log("oh no")
 				}
-				throw reason
+				return
 			}
 
+			let data = await value.json()
+			console.log(data)
+			matchStarted = data["started"]
+			if (matchStarted)
+			{
+				attacker = data["sides"]["attacker"]
+				defender = data["sides"]["defender"]
+
+				document.getElementById("attackerNameField").innerText = attacker
+				document.getElementById("defenderNameField").innerText = defender
+
+				// no idea where to put score first sooo
+				scores[attacker] = data["score"]["attacker"]
+				scores[defender] = data["score"]["defender"]
+
+				updateScoreBoard()
+			}
+
+			let settings = data["settings"]
+
+			serverFieldWidth = settings["width"]
+			serverFieldHeight = settings["height"]
+			serverAspectRatio = serverFieldWidth / serverFieldHeight
+
+			serverBallRadius = settings["ball"]["radius"],
+			serverPaddleWidth = settings["paddle"]["width"],
+			serverPaddleHeight = settings["paddle"]["height"]
+
+			if (settings["vent"])
+				serverVentWidth = settings["vent"]["width"]
+
+			fixFieldDimensions()
 		}
 
 		const errorMessage = (msg) => {

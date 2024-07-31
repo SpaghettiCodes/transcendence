@@ -34,55 +34,52 @@ export default function match(prop={}) {
 	let scores = {}
 
 	const getGameData = async () => {
-		try {
-			let value = await fetchMod (
-				`https://localhost:8000/api/${apiURI}`,
-				{
-					method: "GET",
-				}
-			)
-
-			if (!value.ok)
-				throw value
-
-			let data = await value.json()
-			console.log(data)
-			matchStarted = data["started"]
-			if (matchStarted)
+		let value = await fetchMod (
+			`https://localhost:8000/api/${apiURI}`,
 			{
-				attacker = data["sides"]["attacker"]
-				defender = data["sides"]["defender"]
-
-				// no idea where to put score first sooo
-				scores[attacker.username] = data["score"]["attacker"]
-				scores[defender.username] = data["score"]["defender"]
+				method: "GET",
 			}
+		)
 
-			let settings = data["settings"]
-
-			serverFieldWidth = settings["width"]
-			serverFieldHeight = settings["height"]
-			serverAspectRatio = serverFieldWidth / serverFieldHeight
-
-			serverBallRadius = settings["ball"]["radius"],
-			serverPaddleWidth = settings["paddle"]["width"],
-			serverPaddleHeight = settings["paddle"]["height"]
-
-			if (settings["vent"]) {
-				serverVentWidth = settings["vent"]["width"]
-				serverVentHeight = settings['vent']['height']
-			}
-		} catch (response) {
-			console.log(response)
-			if (response.status === 404) {
+		if (!value.ok) {
+			console.log(value)
+			if (value.status === 404) {
 				// okayyy its probably already done and is in results?
 				console.log('go somwhere else')
 				redirect_replace_history(`/match/${game_id}/results`, {})
 			} else {
 				console.log("i have no idea what happened")
-				console.log(response)
+				console.log(value)
 			}
 			return false
+		}
+
+		let data = await value.json()
+		console.log(data)
+		matchStarted = data["started"]
+		if (matchStarted)
+		{
+			attacker = data["sides"]["attacker"]
+			defender = data["sides"]["defender"]
+
+			// no idea where to put score first sooo
+			scores[attacker.username] = data["score"]["attacker"]
+			scores[defender.username] = data["score"]["defender"]
+		}
+
+		let settings = data["settings"]
+
+		serverFieldWidth = settings["width"]
+		serverFieldHeight = settings["height"]
+		serverAspectRatio = serverFieldWidth / serverFieldHeight
+
+		serverBallRadius = settings["ball"]["radius"],
+		serverPaddleWidth = settings["paddle"]["width"],
+		serverPaddleHeight = settings["paddle"]["height"]
+
+		if (settings["vent"]) {
+			serverVentWidth = settings["vent"]["width"]
+			serverVentHeight = settings['vent']['height']
 		}
 		return true
 	}

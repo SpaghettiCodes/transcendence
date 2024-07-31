@@ -10,7 +10,7 @@ import datetime
 from django.core.exceptions import ObjectDoesNotExist
 
 class PongServer:
-    servers: dict[None | str, dict[str, Game]] = {}
+    servers: dict[str, Game] = {}
     pongQueue = []
     apongQueue = []
 
@@ -31,20 +31,26 @@ class PongServer:
     @classmethod
     # most probably for random matchmaking
     # put on hold for now
-    def random_matchmake(cls, type="pong"):
+    def random_matchmake(cls, playerObject, type="pong"):
         server_to_join = None
 
         if len(cls.servers):
             try:
                 for server_id, server in cls.servers.items():
-                    # should not be able to join a hidden server
-                    # nor a server with player restriction
-                    # nor a server that already started playing
-                    if (not server.is_hidden() and 
-                        not server.has_begin() and 
-                        not server.is_restricted() and
-                        server.getType() == type
-                        ):
+                    # # should not be able to join a hidden server
+                    # # nor a server with player restriction
+                    # # nor a server that already started playing
+                    # if (not server.is_hidden() and 
+                    #     not server.has_begin() and 
+                    #     not server.is_restricted() and
+                    #     server.getType() == type
+                    #     ):
+                    #     server_to_join = server_id
+                    #     break
+                    print(server.expectedPlayers)
+                    print(server.is_expected(playerObject))
+                    if (server.getType() == type and 
+                        server.is_expected(playerObject)):
                         server_to_join = server_id
                         break
             except RuntimeError: # fuckin size changing again
@@ -59,15 +65,16 @@ class PongServer:
 
     @classmethod
     def matchMaking(cls, playerUsername, type="pong"):
-        print(cls.pongQueue, cls.apongQueue)
         if type == "pong" and playerUsername not in cls.pongQueue:
             cls.pongQueue.append(playerUsername)
             if len(cls.pongQueue) >= 2:
-                cls.new_game(type=type)
+                firstTwoPlayers = cls.pongQueue[:2]
+                cls.new_game(type=type, expectedPlayers=firstTwoPlayers)
         elif type == "apong" and playerUsername not in cls.apongQueue:
             cls.apongQueue.append(playerUsername)
             if len(cls.apongQueue) >= 2:
-                cls.new_game(type=type)
+                firstTwoPlayers = cls.apongQueue[:2]
+                cls.new_game(type=type, expectedPlayers=firstTwoPlayers)
         else:
             return False
 

@@ -32,61 +32,50 @@ export default function template(prop={}) {
 	// attach all event listeners here (or do anything that needs to be done AFTER attaching the html code)
 	let postrender = () => {
 		const matchmakingGame = async (type) => {
-			try {
-				disconnectUrl = `https://localhost:8000/api/match?type=${type}`
+			disconnectUrl = `https://localhost:8000/api/match?type=${type}`
 
-				const response = await fetchMod(`https://localhost:8000/api/match?type=${type}`, {
-					method: "GET"
-				})
-				if (!response.ok) {
-					throw response
-				}
+			const response = await fetchMod(`https://localhost:8000/api/match?type=${type}`, {
+				method: "GET"
+			})
 
-				if (response.status == 204) {
-					console.log('Dematching')
-					return
-				}
-
-				const data = await response.json()
-				const game_id = data.game_id
-
-				inMatchmaking = false
-				redirect_replace_history(`/match/${game_id}`)
-			} catch (e) {
-				if (e === 'redirected') {
-					// forget it
-					return
-				}
+			if (!response.ok) {
 				if (inMatchmaking) {
 					inMatchmaking = false
 					history.back()
+					return
 				}
 			}
+
+			if (response.status == 204) {
+				console.log('Dematching')
+				return
+			}
+
+			const data = await response.json()
+			const game_id = data.game_id
+
+			inMatchmaking = false
+			redirect_replace_history(`/match/${game_id}`)
 		}
 
 		const matchmakingTournament = async () => {
-			try {
-				const response = await fetchMod('https://localhost:8000/api/tournament', {
-					method: "GET"
-				})
-				if (!response.ok) {
-					throw response
-				}
-				const data = await response.json()
-				const tournamentID = data.tournament_id
+			const response = await fetchMod('https://localhost:8000/api/tournament', {
+				method: "GET"
+			})
 
-				inMatchmaking = false
-				redirect_replace_history(`/tournament/${tournamentID}`)
-			} catch (e) {
-				if (e === 'redirected') {
-					// forget it
-					return
-				}
+			if (!response.ok) {
 				if (inMatchmaking) {
 					inMatchmaking = false
 					history.back()
+					return
 				}
 			}
+
+			const data = await response.json()
+			const tournamentID = data.tournament_id
+
+			inMatchmaking = false
+			redirect_replace_history(`/tournament/${tournamentID}`)
 		}
 
 		switch (gameType) {

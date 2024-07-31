@@ -49,6 +49,8 @@ export default function template(prop = {}) {
 				} catch (response) {
 					if (response.status === 404) {
 						console.log('forget it')
+						profileData = undefined
+						profileMatchData = undefined
 					}
 				}
 			}

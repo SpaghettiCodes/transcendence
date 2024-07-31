@@ -58,7 +58,7 @@ class Game(ABC):
         return not len(self.players)
     
     def is_expected(self, user):
-        return user in self.players
+        return user in self.expectedPlayers
 
     def is_restricted(self):
         return len(self.expectedPlayers)
