@@ -29,5 +29,9 @@ Changes:
 	backend/src/database/models.py (might needa add more things: ExportModelOperationsMixin("dataset") on every model)
 	backend/src/requirements.txt
 	docker_compose.yml
+
 New files/folders:
 	prometheus/prometheus.yml
+
+To do:
+	- Create a grafana dashboard to visualize data
