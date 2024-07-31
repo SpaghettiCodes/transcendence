@@ -22,6 +22,7 @@
 	https://youtu.be/yrscZ-kGc_Y?si=w9VfaJg0vG6tiPiN
 	https://stackoverflow.com/questions/76919074/how-to-use-prometheus-to-monitor-all-containers-in-a-docker-compose
 	https://keepgrowing.in/tools/grafana-provisioning-how-to-configure-data-sources-and-dashboards/
+	https://signoz.io/guides/how-to-increase-prometheus-storage-retention/
 	https://community.grafana.com/t/trouble-with-loading-dashboards-and-datasources-into-grafana-in-docker-compose/53699
 
 
