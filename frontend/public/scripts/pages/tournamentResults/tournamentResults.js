@@ -15,37 +15,30 @@ export default function tournamentResult(prop={}) {
 			return false
 		}
 
-		try {
-			const response = await fetchMod("https://localhost:8000/api/me");
-			const data = await response.json()
-			console.log(data)
-			yourName = data.username
+		const response = await fetchMod("https://localhost:8000/api/me");
+		const data = await response.json()
+		console.log(data)
+		yourName = data.username
 
-			const resultResponse = await fetchMod(
-				`https://localhost:8000/api/tournament/${tournament_id}/result`,
-				{
-					method: "GET",
-				}
-			)
-			if (!resultResponse.ok) {
-				if (resultResponse.status === 404) {
-					redirect_without_history('/error')
-					return false
-				}
+		const resultResponse = await fetchMod(
+			`https://localhost:8000/api/tournament/${tournament_id}/result`,
+			{
+				method: "GET",
 			}
-			let resultData = await resultResponse.json()
-			console.log(resultData)
-			prop.data = {
-				result: resultData.result,
+		)
+		if (!resultResponse.ok) {
+			if (resultResponse.status === 404) {
+				redirect_without_history('/error')
+				return false
 			}
-
-			return true
-		} catch (error) {
-			console.log(error)
-			return false
 		}
-		return true // return true to continue to render_code
-		// return false to abort (usually used with redirect)
+		let resultData = await resultResponse.json()
+		console.log(resultData)
+		prop.data = {
+			result: resultData.result,
+		}
+
+		return true
 	}
 
 	// return the html code here
