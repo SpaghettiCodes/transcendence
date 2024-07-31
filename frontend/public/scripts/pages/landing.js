@@ -145,11 +145,13 @@ export default function landing(prop={}) {
 					setRefreshToken(result.data.refresh)
 					redirect('/home')
 				}
-			).catch((error) => {
+			).catch(async (error) => {
 				console.log(error)
 				if (error.status === 404) {
 				} else if (error.status === 409) {
 					showErrorMsg(errorMsgBoard, 'Player with that username already exist')
+				} else if (error.status === 400) {
+					showErrorMsg(errorMsgBoard, (await error.json())['error'])
 				}
 				signUpButton.disabled = false
 			})
