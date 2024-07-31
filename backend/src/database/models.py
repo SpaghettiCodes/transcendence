@@ -122,7 +122,7 @@ class Two_Factor_Authentication(models.Model):
         else:
             return False
     
-class Match(models.Model):
+class Match(ExportModelOperationsMixin("dataset"), models.Model):
     id = models.BigAutoField(primary_key=True)
     matchid = models.CharField(max_length=8, unique=True, null=True, blank=True)
     time_played = models.DateTimeField(auto_now_add=True)
@@ -201,7 +201,7 @@ class MatchResult(models.Model):
     def __str__(self) -> str:
         return f"{self.attacker.username} vs {self.defender.username}"
 
-class Tournament(models.Model):
+class Tournament(ExportModelOperationsMixin("dataset"), models.Model):
     id = models.BigAutoField(primary_key=True)
     tournamentid = models.CharField(max_length=8, unique=True)
     time_played = models.DateTimeField(auto_now_add=True)
@@ -244,7 +244,7 @@ class TournamentRound(models.Model):
         related_name="rounds"
     )
 
-class ChatRoom(models.Model):
+class ChatRoom(ExportModelOperationsMixin("dataset"), models.Model):
     roomid = models.BigAutoField(primary_key=True)
     owner = models.ForeignKey(
         Player,

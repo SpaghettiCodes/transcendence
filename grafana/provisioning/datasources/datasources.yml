@@ -5,6 +5,3 @@ datasources:
     type: prometheus
     access: proxy
     url: http://prometheus:9090
-
-# https://keepgrowing.in/tools/grafana-provisioning-how-to-configure-data-sources-and-dashboards/
-# https://community.grafana.com/t/trouble-with-loading-dashboards-and-datasources-into-grafana-in-docker-compose/53699
