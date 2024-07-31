@@ -153,7 +153,14 @@ export default function landing(prop={}) {
 				} else if (error.status === 409) {
 					showErrorMsg(errorMsgBoard, 'Player with that username already exist')
 				} else if (error.status === 400) {
-					showErrorMsg(errorMsgBoard, (await error.json())['error'])
+					let response = await error.json()
+					console.log(response)
+					let reason = response.reason
+					let { password, username } = reason
+					if (username) 
+						showErrorMsg(usernameError, username[0])
+					else if (password)
+						showErrorMsg(passwordError, password[0])
 				}
 				signUpButton.disabled = false
 			})

@@ -27,6 +27,13 @@ class PublicPlayerDetailsSerializer(serializers.ModelSerializer):
                 )
 
 class PlayerCreator(serializers.ModelSerializer):
+
+    def validate_username(self, username):
+        for character in username:
+            if character.isspace():
+                raise serializers.ValidationError('No whitespaces in username')
+        return username
+
     class Meta:
         model = Player
         fields = ('username', 'password')
