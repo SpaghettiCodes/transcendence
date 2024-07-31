@@ -44,6 +44,9 @@ class ViewBlocked(APIView):
         p_target = get_object_or_404(Player.objects, username=target_username)
         p_player = get_object_or_404(Player.objects, username=player_username)
 
+        if (p_player.has_blocked(p_target)):
+            return Response(status=status.HTTP_409_CONFLICT)
+
         p_player.block_player(p_target)
         return Response(status=status.HTTP_201_CREATED)
 

@@ -47,6 +47,9 @@ class Player(models.Model):
     def is_friends_with(self, player):
         return player in self.friends.all()
 
+    def has_blocked(self, target):
+        return target in self.blocked.all()
+
     def block_player(self, player):
         if not player in self.blocked.all():
             self.blocked.add(player)
