@@ -241,6 +241,7 @@ def chatPostingMessages(request: Request, chat_id):
 
     newMessage = ChatMessage(room=room, sender=sender, content=content)
     newMessage.save()
+
     if data['type'] == 'invite':
         newMessage.type = 2
         newMessage.save()

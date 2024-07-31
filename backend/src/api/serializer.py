@@ -179,6 +179,11 @@ class InviteMessageSerializer(serializers.ModelSerializer):
             ret['match'] = MatchSerializer(instance.match).data
         return ret
 
+class ChatMessageSaver(serializers.ModelSerializer):
+    class Meta:
+        model = ChatMessage
+        fields = ['room', 'type', 'sender', 'content']
+
 class ChatMessageSerializer(serializers.ModelSerializer):
     def __init__(self, playerObject, instance=None, **kwargs):
         super().__init__(instance, **kwargs)

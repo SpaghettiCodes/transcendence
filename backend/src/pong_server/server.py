@@ -48,6 +48,7 @@ class PongServer:
                     #     server_to_join = server_id
                     #     break
                     print(server.expectedPlayers)
+                    print(server.getType() == type)
                     print(server.is_expected(playerObject))
                     if (server.getType() == type and 
                         server.is_expected(playerObject)):

@@ -8,6 +8,10 @@ from rest_framework.views import APIView
 from pong_server.server import PongServer
 from rest_framework import status
 
+from asgiref.sync import async_to_sync
+import asyncio
+from time import sleep
+
 from datetime import datetime
 
 class MatchView(APIView):
@@ -55,7 +59,8 @@ class MatchView(APIView):
             server_id = PongServer.random_matchmake(userObject, type)
             if server_id is not None:
                 break
-
+            sleep(0.1) # here is a gamble
+            
         if (not PongServer.inMatchMaking(userObject, type)):
             return Response(status=status.HTTP_204_NO_CONTENT)
 
