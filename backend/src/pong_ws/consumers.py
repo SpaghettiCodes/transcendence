@@ -6,6 +6,8 @@ from backend.authentication import AuthenticateJWT
 
 from asgiref.sync import sync_to_async
 
+from rest_framework_simplejwt.exceptions import InvalidToken
+
 # note that a new consumer is made whenever a new connection is made
 # the name of the new websocket used is called `self.channel_name`
 
@@ -42,8 +44,16 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
         if content.get('command'):
             command = content['command']
             playerJWT = content['jwt']
-            validated_token = self.authenticator.get_validated_token(playerJWT)
-            self.playerObject = await sync_to_async(self.authenticator.get_user)(validated_token)
+            try:
+                validated_token = self.authenticator.get_validated_token(playerJWT)
+                self.playerObject = await sync_to_async(self.authenticator.get_user)(validated_token)
+            except InvalidToken as e:
+                print('n.g.')
+                print(e)
+                return self.close()
+            except Exception as e:
+                print(e)
+                return self.close()
 
             match command:
                 case 'join':

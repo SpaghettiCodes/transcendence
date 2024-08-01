@@ -2,6 +2,8 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from tournament_server.manager import TournamentManager
 
+from rest_framework_simplejwt.exceptions import InvalidToken
+
 from backend.authentication import AuthenticateJWT
 
 from asgiref.sync import sync_to_async
@@ -38,8 +40,15 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         match command:
             case "join":
                 playerJWT = content.get('jwt')
-                validated_token = self.authenticator.get_validated_token(playerJWT)
-                self.playerObject = await sync_to_async(self.authenticator.get_user)(validated_token)
+                try:
+                    validated_token = self.authenticator.get_validated_token(playerJWT)
+                    self.playerObject = await sync_to_async(self.authenticator.get_user)(validated_token)
+                except InvalidToken as e:
+                    print(e)
+                    return self.close()
+                except Exception as e:
+                    print(e)
+                    return self.close()
 
                 result, message, code = await TournamentManager.player_join(self.playerObject, self.tournament_id)
                 if result:

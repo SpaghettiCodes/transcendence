@@ -55,6 +55,12 @@ class ViewFriendRequest(APIView):
         p_receiver = get_object_or_404(Player.objects, username=player_username)
         p_sender = get_object_or_404(Player.objects, username=sender_username)
 
+        if p_sender.has_blocked(p_receiver):
+            return Response(
+                {'error': f"Unable to send friend request: You blocked {p_receiver.username}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         # check if already friends
         if (p_receiver.is_friends_with(p_sender)):
             return Response({
@@ -62,6 +68,10 @@ class ViewFriendRequest(APIView):
                 },
                 status=status.HTTP_409_CONFLICT
             )
+
+        # check if you are blocked
+        if (p_receiver.has_blocked(p_sender)):
+            return Response(status=status.HTTP_200_OK)
 
         # check if already has a request
         existingRequest = p_sender.friend_request_sender.all().filter(receiver=p_receiver)

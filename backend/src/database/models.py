@@ -127,6 +127,11 @@ class Friend_Request(models.Model):
     def decline(self):
         self.delete()
 
+    @classmethod
+    def removeAllFriendRequest(cls, player1, player2):
+        cls.objects.filter(sender=player1, receiver=player2).delete()
+        cls.objects.filter(sender=player2, receiver=player1).delete()
+
 class FourtyTwoAccount(models.Model):
     player = models.OneToOneField(Player, on_delete=models.CASCADE, related_name='fourty_two_account')
     intraID = models.CharField(max_length=50)

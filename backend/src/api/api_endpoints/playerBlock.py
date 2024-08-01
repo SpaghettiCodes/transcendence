@@ -7,7 +7,7 @@ from rest_framework import status
 
 from django.shortcuts import get_object_or_404
 
-from database.models import Player
+from database.models import Player, Friend_Request
 from ..serializer import PublicPlayerSerializer
 
 class ViewBlocked(APIView):
@@ -47,6 +47,7 @@ class ViewBlocked(APIView):
         if (p_player.has_blocked(p_target)):
             return Response(status=status.HTTP_409_CONFLICT)
 
+        Friend_Request.removeAllFriendRequest(p_player, p_target)
         p_player.block_player(p_target)
         return Response(status=status.HTTP_201_CREATED)
 
@@ -74,6 +75,7 @@ class ViewBlocked(APIView):
 
         p_target = get_object_or_404(Player.objects, username=target_username)
         p_player = get_object_or_404(Player.objects, username=player_username)
+
 
         p_player.unblock_player(p_target)
         return Response(status=status.HTTP_201_CREATED)

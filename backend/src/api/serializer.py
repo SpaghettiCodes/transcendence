@@ -33,7 +33,7 @@ class PlayerCreator(serializers.ModelSerializer):
             if character.isspace():
                 raise serializers.ValidationError('No whitespaces in username')
             if not character.isalnum():
-                if character is not '-' and character is not '_':
+                if character != '-' and character != '_':
                     raise serializers.ValidationError('No symbols in username, except for - and _')
         return username
 
