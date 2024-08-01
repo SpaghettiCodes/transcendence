@@ -87,7 +87,7 @@ class Game(ABC):
 
     # grace period for removing the server 
     # before we delete the entire game server
-    async def delayAndRemove(self, duration=3):
+    async def delayAndRemove(self, duration=1):
         startTime = datetime.now()
         totalDuration = duration
         durationLeft = totalDuration
