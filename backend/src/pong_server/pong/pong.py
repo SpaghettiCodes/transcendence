@@ -12,9 +12,11 @@ from ..base.game import Game
 from database.models import Match, Player, MatchResult
 from django.core.exceptions import ObjectDoesNotExist
 
+from api.serializer import PublicPlayerSerializer
+
 class PongGame(Game):
-    def __init__(self, gameid, removalFunction, subserver_id=None, hidden=False, expectedPlayers=[]) -> None:
-        super().__init__(gameid, removalFunction, subserver_id, hidden, expectedPlayers)
+    def __init__(self, gameid, removalFunction, hidden=False, expectedPlayers=[]) -> None:
+        super().__init__(gameid, removalFunction, hidden, expectedPlayers)
 
         if len(expectedPlayers):
             assert len(expectedPlayers) == 2, "Expected Players MUST HAVE THE LENGTH OF 2"
@@ -23,10 +25,10 @@ class PongGame(Game):
 
         self.field = GameFrame()
 
-        self.maxScore = 1 # PLEASE CHANGE LATER
+        self.maxScore = 2 # TODO: PLEASE CHANGE LATER
 
-        self.attackerid = None
-        self.defenderid = None
+        self.attackerObject = None
+        self.defenderObject = None
 
     def getWinner(self):
         winner, loser = self.field.getWinnerLoser()
@@ -51,19 +53,17 @@ class PongGame(Game):
 
         # determine who left and who right
         random.shuffle(self.expectedPlayers)
-        self.attackerid = self.expectedPlayers[0]
-        self.defenderid = self.expectedPlayers[1]
+        self.attackerObject = self.expectedPlayers[0]
+        self.defenderObject = self.expectedPlayers[1]
 
         self.resetField()
 
     def getDetails(self):
         return {
-            "players": self.players,
-            "spectators": self.spectator,
             "started": self.begin,
             "sides": {
-                "attacker": self.attackerid,
-                "defender": self.defenderid
+                "attacker": PublicPlayerSerializer(self.attackerObject).data,
+                "defender": PublicPlayerSerializer(self.defenderObject).data
             },
             "score": self.field.getJsonScore(),
             "settings": self.field.getDetails()
@@ -71,14 +71,14 @@ class PongGame(Game):
 
     def resetField(self):
         self.field.initialization()
-        self.field.setPlayers(self.attackerid, self.defenderid)
+        self.field.setPlayers(self.attackerObject, self.defenderObject)
 
     def command(self, json_info):
-        target = json_info['username']
+        target = json_info['player']
 
-        if target == self.attackerid:
+        if target == self.attackerObject:
             affected_paddle = self.field.getAttackerPaddle()
-        elif target == self.defenderid:
+        elif target == self.defenderObject:
             affected_paddle = self.field.getDefenderPaddle()
         else:
             return
@@ -94,9 +94,6 @@ class PongGame(Game):
 
     async def uploadMatchResults(self):
         matchObject = None
-        attacker = None
-        defender = None
-
         try:
             matchObject = await Match.objects.aget(matchid=self.gameid)
             matchObject.status = 2
@@ -105,13 +102,8 @@ class PongGame(Game):
             print("What, how")
             return
 
-        try:
-            attacker = await Player.objects.aget(username=self.attackerid)
-            defender = await Player.objects.aget(username=self.defenderid)
-        except ObjectDoesNotExist:
-            print("Player does not exist, who were we playing against, ghosts?")
-            await matchObject.adelete()
-            return
+        self.incrementGameCount(self.attackerObject)
+        self.incrementGameCount(self.defenderObject)
 
         attacker_score = int(self.field.attackerScore)
         defender_score = int(self.field.defenderScore)
@@ -119,17 +111,11 @@ class PongGame(Game):
         winner, loser = self.field.getWinnerLoser()
         if self.isForfeit():
             winner = self.getNotMissingPlayer()
-
-        if winner == self.attackerid:
-            winner = attacker
-            loser = defender
-        else:
-            winner = defender
-            loser = attacker
+            loser = self.getMissingPlayer()
 
         newResult = MatchResult(
-            attacker=attacker, 
-            defender=defender,
+            attacker=self.attackerObject, 
+            defender=self.defenderObject,
             attacker_score=attacker_score,
             defender_score=defender_score,
             winner=winner,
@@ -138,14 +124,21 @@ class PongGame(Game):
         )
 
         if self.isForfeit():
+            # forfeit overrides everything
             newResult.reason = 2
-        
-        if attacker_score == defender_score:
+        elif attacker_score == defender_score:
+            # draw
             newResult.reason = 3
+            # no one wins and no one loses i guess?
+        else:
+            self.incrementWinCount(winner)
+            self.incrementLostCount(loser)
 
         self.resultsUploadSuccessfully = True
-        await newResult.asave()
 
+        await self.attackerObject.asave()
+        await self.defenderObject.asave()
+        await newResult.asave()
 
     def initialState(self):
         from ..common.states.processPhysics import ProcessPhysics
@@ -157,3 +150,12 @@ class PongGame(Game):
         if not self.played:
             return
         print("Uploading Scores to Database...")
+
+    def incrementWinCount(self, playerObject):
+        playerObject.pong_matches_won += 1
+
+    def incrementGameCount(self, playerObject):
+        playerObject.pong_matches_played += 1
+
+    def incrementLostCount(self, playerObject):
+        playerObject.pong_matches_lost += 1

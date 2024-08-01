@@ -2,29 +2,95 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden;
+    display: flex;
+    justify-content: flex-start; /* Align items to the left */
+    align-items: flex-start; /* Align items to the top */
+    height: 100vh;
 }
 
-.friend-list {
+.list-section {
+	display: grid;
+	grid-template-rows: 2fr 1fr 1fr;
+    gap: 20px; /* Add gap between containers */
+    padding: 20px;
+}
+
+.list-container {
     background-color: darkgray; /* Slightly transparent background */
-	color: black;
+    color: black;
     border-radius: 5px;
     padding: 20px;
-	height: inherit;
-	overflow-y: auto;
+    overflow-y: auto;
+    flex: 1;
+    /* max-height: 300px; Set a maximum height for scrollable lists */
+}
+
+.profile-section {
+    flex-grow: 1;
+    padding: 20px;
 }
 
 .profile-details {
-	flex-grow: 3 !important;
+    flex-grow: 3 !important;
 }
 
-.friend-list-item {
+.friend-list-item, .blocked-list-item, .friend-request-list-item {
     background-color: #f8f9fa;
     margin-bottom: 10px;
     border-radius: 5px;
     padding: 10px;
-	direction: ltr;
+    direction: ltr;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.friend-list-item:hover {
+.friend-list-item:hover, .blocked-list-item:hover, .friend-request-list-item:hover {
     background-color: #e9ecef;
+}
+
+.input-group {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.input-group input {
+    flex: 1;
+    margin-right: 5px;
+}
+
+.input-group button {
+    flex-shrink: 0;
+}
+
+.blocked-list-item, .friend-request-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f8f9fa;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    padding: 10px;
+    direction: ltr;
+}
+
+.blocked-list-item button, .friend-request-list-item button {
+    margin-left: 10px; /* Add some space between the username and the button */
+}
+
+.friend-request-list-item .button-container {
+    display: flex;
+    gap: 0px; /* Add space between the buttons */
+    justify-content: flex-end;
+    align-items: center;
+    flex-shrink: 0; /* Prevent the container from shrinking */
+}
+
+.scrollable {
+    /* max-height: 250px; Set a maximum height for the scrollable area */
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.stretch-height-fit {
+	height: 100%;
 }

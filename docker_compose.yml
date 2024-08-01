@@ -1,19 +1,27 @@
 services:
+  # frontend:
+  #   image: "node:21"
+  #   user: "node"
+  #   working_dir: "/home/node/app"
+  #   volumes:
+  #     - ./frontend:/home/node/app
+  #   ports: 
+  #     - "8080:8080"
+  #   networks:
+  #     - frontend_net
+  #   depends_on:
+  #     - backend
+  #   env_file:
+  #     - .env
+  #   entrypoint: ["./node_modules/.bin/http-server", "--proxy", "https://localhost:8080?"]
+
   frontend:
-    image: "node:21"
-    user: "node"
-    working_dir: "/home/node/app"
+    build: "./frontend"
     volumes:
-      - ./frontend:/home/node/app
-    ports: 
-      - "8080:8080"
-    networks:
-      - frontend_net
-    depends_on:
-      - backend
-    env_file:
-      - .env
-    entrypoint: ["./node_modules/.bin/http-server", "--proxy", "http://localhost:8080?"]
+      - ./frontend/public:/public
+      - ./sslcert:/sslcert
+    ports:
+      - "443:443"
 
   backend:
     build: "./backend"
@@ -26,10 +34,9 @@ services:
     working_dir: "/app"
     volumes:
       - ./backend/src:/app
+      - ./sslcert:/sslcert
     ports:
-      - "8000:8000"
-    expose:
-      - "8000"
+      - "8000:443"
     env_file:
       - .env
 

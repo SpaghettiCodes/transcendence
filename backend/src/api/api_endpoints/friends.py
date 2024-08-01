@@ -26,6 +26,11 @@ class ViewFriends(APIView):
 
     # remove friend
     def delete(self, request: Request, player_username, format=None):
+        requester_username = request.user.username
+        # dont go breaking friendships
+        if (player_username != requester_username):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
         try:
             target_username = request.data.get('target')
         except FieldDoesNotExist:
@@ -51,8 +56,14 @@ def getDirectMessageChatRoom(request: Request, player_username, player2_username
     if player_username == player2_username:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
+    sender = request.user
+
     p1 = get_object_or_404(Player, username=player_username)
     p2 = get_object_or_404(Player, username=player2_username)
+
+    if (sender != p1 and sender != p2):
+        # nope, not giving it to you
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
     memberSet = [p1, p2]
     chatrooms = ChatRoom.objects.annotate(

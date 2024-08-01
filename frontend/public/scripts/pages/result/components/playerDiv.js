@@ -8,6 +8,24 @@
 */
 import { redirect } from "../../../router.js"
 
+export let playerViewProfileButtonID = (playername) => {
+	return `${playername}-viewProfile`
+}
+
+export let playerDetailsGenerator = (playerDetails, callerUsername='') => {
+	let { username, profile_pic } = playerDetails
+
+	return `
+	<div class='d-flex flex-column flex-grow-1' id="${username}-details">
+		<div class='detailsDiv d-flex justify-content-center align-items-center my-5'>
+			<div class='usernameDiv text-center px-5' id='name'>${username}</div>
+			<img src="https://localhost:8000/api${profile_pic}" class='profilePic rounded'>
+		</div>
+		${(username === callerUsername)? '' : `<button class='resultBtn rounded' id="${playerViewProfileButtonID(username)}">View Profile</button>`}
+	</div>
+	`
+}
+
 export default class playerDetailsDiv {
 	constructor () {
 		this.mainDiv = document.createElement('div')
@@ -35,7 +53,7 @@ export default class playerDetailsDiv {
 	setData = (data, callerUsername) => {
 		let { username, profile_pic } = data
 		this.usernameDiv.innerText = username
-		this.profilePic.style.backgroundImage = `url(http://localhost:8000/api${profile_pic})`
+		this.profilePic.style.backgroundImage = `url(https://localhost:8000/api${profile_pic})`
 
 		if (username !== callerUsername) {
 			let profileButton = document.createElement('button')

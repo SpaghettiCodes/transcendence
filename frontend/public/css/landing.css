@@ -1,8 +1,50 @@
-.lowered {
-    margin-top: 100px; 
-}
- 
 .header-font {
     font-size: 8rem;
     font-family: 'Bungee Inline', cursive;
+}
+
+.landing-ui-var {
+	--font-weight: 600;
+	--font-family: Menlo,Roboto Mono,monospace;
+	--font-size: 25px;
+	--shadow-color: rgb(0, 255, 255);
+	--shadow: 0 2px 10px 0 var(--shadow-color);
+}
+
+.landingPageMain .landing-ui-var.input {
+	background-color: transparent;
+	color: white;
+	font: var(--font-size) var(--font-family);
+	box-shadow: var(--shadow);
+}
+
+.landingPageMain .landing-ui-var.errorMsg {
+	grid-column: 2;
+	font-family: var(--font-family);
+}
+
+.landingPageMain .landing-ui-var.inputText {
+	font: var(--font-weight) var(--font-size) var(--font-family);
+	text-align: left;
+	padding-right: 25px;
+}
+
+.landingPageMain .input-fields {
+	display: grid;
+	grid-template-columns: 1fr 4fr;
+}
+
+.landingPageMain .ui-btn {
+	--btn-width: 100%;
+    --btn-padding: 10px 30px;
+    --btn-height: 50px;
+}
+
+.landingPageMain .ui-btn:disabled {
+	cursor: default;
+    box-shadow: 0px 0px 10px 0px var(--hover-btn-color);
+}
+
+.errorBoard {
+	font-family: var(--font-family);
 }

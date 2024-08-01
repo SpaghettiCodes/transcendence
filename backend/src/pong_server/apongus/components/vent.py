@@ -3,12 +3,15 @@ from ...base.component import Component
 from ...common.components.ball import Ball
 
 class Vent(Component):
-    def __init__(self, exit: Vent, width, initial_x=0, initial_y=0) -> None:
+    def __init__(self, exit: Vent, width, height, initial_x=0, initial_y=0) -> None:
         super().__init__(initial_x, initial_y)
         self.exit = exit
         self.width = width
+        self.height = height
         self.teleportOut = []
         self.teleportIn = []
+
+        self.ventEffect = 0.1 # TODO: change this to a appropriate value
 
     def setExit(self, exit: Vent):
         self.exit = exit
@@ -29,21 +32,27 @@ class Vent(Component):
 
         if (ball_x - ball_radius >= self.x and 
             ball_x + ball_radius <= self.x + self.width and
-            ball_y - ball_radius <= self.y and
-            ball_y + ball_radius >= self.y):
+            ball_y - ball_radius <= self.y + (self.height / 2) and
+            ball_y + ball_radius >= self.y + (self.height / 2)):
             # within the boundary
             if (
                 ball not in self.teleportIn and
                 ball not in self.teleportOut
                 ):
-                self.setTeleportIn(ball)
+                vent_x, vent_y = self.exit.get_coord()
+                vent_y_height = self.exit.height / 2
+                d_from_left_corner = ball_x - self.x
+                ball.set_coord(vent_x + d_from_left_corner, vent_y + vent_y_height)
+                # having all the balls at a constant color makes it trivially easy
+                ball.swapToAnotherColor()
+                self.exit.teleportOut.append(ball)
 
-        elif (ball in self.teleportIn):
-            vent_x, vent_y = self.exit.get_coord()
-            d_from_left_corner = ball_x - self.x
-            ball.set_coord(vent_x + d_from_left_corner, vent_y)
-            self.exit.setTeleportOut(ball)
-            self.teleportIn.remove(ball)
+                x_velo, y_velo = ball.get_velocity()
+
+                affect_velo = -1 if x_velo < 0 else 1
+                print(ball.get_velocity())
+                ball.set_velocity(x_velo + affect_velo * self.ventEffect, y_velo)
+                print(ball.get_velocity())
 
         elif (ball in self.teleportOut):
             self.teleportOut.remove(ball)

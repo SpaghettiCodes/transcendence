@@ -17,20 +17,22 @@ class TournamentView(APIView):
     parser_classes = [JSONParser]
     renderer_classes = [JSONRenderer]
 
-    # new match
-    def post(self, request: Request, format = None):
-        server_id = TournamentManager.new_tournament()
+    # # new match
+    # def post(self, request: Request, format = None):
+    #     server_id = TournamentManager.new_tournament()
 
-        if server_id == None:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    #     if server_id == None:
+    #         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-        return Response({
-            "tournament_id": server_id
-        }, status=status.HTTP_201_CREATED)
+    #     return Response({
+    #         "tournament_id": server_id
+    #     }, status=status.HTTP_201_CREATED)
 
     # random matchmaking
     def get(self, request: Request, format = None):
-        server_id = TournamentManager.randomMatchmake()
+        user = request.user
+
+        server_id = TournamentManager.randomMatchmake(user)
 
         return Response({
             "tournament_id": server_id

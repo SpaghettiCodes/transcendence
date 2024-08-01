@@ -18,8 +18,18 @@ class GameFrame:
         self.ballSpeed = 350
         self.ball = Ball(radius=self.ballRadius, speed=self.ballSpeed)
 
-        self.paddleWidth = 10
-        self.paddleHeight = 75
+        # try to maintain a 493 w and 590 h 
+        # ie around 2/3
+        # so the image doesnt look like shit
+
+        # self.paddleWidth = 80
+        # self.paddleHeight = 120
+
+        # k nvm, looks like ass
+        self.paddleWidth = 30
+        self.paddleHeight = 110
+        # self.paddleHeight = self.height
+
         self.paddleOffset = 20
         self.paddleSpeed = 450
 
@@ -30,8 +40,13 @@ class GameFrame:
 
         self.attackerGoal = scoreFrame(0, 0, width=self.goalWidth, height=self.height)
         self.defenderGoal = scoreFrame(self.width - self.goalWidth, 0, width=self.goalWidth, height=self.height)
-        self.attackerId = None
-        self.defenderId = None
+
+        # TODO: REMEMBER TO CHANGE LATER
+        # self.attackerGoal = scoreFrame(-5, 0, width=self.goalWidth, height=self.height)
+        # self.defenderGoal = scoreFrame(-5, 0, width=self.goalWidth, height=self.height)
+
+        self.attackerObject = None
+        self.defenderObject = None
 
         self.attackerScore = 0
         self.defenderScore = 0
@@ -51,8 +66,8 @@ class GameFrame:
 
     def getWinnerLoser(self):
         if self.attackerScore > self.defenderScore:
-            return (self.attackerId, self.defenderId)
-        return (self.defenderId, self.attackerId)
+            return (self.attackerObject, self.defenderObject)
+        return (self.defenderObject, self.attackerObject)
 
     def getMaxScore(self):
         return max(self.attackerScore, self.defenderScore)
@@ -84,10 +99,10 @@ class GameFrame:
     def checkGoal(self):
         if self.attackerGoal.ball_within_boundary(self.ball):
             self.defenderScore += 1
-            return (True, self.defenderId)
+            return (True, self.defenderObject)
         elif self.defenderGoal.ball_within_boundary(self.ball):
             self.attackerScore += 1
-            return (True, self.attackerId)
+            return (True, self.attackerObject)
         return (False, "No one scored")
     
     def ball_collided_with_wall(self, ball):
@@ -131,11 +146,9 @@ class GameFrame:
             "status": "update",
             "balls": [ball_cord],
             "attacker": {
-                "id": self.attackerId,
                 **attacker_cord
             },
             "defender": {
-                "id": self.defenderId,
                 **defender_cord
             }
         }
@@ -147,6 +160,6 @@ class GameFrame:
         self.ball.set_coord(self.width / 2, self.height / 2)
         self.ball.random_velocity()
 
-    def setPlayers(self, attackerId, defenderId):
-        self.attackerId = attackerId
-        self.defenderId = defenderId
+    def setPlayers(self, attackerObject, defenderObject):
+        self.attackerObject = attackerObject
+        self.defenderObject = defenderObject

@@ -5,7 +5,7 @@ export default class messageDiv {
 		this.mainDiv = document.createElement("div")
 		this.mainDiv.setAttribute('class', 'messageBox rounded')
 
-		this.ImageHolder = document.createElement("div")
+		this.ImageHolder = document.createElement("img")
 		this.ImageHolder.setAttribute("class", "ImageHolder")
 		this.mainDiv.appendChild(this.ImageHolder)
 
@@ -32,7 +32,13 @@ export default class messageDiv {
 			
 			this.content.appendChild(this.inviteContent)
 			this.content.appendChild(this.statusButton)
-		} else {
+		} else if (type === 'blocked') {
+			this.messageContent = document.createElement('div')
+			this.messageContent.setAttribute('class', 'messageContent text-break')
+
+			this.content.appendChild(this.messageContent)
+		}
+		else {
 			console.error("unkown type for message div")
 		}
 
@@ -45,6 +51,8 @@ export default class messageDiv {
 
 	setData = (data) => {
 		let authorID = data['sender']['username']
+		let imageURL = `https://localhost:8000/api${data['sender']['profile_pic']}`
+		this.ImageHolder.src = imageURL
 
 		if (this.type === 'message') {
 			let messageContent = data['content']
@@ -66,6 +74,11 @@ export default class messageDiv {
 
 			this.inviteContent.innerText = message
 			messageDiv.setPlayButtonStatus(this.inviteContent, this.statusButton, status, matchID)
+		} else if (this.type === 'blocked') {
+			this.ImageHolder.remove()
+			let messageContent = data['content']
+			this.messageContent.innerText = messageContent
+			this.messageContent.style.fontWeight = 'bolder'
 		}
 	}
 

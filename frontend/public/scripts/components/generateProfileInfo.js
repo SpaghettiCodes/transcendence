@@ -1,13 +1,16 @@
 export function generateProfileInfo(profile) {
-    return `
-        <div class="profile-info">
-            <img src="${profile.image}" alt="Profile Picture" class="profile-pic">
-            <h2 class="mt-3">${profile.username}</h2>
-            <div class="game-stats">
-                <p>Games Played: ${profile.gamesPlayed}</p>
-                <p>Games Won: ${profile.gamesWon}</p>
-                <p>Win/Lost Ratio: ${profile.winLostRatio}</p>
-            </div>
-        </div>
+	console.log(profile)
+
+	let winLostRatio = undefined
+	if (profile.matches_played)
+		winLostRatio = profile.matches_won / profile.matches_played
+	else
+		winLostRatio = 'Cant be calculated yet'
+
+	let imageSrc = `https://localhost:8000${profile.profile_pic}`
+
+	return `
+		<h2 class="mt-3">${profile.username}</h2>
+		<img src="${imageSrc}" alt="Profile Picture" class="profile-pic" id="pfp">
     `;
 }

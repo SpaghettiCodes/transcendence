@@ -33,7 +33,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,12 +45,10 @@ INSTALLED_APPS = [
 	'rest_framework_simplejwt',
     'corsheaders',
     'pong_ws',
-    'pongList_ws',
     'chat_ws',
     'tournament_ws',
-    'tournamentList_ws',
+    'player_ws',
 	"django_prometheus",
-    # 'drf_spectacular',
 ]
 
 SPECTACULAR_SETTINGS = {
@@ -72,8 +69,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+	'backend.middleware.AuthenticateJWTMiddleware',
 	"django_prometheus.middleware.PrometheusAfterMiddleware",
-	# 'backend.middleware.AuthenticateJWTMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -182,6 +179,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -192,17 +190,18 @@ DEFAULT_IMAGE_PATH = "media/firefly.png"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# plz change later
+# TODO: plz change later
 CORS_ORIGIN_ALLOW_ALL = True
 ALLOWED_HOSTS = ('*', )
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8080',
+    'https://localhost',
 ]
 
 # email stuff
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ['SENDER_MAIL']
 EMAIL_HOST_PASSWORD = os.environ['SENDER_PASSWORD']

@@ -1,11 +1,12 @@
 from ...base.state import State
 from .countDown import CountDown
 from datetime import datetime
-from .endGame import endGame
+from .saveGameData import saveGameData
 from math import ceil
 
 class PlayerLeft(State):
-    def __init__(self, previousState, gameInstance, duration=100) -> None:
+    # TODO: Change the wait timing to something else more suitable
+    def __init__(self, previousState, gameInstance, duration=10) -> None:
         super().__init__(gameInstance)
         self.paused = True
         self.killTheGame = False
@@ -30,7 +31,7 @@ class PlayerLeft(State):
     def nextState(self):
         if self.killTheGame:
             self.gameInstance.setForfeit()
-            return endGame(self.gameInstance)
+            return saveGameData(self.gameInstance)
         return CountDown(self.previousState, 3, self.gameInstance)
 
     def getData(self):

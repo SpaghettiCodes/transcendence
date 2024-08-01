@@ -11,14 +11,66 @@ class PublicPlayerSerializer(serializers.ModelSerializer):
 class PublicPlayerDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = ('username', 'profile_pic', 'is_active', 'matches_played', 'matches_won', 'matches_lost')
+        fields = (
+                    'username', 
+                    'profile_pic', 
+                    'is_active', 
+                    'pong_matches_played',
+                    'pong_matches_won',
+                    'pong_matches_lost',
+                    'apong_matches_played',
+                    'apong_matches_won',
+                    'apong_matches_lost',
+                    'tournament_played',
+                    'tournament_won',
+                    'tournament_lost',
+                )
+
+class PlayerCreator(serializers.ModelSerializer):
+
+    def validate_username(self, username):
+        for character in username:
+            if character.isspace():
+                raise serializers.ValidationError('No whitespaces in username')
+            if not character.isalnum():
+                if character != '-' and character != '_':
+                    raise serializers.ValidationError('No symbols in username, except for - and _')
+        return username
+
+    class Meta:
+        model = Player
+        fields = ('username', 'password')
+
+class ModifiableFieldsPlayer(serializers.ModelSerializer):
+    class Meta:
+        model = Player
+        fields = (
+                    'password',
+                    'email',
+                    'profile_pic',
+                )
 
 class PlayerSerializer(serializers.ModelSerializer):
     friends = serializers.SlugRelatedField(queryset=Player, many=True, slug_field='username')
 
     class Meta:
         model = Player
-        fields = ('username', 'email', 'profile_pic', 'is_active', 'matches_played', 'matches_won', 'matches_lost', 'friends')
+        fields = (
+                    'username', 
+                    'email',
+                    'profile_pic', 
+                    'is_active', 
+                    'pong_matches_played',
+                    'pong_matches_won',
+                    'pong_matches_lost',
+                    'apong_matches_played',
+                    'apong_matches_won',
+                    'apong_matches_lost',
+                    'tournament_played',
+                    'tournament_won',
+                    'tournament_lost',
+                    'friends'
+                )
 
 class FriendRequestSerializer(serializers.ModelSerializer):
     sender = serializers.SlugRelatedField(queryset=Player, slug_field='username')
@@ -74,7 +126,7 @@ class TournamentRoundSerializer(serializers.ModelSerializer):
 
 class TournamentResultSerializer(serializers.ModelSerializer):
     winner = PublicPlayerSerializer()
-    players = serializers.SlugRelatedField(queryset=Player, many=True, slug_field='username')
+    players = PublicPlayerSerializer(many=True)
     rounds = TournamentRoundSerializer(many=True)
 
     class Meta:
@@ -136,6 +188,11 @@ class InviteMessageSerializer(serializers.ModelSerializer):
         if ret['status'] != 'expired':
             ret['match'] = MatchSerializer(instance.match).data
         return ret
+
+class ChatMessageSaver(serializers.ModelSerializer):
+    class Meta:
+        model = ChatMessage
+        fields = ['room', 'type', 'sender', 'content']
 
 class ChatMessageSerializer(serializers.ModelSerializer):
     def __init__(self, playerObject, instance=None, **kwargs):

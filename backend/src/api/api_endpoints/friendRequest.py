@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 from database.models import Player, Friend_Request
-from ..serializer import PlayerSerializer, FriendRequestSerializer
+from ..serializer import FriendRequestSerializer
 
 from django.core.exceptions import FieldDoesNotExist
 from django.core.files.images import ImageFile
@@ -18,6 +18,11 @@ class ViewFriendRequest(APIView):
 
     # list received and sent friend request
     def get(self, request, player_username, format=None):
+        requester_username = request.user.username
+        if (player_username != requester_username):
+            # no snooping
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
         data = request.data
         user = get_object_or_404(Player, username=player_username)
 
@@ -36,26 +41,53 @@ class ViewFriendRequest(APIView):
 
         if sender_username is None:
             return Response(
-                {"error": "target username not given"},
+                {"error": "Target username not given"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         if player_username == sender_username:
             # y u try to be friends with urself
             return Response(
-                {"error": "you are already friends with yourself"},
+                {"error": "You are already friends with yourself"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         p_receiver = get_object_or_404(Player.objects, username=player_username)
         p_sender = get_object_or_404(Player.objects, username=sender_username)
 
+        if p_sender.has_blocked(p_receiver):
+            return Response(
+                {'error': f"Unable to send friend request: You blocked {p_receiver.username}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # check if already friends
+        if (p_receiver.is_friends_with(p_sender)):
+            return Response({
+                    'error': f"You are already friends with {p_receiver.username}"
+                },
+                status=status.HTTP_409_CONFLICT
+            )
+
+        # check if you are blocked
+        if (p_receiver.has_blocked(p_sender)):
+            return Response(status=status.HTTP_200_OK)
+
+        # check if already has a request
+        existingRequest = p_sender.friend_request_sender.all().filter(receiver=p_receiver)
+        if (existingRequest.exists()):
+            return Response({
+                    'error': f"Friend request already sent!"
+                },
+                status=status.HTTP_409_CONFLICT
+            )
+
         # check if receiver once sent a friend req to 
         existingFriendRequest = p_sender.friend_request_receiver.all().filter(sender=p_receiver)
         if existingFriendRequest.exists():
             existingFriendRequest = existingFriendRequest.get()
             existingFriendRequest.accept()
-            return Response(status=status.HTTP_202_ACCEPTED)
+            return Response(status=status.HTTP_201_CREATED)
 
         newFriendRequest = Friend_Request.objects.create(
             sender=p_sender,
@@ -69,7 +101,7 @@ class ViewFriendRequest(APIView):
             sender_username = request.data.get('sender')
         except FieldDoesNotExist:
             return Response(
-                {"error": "sender username not give"},
+                {"error": "Sender username not given"},
                 status=status.HTTP_400_BAD_REQUEST
             )
  

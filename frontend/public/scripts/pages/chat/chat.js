@@ -4,13 +4,57 @@ import errorDiv from "./components/errorDiv.js"
 import endOfChatDiv from "./components/endOfChatDiv.js"
 
 import { createButton, createInput } from "../../components/elements.js"
+import { fetchMod } from "../../jwt.js"
+import generateUserTabs from "../../components/userTab.js"
+import { generateBlockedTab } from "../../components/userTab.js"
 
 export default function chat(prop={}) {
-	let websocket = undefined
-	let resizeHandler = undefined
+	let		websocket = undefined
+	let		resizeHandler = undefined
+	let		yourName = undefined
+	const	urlParams = new URLSearchParams(window.location.search)
+	let		currentlyVisiting = urlParams.get('friend')
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
-	let prerender = () => {
+	let prerender = async () => {
+		const me_response = await fetchMod(`https://localhost:8000/api/me`)
+		if (!me_response.ok) {
+			console.log(me_response)
+			history.back()
+			return false
+		}
+		let value = await me_response.json()
+		yourName = value.username
+
+		const response = await fetchMod(
+			`https://localhost:8000/api/player/${yourName}/friends`,
+			{
+				method: "GET",
+			}
+		)
+		if (!response.ok) {
+			console.log(me_response)
+			history.back()
+			return false
+		}
+
+		value = await response.json()
+		prop.friendList = value
+
+		const blockedResponse = await fetchMod(
+			`https://localhost:8000/api/player/${yourName}/blocked`,
+			{
+				method: "GET",
+			}
+		)
+		if (!blockedResponse.ok) {
+			console.log(me_response)
+			history.back()
+			return false
+		}
+
+		value = await blockedResponse.json()
+		prop.blockList = value
 		return true // return true to continue to render_code
 		// return false to abort (usually used with redirect)
 	}
@@ -20,11 +64,11 @@ export default function chat(prop={}) {
 		return `
 		<h1 class="title">SMS</h1>
 		<div class="d-flex flex-grow-1 align-self-stretch overflow-hidden" id='contentDiv'>
-			<div class="d-flex flex-column friend-list p-2">
+			<div class="d-flex flex-column friend-list p-3">
 				<h4>Colleagues</h4>
 				<div class="input-group mb-3">
-					${createInput("form-control rounded", "search", "search", "Colleaguess' ID")}
-					${createButton('Search', 'btn btn-dark', 'button')}
+					${createInput("form-control rounded", "search", "search", "search", "Colleaguess' ID")}
+					${createButton('btn btn-dark', 'button', 'Search', 'searchButton')}
 				</div>
 				<div dir="rtl" class="d-flex flex-column flex-grow-1 overflow-y-auto" style="padding-left:5px;" id="friend-list-items">
 				</div>
@@ -36,16 +80,14 @@ export default function chat(prop={}) {
 					<div class="d-flex flex-row text-input-box">
 						<textarea class="form-control" rows="1" placeholder="Type your message here..." id="dataEnter"></textarea>
 						<button type="button" class="btn btn-dark mx-2 disabled" id="sendMessageButton">Send</button>
-						<button type="button" class="btn btn-dark d-flex disabled" id="inviteForMatchButton">
-							<div class='px-2'>
-								Invite
-							</div>
+						<button type="button" class="btn btn-dark d-flex disabled gap-3" id="inviteForMatchButton">
+							Invite
 							<select class='rounded bg-black border-black text-white' id="inviteForMatchType">
 								<option value="pong">Pong</option>
 								<option value="apong">APong Us</option>
 							</select>
 						</button>
-						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -54,13 +96,6 @@ export default function chat(prop={}) {
 
 	// attach all event listeners here (or do anything that needs to be done AFTER attaching the html code)
 	let postrender = () => {
-		// temp
-		const username = localStorage.getItem('username')
-		// PLEASE CHANGE LATER, WE ARE NOT SAVING USERNAME IN LOCAL STORAGE
-		// or maybe we are, idk
-
-		console.log('Username =', username)
-
 		const friendList = document.getElementById("friend-list-items")
 		const chatContentField = document.getElementById("chatContentField")
 		const sendMessageButton = document.getElementById('sendMessageButton')
@@ -74,37 +109,29 @@ export default function chat(prop={}) {
 		let gotAllMessages = false
 
 		let loadingNewChatroom = false
-		// <div class="friend-list-item">
-		// 	Friend 1
-		// </div>
 
-		const getFriendList = () => {
-			fetch(
-				`http://localhost:8000/api/player/${username}/friends`,
-				{
-					method: "GET",
-				}
-			).then((value) => {
-				if (!value.ok)
-					throw value
-				return value.json()
-			}).then(
-				(data) => {
-					for (let friend of data) {
-						let newFriendDiv = document.createElement("div")
-						let friendUsername = friend['username']
-						newFriendDiv.setAttribute('class', 'friend-list-item')
-
-						newFriendDiv.innerText = friendUsername
-						newFriendDiv.onclick = async () => {
-							await connectToNewChatroom(username, friendUsername)
-							newFriendDiv.setAttribute('id', 'friendMsgActivated')
-						}
-						friendList.append(newFriendDiv)
-					}
-				}
-			).catch((value) => console.error(value))
+		const generateUserTabFunctions = (friendData) => {
+			let { username } = friendData
+			return (element) => async () => {
+				await connectToNewChatroom(yourName, username)
+				element.setAttribute('id', 'friendMsgActivated')
+			}
 		}
+
+		let friendTabs = generateUserTabs(prop.friendList, generateUserTabFunctions)
+		if (friendTabs.length) {
+			for (let friendTab of friendTabs) {
+				if (prop.blockList.find((playerData) => playerData.username === friendTab.playerAssociated)) {
+					let blockedUsername = friendTab.playerAssociated
+					console.log(blockedUsername)
+					friendList.appendChild(generateBlockedTab(blockedUsername, generateUserTabFunctions({username: blockedUsername})))
+					
+				} else {
+					friendList.appendChild(friendTab)
+				}
+			}
+		}
+		
 
 		const connectToNewChatroom = async (player_username, target_username) => {
 			if (!loadingNewChatroom) {
@@ -115,12 +142,15 @@ export default function chat(prop={}) {
 				sendMessageButton.classList.add('disabled')
 				sendInviteButton.classList.add('disabled')
 
-				let chatID = await getChatRoomData(`http://localhost:8000/api/player/${player_username}/chat/${target_username}`)
-				connectToWebsocket(`ws://localhost:8000/chat/${chatID}`)
+				let chatID = await getChatRoomData(`https://localhost:8000/api/player/${player_username}/chat/${target_username}`)
+				if (chatID) {
+					connectToWebsocket(`wss://localhost:8000/chat/${chatID}`)
 
-				// reenable sending message
-				sendMessageButton.classList.remove('disabled')
-				sendInviteButton.classList.remove('disabled')
+					urlParams.set('friend', target_username)
+					// reenable sending message
+					sendMessageButton.classList.remove('disabled')
+					sendInviteButton.classList.remove('disabled')
+				}
 			}
 		}
 
@@ -128,83 +158,73 @@ export default function chat(prop={}) {
 			let url = undefined
 			let didWeGetAllMessagesBefore = gotAllMessages
 			if (lastMSGID === undefined)
-				url = `http://localhost:8000/api/chat/${chatID}/history?user=${username}` // IMPORTANT, CHANGE, WE ARE NOT PUTTING USERNAME IN QUERY STRINGS
+				url = `https://localhost:8000/api/chat/${chatID}/history`
 			else
-				url = `http://localhost:8000/api/chat/${chatID}/history?start_id=${lastMSGID}&user=${username}`
+				url = `https://localhost:8000/api/chat/${chatID}/history?start_id=${lastMSGID}`
 
-			try {
-				const response = await fetch(url)
+			const response = await fetchMod(url)
 
-				if (!response.ok)
-					throw response
+			if (!response.ok)
+				return -1
 
-				const data = await response.json()
+			const data = await response.json()
 
-				const messageList = data["history"]
-				const haveMore =  data["haveMore"]
+			const messageList = data["history"]
+			const haveMore =  data["haveMore"]
 
-				if (resetChat) {
-					resetChatContent()
-				}
-
-				if (!messageList.length) {
-					gotAllMessages = true
-					if (!didWeGetAllMessagesBefore && gotAllMessages) {
-						let newEOFdiv = new endOfChatDiv()
-						chatContentField.append(newEOFdiv.mainDiv)
-					}
-					return 0
-				}
-
-				lastMSGID = messageList.at(-1)["chatid"]
-				messageList.forEach((pastMessage) => {
-					let type = pastMessage["type"]
-					let messageBlock = new messageDiv(type)
-					messageBlock.setData(pastMessage)
-					chatContentField.append(messageBlock.mainDiv)
-				})
-
-				if (!haveMore) {
-					gotAllMessages = true
-					if (!didWeGetAllMessagesBefore && gotAllMessages) {
-						let newEOFdiv = new endOfChatDiv()
-						chatContentField.append(newEOFdiv.mainDiv)
-					}
-				}
-
-				return messageList.length
-			} catch (e) {
-				console.log(e)
+			if (resetChat) {
+				resetChatContent()
 			}
-			return -1
+
+			if (!messageList.length) {
+				gotAllMessages = true
+				if (!didWeGetAllMessagesBefore && gotAllMessages) {
+					let newEOFdiv = new endOfChatDiv()
+					chatContentField.append(newEOFdiv.mainDiv)
+				}
+				return 0
+			}
+
+			lastMSGID = messageList.at(-1)["chatid"]
+			messageList.forEach((pastMessage) => {
+				let type = pastMessage["type"]
+				let messageBlock = new messageDiv(type)
+				messageBlock.setData(pastMessage)
+				chatContentField.append(messageBlock.mainDiv)
+			})
+
+			if (!haveMore) {
+				gotAllMessages = true
+				if (!didWeGetAllMessagesBefore && gotAllMessages) {
+					let newEOFdiv = new endOfChatDiv()
+					chatContentField.append(newEOFdiv.mainDiv)
+				}
+			}
+
+			return messageList.length
 		}
 
 		const getChatRoomData = async (url) => {
-			try {
-				let results = await fetch(
-					url, {
-						method: "GET",
-					}
-				)
-
-				if (!results.ok) {
-					throw results
+			let results = await fetchMod(
+				url, {
+					method: "GET",
 				}
+			)
 
-				let data = await results.json()
-				let roomid = data['roomid']
-
-				currentlyViewingChatID = roomid
-
-				let messageGotten = await getPreviousMessages(roomid, true)
-				while (chatContentField.clientHeight >= chatContentField.scrollHeight && messageGotten) {
-					messageGotten = await getPreviousMessages(roomid)
-				}
-				return roomid
-			} catch (e) {
-				console.log('uh oh poopy')
+			if (!results.ok) {
+				return undefined
 			}
 
+			let data = await results.json()
+			let roomid = data['roomid']
+
+			currentlyViewingChatID = roomid
+
+			let messageGotten = await getPreviousMessages(roomid, true)
+			while (chatContentField.clientHeight >= chatContentField.scrollHeight && messageGotten) {
+				messageGotten = await getPreviousMessages(roomid)
+			}
+			return roomid
 		}
 
 		const sendMessage = (data) => {
@@ -232,7 +252,7 @@ export default function chat(prop={}) {
 			websocket.onopen = (e) => {
 				sendMessage({
 					'command': 'join',
-					'username': username
+					'username': yourName
 				})
 
 				loadingNewChatroom = false
@@ -276,14 +296,14 @@ export default function chat(prop={}) {
 		sendInviteButton.onclick = async () => {
 			let payload = {
 				'type': 'invite',
-				'sender': username,
+				'sender': yourName,
 				'message': 'do we really need a message?',
 				'match_type': typeSelectionField.value
 			}
 
 			try {
-				await fetch(
-					`http://localhost:8000/api/chat/${currentlyViewingChatID}`,
+				await fetchMod(
+					`https://localhost:8000/api/chat/${currentlyViewingChatID}`,
 					{
 						method: "POST",
 						headers: {
@@ -307,14 +327,14 @@ export default function chat(prop={}) {
 
 			let payload = {
 				"type": "message",
-				"sender": username,
+				"sender": yourName,
 				// should sanitize data here...
 				"message": messageField.value
 			}
 
 			try {
-				await fetch(
-					`http://localhost:8000/api/chat/${currentlyViewingChatID}`,
+				await fetchMod(
+					`https://localhost:8000/api/chat/${currentlyViewingChatID}`,
 					{
 						method: "POST",
 						headers: {
@@ -368,8 +388,6 @@ export default function chat(prop={}) {
 			}
 		}
 		window.addEventListener('resize', resizeHandler)
-
-		getFriendList()
 
 		let eofDiv = new endOfChatDiv()
 		chatContentField.appendChild(eofDiv.mainDiv)

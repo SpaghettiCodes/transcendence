@@ -1,75 +1,55 @@
-# depreciated, will remove in future revisions
-# its here JUST IN CASE we need it
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
-# from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.conf import settings
+from django.shortcuts import redirect
+from database.models import Player
+from django.http import JsonResponse
+from rest_framework import status
+from rest_framework_simplejwt.exceptions import AuthenticationFailed, InvalidToken
+from .authentication import JWT_AUTH_EXEMPT_FULL, JWT_AUTH_EXEMPT_PARTIAL
+import re
 
-# from django.conf import settings
-# from django.shortcuts import redirect
-# from database.models import Player
-# from rest_framework.response import Response
-# from rest_framework import status
-# import re
+# https://stackoverflow.com/questions/66247988/how-to-store-jwt-tokens-in-httponly-cookies-with-drf-djangorestframework-simplej
 
-# # https://stackoverflow.com/questions/66247988/how-to-store-jwt-tokens-in-httponly-cookies-with-drf-djangorestframework-simplej
+PATH_401 = '/api/error/401'
 
-# LOGIN_URL = '/api/player/login' # bro i think you forgot to set thisu
+class AuthenticateJWTMiddleware(JWTAuthentication):
+    user_model = Player
 
-# PATH_401 = '/api/error/401'
+    def __init__(self, get_response):
+        self.get_response = get_response
 
-# JWT_AUTH_EXEMPT_PARTIAL = [
-#     '/admin/',
-#     '/api/ft/',
-# ]
-
-# JWT_AUTH_EXEMPT_FULL = [
-#     '/api/login',
-#     '/api/register',
-#     PATH_401
-# ]
-
-# class AuthenticateJWTMiddleware(JWTAuthentication):
-#     user_model = Player
-
-#     def __init__(self, get_response):
-#         self.get_response = get_response
-
-#     def __call__(self, request):
-#         response = self.get_response(request)
-#         return response
+    def __call__(self, request):
+        response = self.get_response(request)
+        return response
     
-#     def process_view(self, request, view_func, view_args, view_kwargs):
-#         for exempt in JWT_AUTH_EXEMPT_PARTIAL:
-#             if request.path.startswith(exempt):
-#                 return None
-#         for exempt in JWT_AUTH_EXEMPT_FULL:
-#             if request.path == (exempt):
-#                 return None
-            
-#         header = self.get_header(request)
-        
-#         try:
-#             raw_token = self.get_raw_token(header)
-#             print("authenticating... ")
-#             post_jwt_auth = self.get_validated_token(raw_token)
-#             try:
-#                 user = self.get_user(post_jwt_auth)
-#                 print("username: ", user)
-#             except Exception as error:
-#                 print(error)
-#             request.META['username'] = user.username
-#             # print(request.META)
-#         except:
-#             print("authentication failed")
-#             return redirect(PATH_401)
+    def process_view(self, request, view_func, view_args, view_kwargs):
+        for exempt in JWT_AUTH_EXEMPT_PARTIAL:
+            if request.path.startswith(exempt):
+                return None
+        for exempt in JWT_AUTH_EXEMPT_FULL:
+            if request.path == (exempt):
+                return None
 
-#         return None
+        header = self.get_header(request)
+        if header is None:
+            return JsonResponse({'error': 'unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
 
-"""
+        try:
+            raw_token = self.get_raw_token(header)
+            if raw_token is None:
+                return JsonResponse({'error': 'unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
 
-{
-"username":"e",
-"password":"eee",
-"email":"e@e.com"
-}
+            post_jwt_auth = self.get_validated_token(raw_token)
 
-"""
+            self.get_user(post_jwt_auth)
+        except InvalidToken as e:
+            return JsonResponse({'error': 'invalid jwt token'}, status=status.HTTP_401_UNAUTHORIZED)
+        except AuthenticationFailed as e:
+            if (e.get_full_details()['code']['message'] == 'user_not_found'):
+                return JsonResponse({'error': 'user associated to this token not found'}, status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse({'error': 'unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
+        except:
+            return JsonResponse({'error': 'unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        return None

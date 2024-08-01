@@ -9,16 +9,18 @@ from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 
 from django.middleware import csrf
-from database.models import Player, Two_Factor_Authentication
+from database.models import Player, TwoFactorAuthentication
 from ..token import create_jwt_pair_for_user
-from django.core.exceptions import FieldDoesNotExist
+from django.core.exceptions import FieldDoesNotExist, ObjectDoesNotExist
 from django.core.files.images import ImageFile
 from django.conf import settings
 
-from django.db.utils import IntegrityError
-from ..serializer import PlayerSerializer, PublicPlayerSerializer
+from ..serializer import PublicPlayerSerializer, PlayerCreator
 from rest_framework.serializers import StringRelatedField
 
+from passlib.exc import PasswordSizeError
+
+import random
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample,  OpenApiParameter
 
 class ViewPlayers(APIView):
@@ -30,6 +32,7 @@ class ViewPlayers(APIView):
         print(request.user)
         p_all = PublicPlayerSerializer(Player.objects.all(), many=True)
         return Response(p_all.data)
+    # please remove when done
 
 @extend_schema(
         summary="Login Endpoint",
@@ -89,18 +92,23 @@ def login(request):
     p = get_object_or_404(Player.objects, username=username)
 
     if p.verify_password(raw_password=raw_password):
+        if p.has_tfa_activated():
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
         p.now_online()
         data = create_jwt_pair_for_user(p)
-        response = Response()
-
-        response.data = {"success" : "Login successfully", "data": data}
-        return response
+        return Response(
+            {
+                "success" : "Login successfully", 
+                "data": data
+            }
+        , status=status.HTTP_200_OK)
     else:
         return Response(
             {
                 "error": "password is incorrect"
             },
-            status=status.HTTP_400_BAD_REQUEST)
+            status=status.HTTP_401_UNAUTHORIZED)
 
 @extend_schema(
         summary="Register endpoint",
@@ -127,28 +135,51 @@ def createPlayer(request):
             )
 
     data=request.data
+    if 'username' in data.keys():
+        try:
+            Player.objects.get(username=data['username'])
+            return Response(status=status.HTTP_409_CONFLICT)
+        except ObjectDoesNotExist:
+            pass
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
     if 'password' in data.keys():
         raw_password = data.get('password')
-        data['password'] = Player.encrypt_password(raw_password)
+        try:
+            data['password'] = Player.encrypt_password(raw_password)
+        except PasswordSizeError:
+            return Response(
+                {'error': "Password is too long"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    if 'profile_pic' in request.FILES:
-        profile_pic = ImageFile(request.FILES['profile_pic'])
-        profile_pic.name = request.FILES['profile_pic'].name
-        request.data['profile_pic'] = profile_pic
-
-    serializer = PlayerSerializer(data=data)
+    serializer = PlayerCreator(data=data)
 
     if serializer.is_valid():
         serializer.save()
+
         new_player = get_object_or_404(Player.objects, username=data.get('username'))
-        Two_Factor_Authentication.objects.create(player_id=new_player.id)
+        TwoFactorAuthentication.objects.create(player_id=new_player.id) # i will not comment on this
+
+        new_player.now_online()
+        data = create_jwt_pair_for_user(new_player)
+        return Response({
+            "success" : "Register success",
+            "data": data
+        }, status=status.HTTP_201_CREATED)
     else:
         print(serializer.errors)
         errorOfList = {}
         for field, errorList in serializer.errors.items():
             fieldErrors = []
             for error in errorList:
-                fieldErrors.append(error)
+                fieldErrors.append(error.capitalize())
             errorOfList[field] = fieldErrors
         return Response({
                 "error": "Failed to add player into Database",
@@ -157,7 +188,30 @@ def createPlayer(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    return Response(status=status.HTTP_201_CREATED)
+@api_view(['GET'])
+def selectNRandomPlayers(request: Request):
+    # apparantly order_by('?') is slow for some database
+    # i cba to check if postgres is slow, so
+
+    callerUsername = request.user.username
+
+    list_of_usernames = Player.objects.exclude(username=callerUsername).values_list('username', flat=True)
+    list_of_usernames = list(list_of_usernames)
+    number = request.GET.get('number')
+    if (not number):
+        number = 5
+    else:
+        try:
+            number = int(number)
+        except ValueError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    print(list_of_usernames)
+    number = min(len(list_of_usernames), number)
+    rand_username = random.sample(list_of_usernames, number)
+    p_all = PublicPlayerSerializer(Player.objects.filter(username__in=rand_username), many=True)
+
+    return Response(p_all.data)
 
 """
 test:

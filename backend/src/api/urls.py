@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from .api_endpoints import friendRequest, ft, match, player, playerSpecific, friends, hello, chat, result, tournament, tfa, playerBlock
+from .api_endpoints import friendRequest, ft, match, player, playerSpecific, friends, hello, chat, result, tournament, tfa, playerBlock, me
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 urlpatterns = [
@@ -13,8 +13,12 @@ urlpatterns = [
 	path('2fa/send', tfa.send_tfa_code),
 	path('2fa/verify', tfa.verify_tfa_code),
 
+    ## get my own details
+    path('me', me.getMe),
+
     ## players
-    path('player', player.ViewPlayers.as_view()),
+    path('player', player.selectNRandomPlayers),
+    # path('player/random', player.selectNRandomPlayers),
     path('player/<player_username>', playerSpecific.SpecificPlayer),
     path('player/<player_username>/match', playerSpecific.SpecificPlayerMatches),
     path('player/<player_username>/chat', playerSpecific.SpecificPlayerChats),
@@ -32,6 +36,7 @@ urlpatterns = [
     path('player/<player_username>/blocked', playerBlock.ViewBlocked.as_view()),
 
     ## matches
+    path('match/ongoing', match.allowableReconnections),
     path('match', match.MatchView.as_view()),
     path('match/<match_id>', match.specificMatchGet),
     path('match/<match_id>/result', result.MatchResult.as_view()),
@@ -43,18 +48,18 @@ urlpatterns = [
 
     ## 42 login
     path('ft/auth', ft.get_ft_code),
-    path('ft/me', ft.get_ft_me),
+    # path('ft/me', ft.get_ft_me),
     path('ft/env', ft.get_ft_env),
+    path('ft', ft.FourtyTwoAuth.as_view()),
 
     ## tournamnet
     path('tournament', tournament.TournamentView.as_view()),
     path('tournament/<tournament_id>', tournament.specificTournamentDetails),
     path('tournament/<tournament_id>/result', tournament.specificTournamentResults),
-    path('tournament/<tournament_id>/match/<match_id>', match.specificMatchGet),
 
     ## jwt token
     # path('token', TokenObtainPairView.as_view(), name='token_obtain_pair'), # fam we obtain the pair via /login
-    path('token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
-    path('token/verify', TokenVerifyView.as_view(), name='token_verify'),
+    path('token/refresh', TokenRefreshView.as_view()),
+    path('token/verify', TokenVerifyView.as_view()),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

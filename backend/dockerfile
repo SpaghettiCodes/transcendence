@@ -5,6 +5,10 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# make the private directory for ssl
+RUN mkdir -p /etc/ssl/private
+RUN chmod 700 /etc/ssl/private
+
 # COPY ./src .
 # COPY ./script.bash .
 # RUN chmod +x ./script.bash

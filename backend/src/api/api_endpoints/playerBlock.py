@@ -7,7 +7,7 @@ from rest_framework import status
 
 from django.shortcuts import get_object_or_404
 
-from database.models import Player
+from database.models import Player, Friend_Request
 from ..serializer import PublicPlayerSerializer
 
 class ViewBlocked(APIView):
@@ -21,6 +21,13 @@ class ViewBlocked(APIView):
 
     # add someone to block
     def post(self, request: Request, player_username, format=None):
+        requester_username = request.user.username
+        if (requester_username != player_username):
+            # dont help other people block
+            return Response(
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         target_username = request.data.get('target')
         if target_username is None:
             return Response(
@@ -37,11 +44,22 @@ class ViewBlocked(APIView):
         p_target = get_object_or_404(Player.objects, username=target_username)
         p_player = get_object_or_404(Player.objects, username=player_username)
 
+        if (p_player.has_blocked(p_target)):
+            return Response(status=status.HTTP_409_CONFLICT)
+
+        Friend_Request.removeAllFriendRequest(p_player, p_target)
         p_player.block_player(p_target)
         return Response(status=status.HTTP_201_CREATED)
 
     # unblock someone
     def delete(self, request: Request, player_username, format=None):
+        requester_username = request.user.username
+        if (requester_username != player_username):
+            # dont need your help
+            return Response(
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         target_username = request.data.get('target')
         if target_username is None:
             return Response(
@@ -57,6 +75,7 @@ class ViewBlocked(APIView):
 
         p_target = get_object_or_404(Player.objects, username=target_username)
         p_player = get_object_or_404(Player.objects, username=player_username)
+
 
         p_player.unblock_player(p_target)
         return Response(status=status.HTTP_201_CREATED)
