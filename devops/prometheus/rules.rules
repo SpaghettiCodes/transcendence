@@ -1,0 +1,9 @@
+groups:
+- name: Server_Down
+  rules:
+  - alert: ServerDown
+    expr: up == 0
+    for: 1m
+    annotations:
+      summary: "Django Server is down"
+      description: "Alerts are fired when the server goes down"
