@@ -22,6 +22,7 @@ JWT_AUTH_EXEMPT_PARTIAL = [
     '/api/static',
     '/media',
     '/static',
+    '/metrics'
 ]
 
 JWT_AUTH_EXEMPT_FULL = [

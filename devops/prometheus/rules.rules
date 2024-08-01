@@ -1,9 +1,18 @@
 groups:
-- name: Server_Down
+- name: Django Server is Down
   rules:
-  - alert: ServerDown
-    expr: up == 0
+  - alert: Django is down
+    expr: up {instance='backend:443', job='django-backend'} == 0
     for: 1m
     annotations:
       summary: "Django Server is down"
-      description: "Alerts are fired when the server goes down"
+      description: "Django server is down, we cannot serve API like that"
+
+- name: Postgres Server Is Down
+  rules:
+  - alert: Postgres Server is Down
+    expr: pg_up == 0
+    for: 1m
+    annotations:
+      summary: "PostGres Server Is Down"
+      description: "PostgresSQL container is down, devops people gogogo"
