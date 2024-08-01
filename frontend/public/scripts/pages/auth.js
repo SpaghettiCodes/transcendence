@@ -1,5 +1,6 @@
 import { setJwtToken, setRefreshToken } from "../jwt.js"
 import { redirect } from "../router.js"
+import { connectToPlayerNotificationWebsocket } from "./playerNoti.js"
 
 export default function auth2fa(prop={}) {
 	let sendToUsername = prop.username
@@ -97,6 +98,8 @@ export default function auth2fa(prop={}) {
 				const { access, refresh } = result.data
 				setJwtToken(access)
 				setRefreshToken(refresh)
+
+				connectToPlayerNotificationWebsocket(access)
 				redirect('/home')
 			} catch (e) {
 				if (e.status === 410) { // code has expired

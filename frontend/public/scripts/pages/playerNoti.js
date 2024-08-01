@@ -11,6 +11,10 @@ async function defaultDataProcessor (data) {
 let dataProcessors = [defaultDataProcessor]
 export let playerNotificationWebsocket = undefined
 
+export function isConnectedToPlayerNoti() {
+	return playerNotificationWebsocket !== undefined
+}
+
 export function connectToPlayerNotificationWebsocket(token) {
 	if (!token) {
 		return
@@ -18,10 +22,11 @@ export function connectToPlayerNotificationWebsocket(token) {
 
 	// try to get me first
 	async function checkMe() {
-		await fetchMod("https://localhost:8000/api/me"); //change to the correct endpoint
+		await fetchMod("https://localhost:8000/api/me");
 	}
 
 	function connectWebSock () {
+		console.log('Connecting to notification websocket...')
 		playerNotificationWebsocket = new WebSocket(`wss://localhost:8000/player`)
 
 		const sendMessage = (message) => {
@@ -62,4 +67,5 @@ export function playerNotiRemoveProcessor(func) {
 export function disconnectPlayerNotificationWebsocket() {
 	if (playerNotificationWebsocket !== undefined)
 		playerNotificationWebsocket.close()
+	playerNotificationWebsocket = undefined
 }

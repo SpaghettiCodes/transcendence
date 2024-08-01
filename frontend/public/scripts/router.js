@@ -21,7 +21,7 @@ import friendlist from "./pages/friendList/friendList.js"
 import match from "./pages/match.js"
 import { check_token_exists, getJwtToken } from "./jwt.js"
 import auth2fa from "./pages/auth.js"
-import { connectToPlayerNotificationWebsocket, disconnectPlayerNotificationWebsocket } from "./pages/playerNoti.js"
+import { connectToPlayerNotificationWebsocket, disconnectPlayerNotificationWebsocket, isConnectedToPlayerNoti } from "./pages/playerNoti.js"
 
 const routes = {
 	'/': landing,
@@ -143,7 +143,6 @@ const render_html = (which, prop={}, originator=undefined, rightBefore=undefined
 	clean_up_function()
 	clean_up_function = cleanup
 
-	disconnectPlayerNotificationWebsocket()
 	prerender().then(
 		(success) => {
 			if (success) {
@@ -154,7 +153,6 @@ const render_html = (which, prop={}, originator=undefined, rightBefore=undefined
 					errorContainer.innerHTML = render_code()
 				else
 					mainContainer.innerHTML = render_code()
-				connectToPlayerNotificationWebsocket(getJwtToken())
 				postrender()
 			} else {
 				// oh fuck it, prerender is expected to handle the fails
@@ -175,6 +173,8 @@ const navigate = (e, prop={}) => {
 	uri = '/' + uri.split("/").filter(Boolean).join('/') + searchParam
 	history.replaceState(null, null, uri)
 
+	if (!isConnectedToPlayerNoti())
+		connectToPlayerNotificationWebsocket(getJwtToken())
 	render_html(uri, prop)
 }
 

@@ -1,7 +1,8 @@
 import { redirect, redirect_replace_history, redirect_without_history } from "../router.js"
-import { removeJWTPair, setJwtToken, setRefreshToken } from "../jwt.js"
+import { getJwtToken, removeJWTPair, setJwtToken, setRefreshToken } from "../jwt.js"
 import { createButton, createInput } from "../components/elements.js"
 import createInputFields from "../components/inputFields.js"
+import { connectToPlayerNotificationWebsocket, disconnectPlayerNotificationWebsocket } from "./playerNoti.js"
 
 // env var, remove when done
 // note to self: DO NOT, PUSH, TO GITHUB
@@ -9,6 +10,7 @@ import createInputFields from "../components/inputFields.js"
 export default function landing(prop={}) {
 	let prerender = async () => {
 		removeJWTPair()
+		disconnectPlayerNotificationWebsocket()
 		return true
 	}
 
@@ -105,6 +107,7 @@ export default function landing(prop={}) {
 				(result) => {
 					setJwtToken(result.data.access)
 					setRefreshToken(result.data.refresh)
+					connectToPlayerNotificationWebsocket(getJwtToken())
 					redirect('/home')
 				}
 			).catch((error) => {
@@ -146,6 +149,7 @@ export default function landing(prop={}) {
 			}).then((result) => {
 					setJwtToken(result.data.access)
 					setRefreshToken(result.data.refresh)
+					connectToPlayerNotificationWebsocket(getJwtToken())
 					redirect('/home')
 				}
 			).catch(async (error) => {

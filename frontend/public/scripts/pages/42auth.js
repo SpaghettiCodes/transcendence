@@ -1,5 +1,6 @@
 import { setJwtToken, setRefreshToken } from "../jwt.js"
 import { redirect, redirect_replace_history } from "../router.js"
+import { connectToPlayerNotificationWebsocket } from "./playerNoti.js"
 
 export default function ftlogin(prop={}) {
 	const urlParams = new URLSearchParams(window.location.search)
@@ -100,6 +101,8 @@ export default function ftlogin(prop={}) {
 
 			setJwtToken(access)
 			setRefreshToken(refresh)
+			connectToPlayerNotificationWebsocket(access)
+
 			redirect_replace_history('/home')
 			return
 		}
@@ -141,6 +144,7 @@ export default function ftlogin(prop={}) {
 
 			setJwtToken(access)
 			setRefreshToken(refresh)
+			connectToPlayerNotificationWebsocket(access)
 
 			await linkWithFTCode(ftCode, access)
 		}
