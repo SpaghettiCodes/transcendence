@@ -15,6 +15,7 @@ from api.serializer import MatchSerializer, PublicPlayerSerializer
 from util.base_converter import from_base52, to_base52
 
 from .matchUp import MatchUps
+from player_ws.consumers import PlayerNotification
 
 import asyncio
 
@@ -310,6 +311,12 @@ class TournamentServer:
         if (len(self.currentPlayers) == 1):
             asyncio.create_task(self.endTournament())
         else:
+            for player in self.expectedPlayers:
+                print('sending to' + player.username)
+                await PlayerNotification.sendToPlayerNoti(player.username, {
+                    'code': f"upcoming_tournament_match",
+                    'message': f"You have an upcoming match in a tournament you participated! Press tournament button to rejoin in /home!"
+                })
             asyncio.create_task(self.startMatch())
 
     async def matchUp(self) -> None:

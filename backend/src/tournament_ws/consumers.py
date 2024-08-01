@@ -85,4 +85,4 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             if (self.authorized or self.spectate):
                 await self.send_json(event["text"])
         except Exception as e:
-            print(e.args[0])
+            print(e)

@@ -93,7 +93,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             try:
                 await self.send_json(data)
             except Exception as e:
-                print(e.args[0])
+                print(e)
 
     async def disconnect_when_connecting(self):
         await self.accept()

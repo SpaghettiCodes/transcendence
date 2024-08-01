@@ -1,8 +1,5 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
-from tournament_server.manager import TournamentManager
-from rest_framework_simplejwt.exceptions import InvalidToken
-
 from backend.authentication import AuthenticateJWT
 
 from asgiref.sync import sync_to_async
@@ -69,4 +66,4 @@ class PlayerNotification(AsyncJsonWebsocketConsumer):
             if (self.authorized):
                 await self.send_json(event["text"])
         except Exception as e:
-            print(e.args[0])
+            print(e)

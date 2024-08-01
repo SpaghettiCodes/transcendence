@@ -1,6 +1,14 @@
+import { createAlert } from "../components/alert.js"
 import { fetchMod } from "../jwt.js"
 
-let dataProcessors = []
+async function defaultDataProcessor (data) {
+	let { code, message } = data
+	if (code === 'upcoming_tournament_match') {
+		createAlert('info', message)
+	}
+}
+
+let dataProcessors = [defaultDataProcessor]
 export let playerNotificationWebsocket = undefined
 
 export function connectToPlayerNotificationWebsocket(token) {
@@ -22,7 +30,7 @@ export function connectToPlayerNotificationWebsocket(token) {
 	
 		playerNotificationWebsocket.onerror = (e) => {
 		}
-	
+
 		playerNotificationWebsocket.onmessage = async (e) => {
 			const data = JSON.parse(e.data)
 			for (let dataProcessor of dataProcessors) 
