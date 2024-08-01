@@ -14,6 +14,8 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample
 from database.models import FourtyTwoAccount, Player
 from backend.authentication import AuthenticateJWT
 
+from rest_framework_simplejwt.exceptions import InvalidToken, AuthenticationFailed
+
 from ..serializer import PlayerSerializer
 from ..token import create_jwt_pair_for_user
 
@@ -127,7 +129,18 @@ class FourtyTwoAuth(APIView):
         intraID = ft_data['login']
 
         authObject = AuthenticateJWT()
-        playerObject = authObject.get_user(authObject.get_validated_token(playerCode))
+        try:
+            playerObject = authObject.get_user(authObject.get_validated_token(playerCode))
+        except InvalidToken as e:
+            return Response({'error': 'invalid player token'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except AuthenticationFailed as e:
+            return Response({'error': 'authentication failed'},
+                            status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            print(e)
+            return Response({'error': 'the server has failed you'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         try:
             intraObject = FourtyTwoAccount.objects.get(intraID=intraID)
@@ -144,7 +157,12 @@ class FourtyTwoAuth(APIView):
         # we steal JWTAuthentication's header extraction
         authObject = AuthenticateJWT()
 
-        fourtyTwoCode = authObject.get_raw_token(authObject.get_header(request))
+        try:
+            fourtyTwoCode = authObject.get_raw_token(authObject.get_header(request))
+        except AuthenticationFailed as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
         headers = {'Authorization': f'Bearer {fourtyTwoCode.decode('utf-8')}'} # pray that it works
         response = requests.get("https://api.intra.42.fr/v2/me", headers=headers)
 

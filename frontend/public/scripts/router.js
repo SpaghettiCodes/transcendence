@@ -154,13 +154,13 @@ const render_html = (which, prop={}, originator=undefined, rightBefore=undefined
 					errorContainer.innerHTML = render_code()
 				else
 					mainContainer.innerHTML = render_code()
+				connectToPlayerNotificationWebsocket(getJwtToken())
 				postrender()
 			} else {
 				// oh fuck it, prerender is expected to handle the fails
 			}
 		}
 	)
-	connectToPlayerNotificationWebsocket(getJwtToken())
 }
 
 const navigate = (e, prop={}) => {

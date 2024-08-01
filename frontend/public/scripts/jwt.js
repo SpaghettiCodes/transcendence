@@ -124,13 +124,11 @@ export async function fetchMod(url, request) {
 		}
 		else {
 				console.log("access token invalid, refresh token not working, wallahi its over bijoever")
-				removeJWTPair()
 				redirect('/')
 				throw 'redirected'
 			}
 	} else if (response_verify.status === 404) {
 		console.log('what kind of code are you using')
-		removeJWTPair()
 		redirect('/')
 		throw 'redirected'
 	};

@@ -1,5 +1,5 @@
 import { redirect, redirect_replace_history, redirect_without_history } from "../router.js"
-import { setJwtToken, setRefreshToken } from "../jwt.js"
+import { removeJWTPair, setJwtToken, setRefreshToken } from "../jwt.js"
 import { createButton, createInput } from "../components/elements.js"
 import createInputFields from "../components/inputFields.js"
 
@@ -8,6 +8,7 @@ import createInputFields from "../components/inputFields.js"
 
 export default function landing(prop={}) {
 	let prerender = async () => {
+		removeJWTPair()
 		return true
 	}
 

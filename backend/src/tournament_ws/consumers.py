@@ -43,11 +43,11 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
                 try:
                     validated_token = self.authenticator.get_validated_token(playerJWT)
                     self.playerObject = await sync_to_async(self.authenticator.get_user)(validated_token)
-                except InvalidToken as e:
-                    print(e)
-                    return self.close()
                 except Exception as e:
                     print(e)
+                    self.send_json({
+                        'status': 'auth_error'
+                    })
                     return self.close()
 
                 result, message, code = await TournamentManager.player_join(self.playerObject, self.tournament_id)
