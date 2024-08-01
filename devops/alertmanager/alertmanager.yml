@@ -4,7 +4,8 @@ route:
   group_interval: 5s
   repeat_interval: 1m
   receiver: 'webhook'
+
 receivers:
 - name: 'webhook'
   webhook_configs:
-  - url: 'http://127.0.0.1:9093/alerts'
+  - url: 'https://localhost:8000/api/alert'

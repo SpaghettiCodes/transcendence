@@ -57,6 +57,8 @@ services:
     image: prom/prometheus
     container_name: prometheus
     restart: unless-stopped
+    ports:
+      - '9090:9090'
     volumes:
       - ./devops/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./devops/prometheus/rules.rules:/etc/prometheus/rules.rules
@@ -65,6 +67,7 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--storage.tsdb.retention.time=30d'
+      - '--web.external-url=http://localhost:9090/'
     depends_on:
       - postgresql-exporter
       - backend

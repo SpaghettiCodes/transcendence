@@ -12,3 +12,4 @@ requirements.in
 sslcert/
 static/
 media/
+special_alertmanager.yml
