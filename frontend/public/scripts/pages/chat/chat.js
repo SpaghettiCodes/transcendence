@@ -66,10 +66,6 @@ export default function chat(prop={}) {
 		<div class="d-flex flex-grow-1 align-self-stretch overflow-hidden" id='contentDiv'>
 			<div class="d-flex flex-column friend-list p-3">
 				<h4>Colleagues</h4>
-				<div class="input-group mb-3">
-					${createInput("form-control rounded", "search", "search", "search", "Colleaguess' ID")}
-					${createButton('btn btn-dark', 'button', 'Search', 'searchButton')}
-				</div>
 				<div dir="rtl" class="d-flex flex-column flex-grow-1 overflow-y-auto" style="padding-left:5px;" id="friend-list-items">
 				</div>
 			</div>
