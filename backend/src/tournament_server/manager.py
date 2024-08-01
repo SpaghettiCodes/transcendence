@@ -14,6 +14,10 @@ class TournamentManager:
     ran_letter = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
     @classmethod
+    def hasExpected(cls, playerObj):
+        return any(server.isExpected(playerObj) for server in cls.servers.values())
+
+    @classmethod
     def randomMatchmake(cls, playerObj):
         server_to_join = None
         

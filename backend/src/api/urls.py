@@ -36,6 +36,7 @@ urlpatterns = [
     path('player/<player_username>/blocked', playerBlock.ViewBlocked.as_view()),
 
     ## matches
+    path('match/ongoing', match.allowableReconnections),
     path('match', match.MatchView.as_view()),
     path('match/<match_id>', match.specificMatchGet),
     path('match/<match_id>/result', result.MatchResult.as_view()),

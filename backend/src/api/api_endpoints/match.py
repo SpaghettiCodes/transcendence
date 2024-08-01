@@ -87,3 +87,15 @@ def specificMatchGet(request, match_id):
         print("uh oh stinky")
         print(e)
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+def allowableReconnections(request):
+    from tournament_server.manager import TournamentManager
+
+    user = request.user
+    return Response({
+        'pong': PongServer.hasExpected(user, 'pong'),
+        'apong': PongServer.hasExpected(user, 'apong'),
+        'tournament': TournamentManager.hasExpected(user)
+    })
+    pass

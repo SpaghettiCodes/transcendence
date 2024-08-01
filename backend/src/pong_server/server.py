@@ -17,11 +17,20 @@ class PongServer:
     channel_layer = get_channel_layer()
 
     @classmethod
-    def getDetails(cls, game_id, ):
+    def hasExpected(cls, playerObject, type="pong"):
+        print([            server.is_expected(playerObject) and server.getType() == type
+            for server in cls.servers.values()])
+        return any(
+            server.is_expected(playerObject) and server.getType() == type
+            for server in cls.servers.values()
+        )
+
+    @classmethod
+    def getDetails(cls, game_id):
         return cls.servers[game_id].getDetails()
 
     @classmethod
-    def get_servers_list(cls, ):
+    def get_servers_list(cls):
         ret = []
         for server_id, server in cls.servers.items():
             if (not server.is_hidden()):
