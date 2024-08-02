@@ -13,7 +13,7 @@ export default function template(prop={}) {
 	let prerender = async () => {
 		try {
 			// get user data
-			const response = await fetchMod("https://localhost:8000/api/me"); //change to the correct endpoint
+			const response = await fetchMod("https://172.20.10.2:8000/api/me"); //change to the correct endpoint
 			if (!response.ok)
 				throw new Error('Network response was not ok ' + response.statusText);
 			const data = await response.json();
@@ -23,7 +23,7 @@ export default function template(prop={}) {
 			// get match history
 			// i may throw this in /players and /me also
 			// see first
-			const matchHistoryResponse = await fetchMod(`https://localhost:8000/api/player/${yourName}/match`)
+			const matchHistoryResponse = await fetchMod(`https://172.20.10.2:8000/api/player/${yourName}/match`)
 			if (!matchHistoryResponse.ok)
 				throw new Error('Server responded with ' + matchHistoryResponse.statusText)
 			const matchData = await matchHistoryResponse.json()
@@ -153,7 +153,7 @@ export default function template(prop={}) {
 			const formData = new FormData();
 			formData.append("profile_pic", file);
 		
-			const url = `https://localhost:8000/api/player/${yourName}`;
+			const url = `https://172.20.10.2:8000/api/player/${yourName}`;
 			const response = await fetchMod(url, {
 				method: "PATCH",
 				body: formData,
@@ -162,13 +162,13 @@ export default function template(prop={}) {
 				return createAlert('error', 'Invalid Image!')
 			}
 			const json = await response.json();
-			document.getElementById("pfp").src = `https://localhost:8000/api${json.profile_pic}`;	
+			document.getElementById("pfp").src = `https://172.20.10.2:8000/api${json.profile_pic}`;	
 		});
 
 		document.getElementById("email_button").addEventListener("click", async () => {
 			const newEmail = prompt("Enter new email:");
 			if (newEmail) {
-				const url = `https://localhost:8000/api/player/${yourName}`;
+				const url = `https://172.20.10.2:8000/api/player/${yourName}`;
 				const response = await fetchMod(url, {
 					method: "PATCH",
 					body: JSON.stringify({

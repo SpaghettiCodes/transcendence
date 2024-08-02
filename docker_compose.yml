@@ -11,6 +11,7 @@ services:
     build: "./backend"
     tty: true
     depends_on:
+      - frontend
       - db
     networks:
       - frontend_net
@@ -63,11 +64,14 @@ services:
       - ./devops/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./devops/prometheus/rules.rules:/etc/prometheus/rules.rules
       - prometheus-data:/prometheus
+      - ./devops/tlsconfig/tls-server.yml:/tls-server.yml
+      - ./sslcert:/cert
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--storage.tsdb.retention.time=30d'
-      - '--web.external-url=http://localhost:9090/'
+      - '--web.external-url=https://172.20.10.2:9090/'
+      - '--web.config.file=/tls-server.yml'
     depends_on:
       - postgresql-exporter
       - backend
@@ -85,6 +89,10 @@ services:
       - ./devops/grafana/provisioning/datasources/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
       - ./devops/grafana/provisioning/dashboards/:/etc/grafana/provisioning/dashboards/
       - grafana-storage:/var/lib/grafana
+      - ./devops/grafana/config/:/config
+      - ./sslcert:/cert
+    command:
+      - '--config=/config/grafana.ini'
     depends_on:
       - prometheus
     networks:
@@ -97,10 +105,15 @@ services:
     networks:
       - backend_net
     volumes:
-      - './devops/alertmanager/mailing-alertmanager.yml:/alertmanager.yml'
+      - ./devops/alertmanager/mailing-alertmanager.yml:/alertmanager.yml
+      - ./devops/tlsconfig/tls-server.yml:/tls-server.yml
+      - ./sslcert:/cert
     command:
       - '--config.file=/alertmanager.yml'
-      - '--web.external-url=http://localhost:9093/'
+      - '--web.external-url=https://172.20.10.2:9093/'
+      - '--web.config.file=/tls-server.yml'
+    depends_on:
+      - frontend
 
 volumes:
   prometheus-data: {}

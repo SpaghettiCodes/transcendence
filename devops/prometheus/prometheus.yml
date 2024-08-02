@@ -8,23 +8,31 @@ rule_files:
 
 alerting:
   alertmanagers:
-  - static_configs:
+  - scheme: https
+    tls_config:
+      cert_file: /cert/ssl.crt
+      key_file: /cert/ssl.key
+      insecure_skip_verify: true
+    static_configs:
     - targets:
       - alertmanager:9093
 
 scrape_configs:
 - job_name: prometheus
+  scheme: https
+  tls_config:
+    insecure_skip_verify: true
   static_configs:
   - targets: ['127.0.0.1:9090']
 
 - job_name: django-backend
   metrics_path: '/metrics'
   scheme: https
+  tls_config:
+    insecure_skip_verify: true
   static_configs:
   - targets: 
     - backend:443
-  tls_config:
-      insecure_skip_verify: true
 
 - job_name: postgresql
   static_configs:

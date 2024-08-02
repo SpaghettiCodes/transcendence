@@ -15,13 +15,13 @@ export default function tournamentResult(prop={}) {
 			return false
 		}
 
-		const response = await fetchMod("https://localhost:8000/api/me");
+		const response = await fetchMod("https://172.20.10.2:8000/api/me");
 		const data = await response.json()
 		console.log(data)
 		yourName = data.username
 
 		const resultResponse = await fetchMod(
-			`https://localhost:8000/api/tournament/${tournament_id}/result`,
+			`https://172.20.10.2:8000/api/tournament/${tournament_id}/result`,
 			{
 				method: "GET",
 			}

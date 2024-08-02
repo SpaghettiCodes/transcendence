@@ -4,4 +4,7 @@ datasources:
   - name: prom
     type: prometheus
     access: proxy
-    url: http://prometheus:9090
+    url: https://prometheus:9090
+    jsonData:
+      tlsSkipVerify: true
+    editable: True

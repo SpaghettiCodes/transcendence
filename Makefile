@@ -3,6 +3,7 @@ all: build up
 build:
 	mkdir -p ./data/database
 	mkdir -p ./sslcert
+	./genssl_cert.bash
 	docker compose -f docker_compose.yml build
 
 up:

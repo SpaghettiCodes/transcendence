@@ -17,7 +17,7 @@ export default function chat(prop={}) {
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
 	let prerender = async () => {
-		const me_response = await fetchMod(`https://localhost:8000/api/me`)
+		const me_response = await fetchMod(`https://172.20.10.2:8000/api/me`)
 		if (!me_response.ok) {
 			console.log(me_response)
 			history.back()
@@ -27,7 +27,7 @@ export default function chat(prop={}) {
 		yourName = value.username
 
 		const response = await fetchMod(
-			`https://localhost:8000/api/player/${yourName}/friends`,
+			`https://172.20.10.2:8000/api/player/${yourName}/friends`,
 			{
 				method: "GET",
 			}
@@ -42,7 +42,7 @@ export default function chat(prop={}) {
 		prop.friendList = value
 
 		const blockedResponse = await fetchMod(
-			`https://localhost:8000/api/player/${yourName}/blocked`,
+			`https://172.20.10.2:8000/api/player/${yourName}/blocked`,
 			{
 				method: "GET",
 			}
@@ -138,9 +138,9 @@ export default function chat(prop={}) {
 				sendMessageButton.classList.add('disabled')
 				sendInviteButton.classList.add('disabled')
 
-				let chatID = await getChatRoomData(`https://localhost:8000/api/player/${player_username}/chat/${target_username}`)
+				let chatID = await getChatRoomData(`https://172.20.10.2:8000/api/player/${player_username}/chat/${target_username}`)
 				if (chatID) {
-					connectToWebsocket(`wss://localhost:8000/chat/${chatID}`)
+					connectToWebsocket(`wss://172.20.10.2:8000/chat/${chatID}`)
 
 					urlParams.set('friend', target_username)
 					// reenable sending message
@@ -154,9 +154,9 @@ export default function chat(prop={}) {
 			let url = undefined
 			let didWeGetAllMessagesBefore = gotAllMessages
 			if (lastMSGID === undefined)
-				url = `https://localhost:8000/api/chat/${chatID}/history`
+				url = `https://172.20.10.2:8000/api/chat/${chatID}/history`
 			else
-				url = `https://localhost:8000/api/chat/${chatID}/history?start_id=${lastMSGID}`
+				url = `https://172.20.10.2:8000/api/chat/${chatID}/history?start_id=${lastMSGID}`
 
 			const response = await fetchMod(url)
 
@@ -299,7 +299,7 @@ export default function chat(prop={}) {
 
 			try {
 				await fetchMod(
-					`https://localhost:8000/api/chat/${currentlyViewingChatID}`,
+					`https://172.20.10.2:8000/api/chat/${currentlyViewingChatID}`,
 					{
 						method: "POST",
 						headers: {
@@ -330,7 +330,7 @@ export default function chat(prop={}) {
 
 			try {
 				await fetchMod(
-					`https://localhost:8000/api/chat/${currentlyViewingChatID}`,
+					`https://172.20.10.2:8000/api/chat/${currentlyViewingChatID}`,
 					{
 						method: "POST",
 						headers: {

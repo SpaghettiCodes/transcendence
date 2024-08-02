@@ -1,5 +1,5 @@
 export function ImageFromBackendUrl(url) {
-	return `https://localhost:8000${url}`
+	return `https://172.20.10.2:8000${url}`
 }
 
 export function pairElements(arr) {
