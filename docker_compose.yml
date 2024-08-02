@@ -97,7 +97,7 @@ services:
     networks:
       - backend_net
     volumes:
-      - './devops/alertmanager/alertmanager.yml:/alertmanager.yml'
+      - './devops/alertmanager/mailing-alertmanager.yml:/alertmanager.yml'
     command:
       - '--config.file=/alertmanager.yml'
 
