@@ -100,6 +100,7 @@ services:
       - './devops/alertmanager/mailing-alertmanager.yml:/alertmanager.yml'
     command:
       - '--config.file=/alertmanager.yml'
+      - '--web.external-url=http://localhost:9093/'
 
 volumes:
   prometheus-data: {}
