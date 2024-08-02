@@ -8,7 +8,7 @@ export default function home(prop={}) {
 	let tournament = false
 
 	let prerender = async () => {
-		const response = await fetchMod("https://172.20.10.2:8000/api/match/ongoing");
+		const response = await fetchMod("https://localhost:8000/api/match/ongoing");
 		
 		if (!response.ok) {
 			return true // welp, forget everything and leave

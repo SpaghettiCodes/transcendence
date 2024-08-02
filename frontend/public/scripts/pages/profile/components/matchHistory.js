@@ -6,13 +6,31 @@ export function generateMatchHistory(items) {
 	}
 	return generateList(items, match => {
 		let resultData = match.result
+		let { type } = match
 		let { attacker, attacker_score, defender, defender_score } = resultData
 		let matchId = match.matchid
 
 		return`
-		<li class="list-group-item" id="match-${matchId}">
-			<div>
-				${attacker.username} vs ${defender.username}: ${attacker_score} - ${defender_score}
+		<li class="gap-1 match-box p-1 text-white" id="match-${matchId}">
+			<div class='d-flex justify-content-center type-div mx-5 fw-bold'>
+				${type}
+			</div>
+			<div class='username-div gap-2'>
+				<div class='text-end border-end pe-2'>
+					${attacker_score} 
+				</div>
+				<div class='text-center'>
+					${attacker.username}
+				</div>
+				<div class='text-center'>
+					-
+				</div>
+				<div class='text-center'>
+					${defender.username}
+				</div>
+				<div class='text-start border-start ps-2'>
+					${defender_score}
+				</div>
 			</div>
 		</li>`})
 }

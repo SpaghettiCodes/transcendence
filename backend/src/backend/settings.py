@@ -194,7 +194,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ORIGIN_ALLOW_ALL = True
 ALLOWED_HOSTS = ('*', )
 CORS_ALLOWED_ORIGINS = [
-    'https://172.20.10.2',
+    'https://localhost',
 ]
 
 # email stuff

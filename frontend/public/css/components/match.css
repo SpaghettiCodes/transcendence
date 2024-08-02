@@ -1,0 +1,20 @@
+.match-box {
+	/* background-color: rgb(206, 206, 206); */
+	border-top: 5px black solid;
+	border-left: 5px black solid;
+	border-right: 5px black solid;
+}
+
+.match-box .username-div{
+	display: grid;
+	grid-template-columns: 1fr 1fr auto 1fr 1fr;
+}
+
+.match-box .type-div{
+	border-bottom: 1px white solid;
+}
+
+.match-box .score-div{
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+}

@@ -22,12 +22,12 @@ export function connectToPlayerNotificationWebsocket(token) {
 
 	// try to get me first
 	async function checkMe() {
-		await fetchMod("https://172.20.10.2:8000/api/me");
+		await fetchMod("https://localhost:8000/api/me");
 	}
 
 	function connectWebSock () {
 		console.log('Connecting to notification websocket...')
-		playerNotificationWebsocket = new WebSocket(`wss://172.20.10.2:8000/player`)
+		playerNotificationWebsocket = new WebSocket(`wss://localhost:8000/player`)
 
 		const sendMessage = (message) => {
 			playerNotificationWebsocket.send(JSON.stringify(message))

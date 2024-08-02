@@ -55,11 +55,6 @@
     margin-top: 30px;
 }
 
-.list-group-item {
-    background-color: transparent; /* Make list group items transparent to match parent background */
-    color: #ecf0f1; /* Light text color */
-}
-
 .bottom-left-buttons {
     position: fixed;
     bottom: 20px;

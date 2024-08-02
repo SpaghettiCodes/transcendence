@@ -32,9 +32,9 @@ export default function template(prop={}) {
 	// attach all event listeners here (or do anything that needs to be done AFTER attaching the html code)
 	let postrender = () => {
 		const matchmakingGame = async (type) => {
-			disconnectUrl = `https://172.20.10.2:8000/api/match?type=${type}`
+			disconnectUrl = `https://localhost:8000/api/match?type=${type}`
 
-			const response = await fetchMod(`https://172.20.10.2:8000/api/match?type=${type}`, {
+			const response = await fetchMod(`https://localhost:8000/api/match?type=${type}`, {
 				method: "GET"
 			})
 
@@ -59,7 +59,7 @@ export default function template(prop={}) {
 		}
 
 		const matchmakingTournament = async () => {
-			const response = await fetchMod('https://172.20.10.2:8000/api/tournament', {
+			const response = await fetchMod('https://localhost:8000/api/tournament', {
 				method: "GET"
 			})
 

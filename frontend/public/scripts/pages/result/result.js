@@ -10,7 +10,7 @@ export default function result(prop={}) {
 	// attach all pre-rendering code here (like idk, fetch request or something)
 	let prerender = async () => {
 		try {
-			const response = await fetchMod("https://172.20.10.2:8000/api/me");
+			const response = await fetchMod("https://localhost:8000/api/me");
 			if (!response.ok)
 				throw response
 			const data = await response.json()
@@ -19,7 +19,7 @@ export default function result(prop={}) {
 			console.log(yourName)
 
 			const resultResponse = await fetchMod(
-				`https://172.20.10.2:8000/api/match/${game_id}/result`,
+				`https://localhost:8000/api/match/${game_id}/result`,
 				{
 					method: "GET",
 				}

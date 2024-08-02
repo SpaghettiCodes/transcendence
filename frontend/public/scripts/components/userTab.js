@@ -11,7 +11,7 @@ function generateUserTab(friendData, onClickFunction) {
 
 	let pictureDiv = document.createElement('img')
 	pictureDiv.setAttribute('class', 'picture rounded')
-	pictureDiv.src = `https://172.20.10.2:8000${profile_pic}`
+	pictureDiv.src = `https://localhost:8000${profile_pic}`
 	newFriendDiv.append(pictureDiv)
 
 	let usernameDiv = document.createElement('div')
