@@ -234,18 +234,25 @@ class TournamentServer:
             await self.notify_Timer(msg)
             return True
 
-        # TODO: put a better timing ig?
-        if not await self.delaySeconds(3, checkerFunction):
-            return
+        async def messageFunction(durationLeft):
+            msg = f"The next round will start in {ceil(durationLeft)} seconds"
+            await self.notify_Timer(msg)
+            return True
 
+        # first initialization
         if not self.tournamentStarted:
+            # TODO: put a better timing ig?
+            if not await self.delaySeconds(3, checkerFunction):
+                return
+
             if not self.canBeginTournament():
                 return
-            # first initialization
             self.tournamentStarted = True
             self.completePlayers = [player for player in self.currentPlayers]
             self.expectedPlayers = [player for player in self.currentPlayers]
             self.determineMatchUps()
+        else:
+            await self.delaySeconds(5, messageFunction)
 
         self.onGoingMatch = True
         self.round += 1
@@ -329,7 +336,7 @@ class TournamentServer:
             # i have only myself to blame for this situation
             gameInstance = PongServer.getGameInstance(gameId)
             gameInstance.setRemovalFunction(self.collectData(gameInstance, matchup))
-            # await gameInstance.startImmediately()
+            await gameInstance.startImmediately()
 
             self.currentlyRunningMatches.append(gameInstance)
 
