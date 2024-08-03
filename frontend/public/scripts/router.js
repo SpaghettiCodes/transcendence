@@ -23,8 +23,6 @@ import { check_token_exists, getJwtToken } from "./jwt.js"
 import auth2fa from "./pages/auth.js"
 import { connectToPlayerNotificationWebsocket, disconnectPlayerNotificationWebsocket, isConnectedToPlayerNoti } from "./pages/playerNoti.js"
 
-let isRedirecting = false
-
 const routes = {
 	'/': landing,
 	'/error': fourofour,
@@ -132,7 +130,6 @@ const render_html = (which, prop={}, originator=undefined, rightBefore=undefined
 		if (callerLocation !== originator)
 			// the caller location is not the same as where the redirect is called
 			// this probably means we have already been redirected away
-			isRedirecting = false
 			return
 	}
 
@@ -140,7 +137,6 @@ const render_html = (which, prop={}, originator=undefined, rightBefore=undefined
 	let [ prerender, render_code, postrender, cleanup] = to_render(prop)
 
 	if (!check_token_exists()) {
-		isRedirecting = false
 		return
 	}
 
@@ -154,7 +150,6 @@ const render_html = (which, prop={}, originator=undefined, rightBefore=undefined
 				if (prerenderLocation !== window.location.pathname) {
 					// we got redirected, abort
 					console.log('content doesnt make sense anymore')
-					isRedirecting = false
 					return
 				}
 
@@ -169,7 +164,6 @@ const render_html = (which, prop={}, originator=undefined, rightBefore=undefined
 			} else {
 				// oh fuck it, prerender is expected to handle the fails
 			}
-			isRedirecting = false
 		}
 	)
 }
@@ -192,31 +186,18 @@ const navigate = (e, prop={}) => {
 }
 
 export const redirect = (uri, prop={}, originator=undefined) => {
-	if (isRedirecting)
-		return
-	isRedirecting = true
-
-	console.log(isRedirecting)
 	let rightBefore = window.location.pathname
 	history.pushState(null, null, uri)
 	render_html(uri, prop, originator, rightBefore)
 }
 
 export const redirect_replace_history = (uri, prop={}, originator=undefined) => {
-	if (isRedirecting)
-		return
-	isRedirecting = true
-
 	let rightBefore = window.location.pathname
 	history.replaceState(null, null, uri)
 	render_html(uri, prop, originator, rightBefore)
 }
 
 export const redirect_without_history = (uri, prop={}) => {
-	if (isRedirecting)
-		return
-	isRedirecting = true
-
 	render_html(uri, prop)
 }
 
