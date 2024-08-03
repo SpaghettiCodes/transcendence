@@ -19,13 +19,13 @@ export function generateMatchHistory(items) {
 				<div class='text-end border-end pe-2'>
 					${attacker_score} 
 				</div>
-				<div class='text-center'>
+				<div class='text-center text-truncate'>
 					${attacker.username}
 				</div>
 				<div class='text-center'>
 					-
 				</div>
-				<div class='text-center'>
+				<div class='text-center text-truncate'>
 					${defender.username}
 				</div>
 				<div class='text-start border-start ps-2'>
