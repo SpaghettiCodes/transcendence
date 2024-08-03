@@ -40,6 +40,12 @@ export default function chat(prop={}) {
 		}
 
 		value = await response.json()
+		if (visitingFriendID !== undefined && !value.find(value => value.username === visitingFriendID)) {
+			// not a friend, redirect back to chat/
+			redirect('/chat')
+			return false
+		}
+
 		prop.friendList = value
 
 		const blockedResponse = await fetchMod(
