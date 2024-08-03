@@ -17,4 +17,8 @@ clean: down
 	@docker system prune -af
 	@echo "Cleaned!"
 
+fclean: clean
+	sudo rm -rf ./data/database
+	rm -rf ./sslcert
+
 re: down all

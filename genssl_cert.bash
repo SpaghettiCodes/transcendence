@@ -26,7 +26,7 @@ if [[ ! -f "./ssl.key" && ! -f "./ssl.crt" ]]; then
 	openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 	-keyout ./ssl.key \
 	-out ./ssl.crt \
-	-subj "/C=MY/ST=Selangor/L=ShahAlam/O=ApongUs/OU=IDK/CN=apongus.com" \
+	-subj "/C=MY/ST=Selangor/L=ShahAlam/O=ApongUs/OU=IDK/CN=localhost" \
 	2> /dev/null
 
 	# i dont fucking know what am i doing
