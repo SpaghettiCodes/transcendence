@@ -7,8 +7,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 urlpatterns = [
     path('hello', hello.hello_world),
 
-    ## login n register
+    ## login, logout n register
     path('login', player.login),
+	path('logout', player.logout),
     path('register', player.createPlayer),
 	path('2fa/send', tfa.send_tfa_code),
 	path('2fa/verify', tfa.verify_tfa_code),
