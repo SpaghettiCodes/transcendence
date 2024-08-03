@@ -20,7 +20,7 @@
 	transition: background-color 0.25s ease-in-out;
 }
 
-.friend-list-item#friendMsgActivated {
+.friend-list-item.friendMsgActivated {
 	background-color: rgba(248, 249, 250, 0.342);
 }
 
@@ -78,6 +78,11 @@
 	border-radius: 100%;
 	object-fit: cover;
 }
+
+.chat-content-field .messageBox .ImageHolder:hover{
+	cursor: pointer;
+}
+
 
 .chat-content-field .messageBox .content{
 	flex-grow: 1;

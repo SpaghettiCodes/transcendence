@@ -1,19 +1,20 @@
-import { redirect } from "../../router.js"
+import { redirect, redirect_replace_history } from "../../router.js"
 import messageDiv from "./components/messageDiv.js"
 import errorDiv from "./components/errorDiv.js"
 import endOfChatDiv from "./components/endOfChatDiv.js"
+import { loadingDiv } from "./components/endOfChatDiv.js"
 
 import { createButton, createInput } from "../../components/elements.js"
 import { fetchMod } from "../../jwt.js"
 import generateUserTabs from "../../components/userTab.js"
 import { generateBlockedTab } from "../../components/userTab.js"
+import { replaceURL } from "../helpers.js"
 
 export default function chat(prop={}) {
 	let		websocket = undefined
 	let		resizeHandler = undefined
 	let		yourName = undefined
-	const	urlParams = new URLSearchParams(window.location.search)
-	let		currentlyVisiting = urlParams.get('friend')
+	let		visitingFriendID = (prop['arguments']) ? prop['arguments']['player_id'] : undefined
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
 	let prerender = async () => {
@@ -108,9 +109,16 @@ export default function chat(prop={}) {
 
 		const generateUserTabFunctions = (friendData) => {
 			let { username } = friendData
+	
 			return (element) => async () => {
+				replaceURL(`/chat/${username}`)
+
+				let activatedButton = document.getElementsByClassName('friendMsgActivated')
+				if (activatedButton.length)
+					activatedButton[0].classList.remove('friendMsgActivated')
+
 				await connectToNewChatroom(yourName, username)
-				element.setAttribute('id', 'friendMsgActivated')
+				element.classList.add('friendMsgActivated')
 			}
 		}
 
@@ -119,10 +127,12 @@ export default function chat(prop={}) {
 			for (let friendTab of friendTabs) {
 				if (prop.blockList.find((playerData) => playerData.username === friendTab.playerAssociated)) {
 					let blockedUsername = friendTab.playerAssociated
-					console.log(blockedUsername)
 					friendList.appendChild(generateBlockedTab(blockedUsername, generateUserTabFunctions({username: blockedUsername})))
-					
 				} else {
+					if (friendTab.playerAssociated === visitingFriendID) {
+
+						friendTab.classList.add('friendMsgActivated')
+					}
 					friendList.appendChild(friendTab)
 				}
 			}
@@ -142,7 +152,6 @@ export default function chat(prop={}) {
 				if (chatID) {
 					connectToWebsocket(`wss://localhost:8000/chat/${chatID}`)
 
-					urlParams.set('friend', target_username)
 					// reenable sending message
 					sendMessageButton.classList.remove('disabled')
 					sendInviteButton.classList.remove('disabled')
@@ -236,10 +245,6 @@ export default function chat(prop={}) {
 			gotAllMessages = false
 			if (websocket)
 				websocket.close()
-
-			let activatedButton = document.getElementById('friendMsgActivated')
-			if (activatedButton)
-				activatedButton.removeAttribute('id')
 		}
 
 		const connectToWebsocket = (url) => {
@@ -385,8 +390,14 @@ export default function chat(prop={}) {
 		}
 		window.addEventListener('resize', resizeHandler)
 
-		let eofDiv = new endOfChatDiv()
-		chatContentField.appendChild(eofDiv.mainDiv)
+		if (visitingFriendID) {
+			let loadDiv = new loadingDiv()
+			chatContentField.appendChild(loadDiv.mainDiv)
+			connectToNewChatroom(yourName, visitingFriendID)
+		} else {
+			let eofDiv = new endOfChatDiv()
+			chatContentField.appendChild(eofDiv.mainDiv)
+		}
 	}
 
 	let cleanup = () => {

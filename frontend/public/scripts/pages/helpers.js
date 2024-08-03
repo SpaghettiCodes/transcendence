@@ -14,3 +14,7 @@ export function pairElements(arr) {
 }
 
 export let everyElementContains = (a, b) => a.every(value => b.includes(value))
+
+export function replaceURL(newUrl) {
+	history.replaceState(null, null, newUrl)
+}

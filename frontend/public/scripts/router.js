@@ -30,6 +30,7 @@ const routes = {
 	'/match/<game_id>/spectate': match,
 	'/match/<game_id>/results': result,
 	'/match/<game_id>': match,
+	'/chat/<player_id>': chat,
 	'/chat': chat,
 	'/tournament/<tournament_id>/spectate': tournament,
 	'/tournament/<tournament_id>/results': tournamentResult,
@@ -204,6 +205,7 @@ document.onclick = (e) => {
 
 	if (element.tagName.toLowerCase() === 'a') {
 		redirect(element.href)
+		console.log('hello')
 		return false // prevents default action and stops event propagation
 	}
 }
