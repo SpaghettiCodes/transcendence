@@ -131,58 +131,79 @@ export default function template(prop = {}) {
 
     let postrender = async () => {
         const user = prop.data.user;
+		let gettingUserData = false
 
-        document.getElementById('search').addEventListener('click', async (e) => {
-            const inputBox = document.getElementById('searchInputBox');
-            const search = inputBox.value;
-            console.log('Search:', search);
+		const	getUserDataWrapper = (func) => async (e) => {
+			if (gettingUserData)
+				return
+			gettingUserData = true
+			await func(e)
+			gettingUserData = false
+		}
 
-			
-            const response = await fetchMod(`https://localhost:8000/api/player/${search}`);
-            if (!response.ok) return createAlert('error', 'The user \'' + search + '\' does not exist');
-            const user = await response.json();
-            const userMatchHistoryResponse = await fetchMod(`https://localhost:8000/api/player/${user.username}/match`);
-            const matchHistory = await userMatchHistoryResponse.json();
-            const profileDetails = document.querySelector('.profile-details');
-			profileDetails.innerHTML = createLoader();
-			await sleep(1000);
-            profileDetails.innerHTML = generateUserProfile(user, matchHistory);
-            updateCharts(user, matchHistory);
-            friend = user.username;
-        });
+		document.getElementById('search').addEventListener('click', getUserDataWrapper( async (e) => {
+				const inputBox = document.getElementById('searchInputBox');
+				const search = inputBox.value;
+				console.log('Search:', search);
+
+				if (search === friend) {
+					// no need to rerender everything
+					return
+				}
+
+				const response = await fetchMod(`https://localhost:8000/api/player/${search}`);
+				if (!response.ok) return createAlert('error', 'The user \'' + search + '\' does not exist');
+				const user = await response.json();
+				const userMatchHistoryResponse = await fetchMod(`https://localhost:8000/api/player/${user.username}/match`);
+				const matchHistory = await userMatchHistoryResponse.json();
+				const profileDetails = document.querySelector('.profile-details');
+				profileDetails.innerHTML = createLoader();
+				await sleep(1000);
+				profileDetails.innerHTML = generateUserProfile(user, matchHistory);
+				updateCharts(user, matchHistory);
+				friend = user.username;
+			}
+		)
+	);
 
 
-        document.querySelector('.friend-list').addEventListener('click', async (e) => {
-            if (e.target.classList.contains('friend-list-item')) {
-                const friendName = e.target.innerText;
-                console.log('Friend:', friendName);
-    
-                // Show loading indicator
-                const profileDetails = document.querySelector('.profile-details');
-                profileDetails.innerHTML = createLoader();
-    
-                try {
-                    const response = await fetchMod(`https://localhost:8000/api/player/${friendName}`);
-                    if (!response.ok) {
-                        createAlert('error', 'The user \'' + friendName + '\' does not exist');
-                        profileDetails.innerHTML = ''; // Clear loading indicator
-                        return;
-                    }
-                    const friendProfile = await response.json();
-                    const friendMatchHistoryResponse = await fetchMod(`https://localhost:8000/api/player/${friendProfile.username}/match`);
-                    const matchHistory = await friendMatchHistoryResponse.json();
-    
-                    // Update profile details and charts
-                    profileDetails.innerHTML = generateUserProfile(friendProfile, matchHistory);
-                    updateCharts(friendProfile, matchHistory);
-                    friend = friendProfile.username;
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                    createAlert('error', 'An error occurred while fetching data');
-                    profileDetails.innerHTML = ''; // Clear loading indicator
-                }
-            }
-        });
+        document.querySelector('.friend-list').addEventListener('click', getUserDataWrapper(async (e) => {
+				if (e.target.classList.contains('friend-list-item')) {
+					const friendName = e.target.innerText;
+					console.log('Friend:', friendName);
+		
+					if (friendName === friend) {
+						return
+					}
+
+					// Show loading indicator
+					const profileDetails = document.querySelector('.profile-details');
+					profileDetails.innerHTML = createLoader();
+		
+					try {
+						const response = await fetchMod(`https://localhost:8000/api/player/${friendName}`);
+						if (!response.ok) {
+							createAlert('error', 'The user \'' + friendName + '\' does not exist');
+							profileDetails.innerHTML = ''; // Clear loading indicator
+							return;
+						}
+						const friendProfile = await response.json();
+						const friendMatchHistoryResponse = await fetchMod(`https://localhost:8000/api/player/${friendProfile.username}/match`);
+						const matchHistory = await friendMatchHistoryResponse.json();
+		
+						// Update profile details and charts
+						profileDetails.innerHTML = generateUserProfile(friendProfile, matchHistory);
+						updateCharts(friendProfile, matchHistory);
+						friend = friendProfile.username;
+					} catch (error) {
+						console.error('Error fetching data:', error);
+						createAlert('error', 'An error occurred while fetching data');
+						profileDetails.innerHTML = ''; // Clear loading indicator
+					}
+				}
+			}
+		)
+	);
 
 
         document.querySelector('.blocked-list').addEventListener('click', async (e) => {
