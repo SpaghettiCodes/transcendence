@@ -1,4 +1,4 @@
-import { redirect, redirect_replace_history } from "../../router.js"
+import { redirect } from "../../router.js"
 import messageDiv from "./components/messageDiv.js"
 import errorDiv from "./components/errorDiv.js"
 import endOfChatDiv from "./components/endOfChatDiv.js"

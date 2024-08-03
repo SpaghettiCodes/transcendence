@@ -23,6 +23,8 @@ import { check_token_exists, getJwtToken } from "./jwt.js"
 import auth2fa from "./pages/auth.js"
 import { connectToPlayerNotificationWebsocket, disconnectPlayerNotificationWebsocket, isConnectedToPlayerNoti } from "./pages/playerNoti.js"
 
+export let loadingPage = false
+
 const routes = {
 	'/': landing,
 	'/error': fourofour,
@@ -143,6 +145,7 @@ const render_html = (which, prop={}, originator=undefined, rightBefore=undefined
 	clean_up_function()
 	clean_up_function = cleanup
 
+	loadingPage = true
 	let prerenderLocation = window.location.pathname
 	prerender().then(
 		(success) => {
@@ -150,6 +153,7 @@ const render_html = (which, prop={}, originator=undefined, rightBefore=undefined
 				if (prerenderLocation !== window.location.pathname) {
 					// we got redirected, abort
 					console.log('content doesnt make sense anymore')
+					loadingPage = false
 					return
 				}
 
@@ -164,6 +168,7 @@ const render_html = (which, prop={}, originator=undefined, rightBefore=undefined
 			} else {
 				// oh fuck it, prerender is expected to handle the fails
 			}
+			loadingPage = false
 		}
 	)
 }

@@ -1,6 +1,6 @@
 import generateUserTabs from "../../components/userTab.js"
 import { fetchMod, getJwtToken } from "../../jwt.js"
-import { redirect, redirect_replace_history, redirect_without_history } from "../../router.js"
+import { redirect, redirect_replace_history } from "../../router.js"
 import { everyElementContains, pairElements } from "../helpers.js"
 import { appendOngoingMatchup, appendTournamentScreen, generateTournamentScreen } from "./components/roundGenerator.js"
 

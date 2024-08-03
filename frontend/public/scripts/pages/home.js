@@ -1,6 +1,7 @@
 import { createButton } from "../components/elements.js"
 import { fetchMod } from "../jwt.js"
 import { redirect } from "../router.js"
+import { redirectSpamWrapper } from "./helpers.js"
 
 export default function home(prop={}) {
 	let pong = false
@@ -62,31 +63,27 @@ export default function home(prop={}) {
 			redirect('/matchmaking/tournament')
 		}
 
-		const	changeLanguage = () => {
-			alert('Soon!')
-		}
-
 		const	chatWithFriends = () => {
 			redirect('/chat')
 		}
 
 		const profile_button = document.getElementById("profile")
-		profile_button.onclick = go_profile
+		profile_button.onclick = redirectSpamWrapper(go_profile)
 
 		const friend_button = document.getElementById("friends")
-		friend_button.onclick = go_friends
+		friend_button.onclick = redirectSpamWrapper(go_friends)
 
 		const pong_button = document.getElementById("pongGame")
-		pong_button.onclick = matchmakePong
+		pong_button.onclick = redirectSpamWrapper(matchmakePong)
 
 		const apong_button = document.getElementById("apongUsGame")
-		apong_button.onclick = matchmakeApong
+		apong_button.onclick = redirectSpamWrapper(matchmakeApong)
 
 		const tournament_button = document.getElementById("tournament")
-		tournament_button.onclick = matchmakeTournamnet
+		tournament_button.onclick = redirectSpamWrapper(matchmakeTournamnet)
 
 		const chat_button = document.getElementById("chat")
-		chat_button.onclick = chatWithFriends
+		chat_button.onclick = redirectSpamWrapper(chatWithFriends)
 	}
 
 	let cleanup = () => {

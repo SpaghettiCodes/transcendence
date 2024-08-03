@@ -1,5 +1,5 @@
 import { fetchMod, getJwtToken } from "../jwt.js"
-import { redirect, redirect_replace_history, redirect_without_history } from "../router.js"
+import { redirect_replace_history } from "../router.js"
 import { ImageFromBackendUrl } from "./helpers.js"
 
 export default function match(prop={}) {

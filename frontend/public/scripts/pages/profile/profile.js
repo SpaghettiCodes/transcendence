@@ -3,6 +3,7 @@ import { createButton } from "../../components/elements.js";
 import { generateProfileInfo } from "../../components/generateProfileInfo.js";
 import { fetchMod } from "../../jwt.js";
 import { redirect } from "../../router.js"
+import { redirectSpamWrapper } from "../helpers.js";
 import { generateMatchHistory } from "./components/matchHistory.js";
 import drawPieChartData from "./components/pieChartData.js";
 
@@ -122,9 +123,11 @@ export default function template(prop={}) {
 			matches.forEach(match => {
 				let matchId = match.matchid
 				let matchDiv = document.getElementById(`match-${matchId}`)
-				matchDiv.onclick = () => {
-					redirect(`/match/${matchId}/results`)
-				}
+				matchDiv.onclick = redirectSpamWrapper(
+					() => {
+						redirect(`/match/${matchId}/results`)
+					}
+				)
 			});
 		}
 		linkResultURL()

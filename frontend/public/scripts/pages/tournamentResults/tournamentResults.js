@@ -2,7 +2,7 @@ import generateUserTabs from "../../components/userTab.js"
 import { fetchMod } from "../../jwt.js"
 import { redirect, redirect_without_history } from "../../router.js"
 import { pairElements } from "../helpers.js"
-import { appendTournamentScreen, generateTournamentScreen } from "../tournament/components/roundGenerator.js"
+import { generateTournamentScreen } from "../tournament/components/roundGenerator.js"
 
 export default function tournamentResult(prop={}) {
 	let tournament_id = (prop['arguments']) ? (prop['arguments']['tournament_id']) : undefined

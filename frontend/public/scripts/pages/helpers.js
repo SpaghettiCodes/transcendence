@@ -1,3 +1,5 @@
+import { loadingPage } from "../router.js"
+
 export function ImageFromBackendUrl(url) {
 	return `https://localhost:8000${url}`
 }
@@ -17,4 +19,11 @@ export let everyElementContains = (a, b) => a.every(value => b.includes(value))
 
 export function replaceURL(newUrl) {
 	history.replaceState(null, null, newUrl)
+}
+
+// prevent spamming of button to prevent multiple calls to redirect
+export const redirectSpamWrapper = (func) => () => {
+	if (loadingPage)
+		return
+	func()
 }

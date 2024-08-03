@@ -1,4 +1,5 @@
 import { redirect } from "../../../router.js"
+import { redirectSpamWrapper } from "../../helpers.js"
 
 export default class messageDiv {
 	constructor (type) {
@@ -53,9 +54,12 @@ export default class messageDiv {
 		let authorID = data['sender']['username']
 		let imageURL = `https://localhost:8000/api${data['sender']['profile_pic']}`
 		this.ImageHolder.src = imageURL
-		this.ImageHolder.onclick = () => {
-			redirect(`/friends/${authorID}`)
-		}
+		this.ImageHolder.onclick = redirectSpamWrapper(
+			() => {
+				redirect(`/friends/${authorID}`)
+			}
+		)
+
 
 		if (this.type === 'message') {
 			let messageContent = data['content']
@@ -96,14 +100,18 @@ export default class messageDiv {
 	static setPlayButtonStatus (inviteContent, buttonElement, status, matchID) {
 		if (status === "waiting") {
 			buttonElement.innerText = "Join Match"
-			buttonElement.onclick = () => {
-				redirect(`/match/${matchID}`)
-			}
+			buttonElement.onclick = redirectSpamWrapper(
+				() => {
+					redirect(`/match/${matchID}`)
+				}	
+			)
 		} else if (status === "done") {
 			buttonElement.innerText = "Match Results"
-			buttonElement.onclick = () => {
-				redirect(`/match/${matchID}/results`)
-			}
+			buttonElement.onclick = redirectSpamWrapper(
+				() => {
+					redirect(`/match/${matchID}/results`)
+				}	
+			)
 		} else if (status === "expired") {
 			inviteContent.innerText = 'This invitation is no longer available'
 			buttonElement.innerText = "Unavailable"

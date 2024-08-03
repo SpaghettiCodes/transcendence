@@ -1,4 +1,4 @@
-import { redirect, redirect_replace_history, redirect_without_history } from "../router.js"
+import { redirect, redirect_without_history } from "../router.js"
 import { getJwtToken, removeJWTPair, setJwtToken, setRefreshToken } from "../jwt.js"
 import { createButton, createInput } from "../components/elements.js"
 import createInputFields from "../components/inputFields.js"
