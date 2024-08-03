@@ -52,7 +52,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
                 self.send_json({
                     'status': 'auth_error'
                 })
-                return self.close()
+                return await self.close()
 
             match command:
                 case 'join':
@@ -62,9 +62,8 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
                             'status': 'error',
                             'message': result[1]
                         })
-                        self.close()
 
-                        return
+                        return await self.close()
 
                     self.authorized = True
                 case 'watch':

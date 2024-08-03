@@ -52,7 +52,7 @@ class PlayerNotification(AsyncJsonWebsocketConsumer):
                     self.send_json({
                         'status': 'auth_error'
                     })
-                    return self.close()
+                    return await self.close()
 
                 username = self.playerObject.username
                 self.groupName = PlayerNotification.generateGroupName(username)
