@@ -37,22 +37,31 @@ export default function template(prop = {}) {
 
 			let profileData = undefined
 			let profileMatchData = undefined
+
+			const getSearchingData = async () => {
+				const profileFetch = await fetchMod(`https://localhost:8000/api/player/${searching}`);
+				if (!profileFetch.ok) {
+					return false
+				}
+ 
+				profileData = await profileFetch.json();
+	
+				const profileMatch = await fetchMod(`https://localhost:8000/api/player/${searching}/match`);
+				if (!profileFetch.ok) {
+					return false
+				}
+
+				profileMatchData = await profileMatch.json();
+				return true
+			}
+
 			if (searching !== undefined) {
-				try {
-					const profileFetch = await fetchMod(`https://localhost:8000/api/player/${searching}`);
-					if (!profileFetch.ok)
-						throw profileFetch
-					profileData = await profileFetch.json();
-		
-					const profileMatch = await fetchMod(`https://localhost:8000/api/player/${searching}/match`);
-					profileMatchData = await profileMatch.json();
-				} catch (response) {
-					if (response.status === 404) {
-						console.log('forget it')
-						replaceURL('/friends')
-						profileData = undefined
-						profileMatchData = undefined
-					}
+				let status = await getSearchingData()
+				if (!status) {
+					createAlert('error', 'The user \'' + searching + '\' does not exist')
+					replaceURL('/friends')
+					profileData = undefined
+					profileMatchData = undefined
 				}
 			}
 
