@@ -5,6 +5,11 @@
 	border-right: 5px black solid;
 }
 
+.match-box:last-child {
+	/* background-color: rgb(206, 206, 206); */
+	border-bottom: 5px black solid;
+}
+
 .match-box .username-div{
 	display: grid;
 	grid-template-columns: 1fr 1fr auto 1fr 1fr;

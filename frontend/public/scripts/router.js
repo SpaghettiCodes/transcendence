@@ -38,6 +38,7 @@ const routes = {
 	'/profile': profile,
 	'/matchmaking/<game_type>': matchmaking,
 	'/friends': friendlist,
+	'/friends/<player_id>': friendlist,
 	'/auth/2fa': auth2fa,
 	'/ftlogin': ftlogin,
 }

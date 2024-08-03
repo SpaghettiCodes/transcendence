@@ -54,7 +54,7 @@ export default class messageDiv {
 		let imageURL = `https://localhost:8000/api${data['sender']['profile_pic']}`
 		this.ImageHolder.src = imageURL
 		this.ImageHolder.onclick = () => {
-			redirect(`/friends?search=${authorID}`)
+			redirect(`/friends/${authorID}`)
 		}
 
 		if (this.type === 'message') {

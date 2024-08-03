@@ -67,7 +67,7 @@ export default function result(prop={}) {
 			if (!viewProfileButton)
 				continue
 			viewProfileButton.onclick = () => {
-				redirect(`/friends?search=${playerUsername}`)
+				redirect(`/friends/${playerUsername}`)
 			}
 		}
 

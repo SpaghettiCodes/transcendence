@@ -69,7 +69,7 @@ export default function tournamentResult(prop={}) {
 		function playerDivOnClickGenerator (data) {
 			return (element) => () => {
 				let playerUsername = data.username
-				redirect(`/friends?search=${playerUsername}`)
+				redirect(`/friends/${playerUsername}`)
 			}
 		}
 

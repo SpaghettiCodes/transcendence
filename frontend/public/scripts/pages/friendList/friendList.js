@@ -7,11 +7,11 @@ import { createAlert } from "../../components/alert.js";
 import { generateMatchHistory } from '../profile/components/matchHistory.js';
 import drawPieChartData from '../profile/components/pieChartData.js';
 import { createLoader } from "../../components/loader.js";
+import { replaceURL } from "../helpers.js";
 
 export default function template(prop = {}) {
     let friends, profile, matches ,friend, me, blockList, friendRequests;
-	let searchParams = new URLSearchParams(window.location.search)
-	let searching = searchParams.get('search')
+	let searching = (prop['arguments']) ? prop['arguments']['player_id'] : undefined
 
     let prerender = async () => {
         try {
@@ -37,7 +37,7 @@ export default function template(prop = {}) {
 
 			let profileData = undefined
 			let profileMatchData = undefined
-			if (searching !== null) {
+			if (searching !== undefined) {
 				try {
 					const profileFetch = await fetchMod(`https://localhost:8000/api/player/${searching}`);
 					if (!profileFetch.ok)
@@ -49,6 +49,7 @@ export default function template(prop = {}) {
 				} catch (response) {
 					if (response.status === 404) {
 						console.log('forget it')
+						replaceURL('/friends')
 						profileData = undefined
 						profileMatchData = undefined
 					}
@@ -448,6 +449,8 @@ function generateFriendRequestList(requests) {
 }
 
 function generateUserProfile(profile, matches = []) {
+	replaceURL(`/friends/${profile.username}`)
+
     return `
     <div class="d-flex justify-content-center flex-grow-1 gap-5 text-white overflow-y-hidden profile p-4">
         <div class='d-flex flex-column overflow-y-auto gap-1 profile-stuff'>

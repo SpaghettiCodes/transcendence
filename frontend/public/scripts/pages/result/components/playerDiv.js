@@ -60,7 +60,7 @@ export default class playerDetailsDiv {
 			profileButton.setAttribute('class', 'resultBtn')
 			profileButton.innerText = 'View Profile'
 			profileButton.onclick = (event) => {
-				redirect(`/colleagues?search=${username}`)
+				redirect(`/colleagues/${username}`)
 			}
 
 			this.innerDiv.appendChild(profileButton)
