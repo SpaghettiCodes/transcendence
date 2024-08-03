@@ -57,7 +57,7 @@ export default function tournamentResult(prop={}) {
 			<div class='d-flex flex-row gap-2' id='playerDiv'>
 			</div>
 		</div>
-		<button class='btn btn-dark text-white my-3' id='home-button'>Home</button>
+		<button class='btn btn-dark text-white my-3' id='home-button'>Back</button>
 		`
 	}
 

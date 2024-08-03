@@ -51,7 +51,7 @@ export default function result(prop={}) {
 			${scoreDetailsDiv(prop.data, yourName)}
 		</div>
 		<div class='btn-btm'>
-			<button class='btn btn-dark text-white btn-bot btn-lg' id='home-button'>Home</button>
+			<button class='btn btn-dark text-white btn-bot btn-lg' id='home-button'>Back</button>
 		</div>`
 	}
 
