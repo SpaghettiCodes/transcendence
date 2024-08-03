@@ -51,9 +51,13 @@ export default function template(prop={}) {
 				<h1 class="title">Employee Info</h1>
 			</div>
 			<div class="d-flex justify-content-center flex-grow-1 gap-5 text-white overflow-y-hidden profile p-4">
-				<div class='d-flex flex-column overflow-y-auto gap-1 profile-stuff'>
-					<div class="profile-info p-3">
+				<div class='d-flex flex-column overflow-y-auto gap-3 profile-stuff'>
+					<div class="profile-info">
 						${generateProfileInfo(profile)}
+					</div>
+					<div>
+						${createButton('btn btn-secondary', 'button', 'Change Profile Pic', 'pfp_button')}
+						${createButton('btn btn-secondary', 'button', 'Change Email', 'email_button')}
 					</div>
 					<div class="d-flex flex-column match-history flex-grow-1 overflow-y-auto p-3 rounded">
 						<h3>Match History</h3>
@@ -75,10 +79,6 @@ export default function template(prop={}) {
 						<canvas id="myChart3"></canvas>
 					</div>
 				</div>
-			</div>
-			<div class="bottom-left-buttons">
-				${createButton('btn btn-secondary', 'button', 'Change Profile Pic', 'pfp_button')}
-				${createButton('btn btn-secondary', 'button', 'Change Email', 'email_button')}
 			</div>
 		</div>
     `

@@ -27,6 +27,8 @@
     font-weight: 500;
     font-size: 14px;
     flex-grow: 1; /* Allow title to grow and push close button to the side */
+	overflow: hidden;
+	text-overflow: ellipsis;
   }
   
   .alert__close {

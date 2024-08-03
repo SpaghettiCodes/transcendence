@@ -112,7 +112,7 @@ def SpecificPlayer(request, player_username):
 def SpecificPlayerMatches(request, player_username):
     p = get_object_or_404(Player.objects, username=player_username)
     m = Match.objects.filter(Q(result__attacker=p) | Q(result__defender=p))
-    m = m.order_by("time_played")
+    m = m.order_by("-time_played")
     serialized = MatchSerializer(m, many=True)
     return Response(serialized.data)
 

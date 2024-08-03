@@ -6,9 +6,7 @@
 	aspect-ratio: 1;
 	width: 5em;
 	margin: 5px;
-	background-position: top;
-	background-size: cover;
-	background-repeat: no-repeat;
+	object-fit: cover;
 }
 
 .resultDiv .flex-grow-2 {

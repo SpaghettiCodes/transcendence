@@ -307,7 +307,9 @@ export default function template(prop = {}) {
             } else {
                 if (response.status === 409) {
                     createAlert('info', 'User ' + friend + ' already blocked');
-                } else {
+                } else if (response.status === 400) {
+					createAlert('error', (await response.json()).error)
+				} else {
                     createAlert('error', 'An error occurred while blocking user');
                     throw new Error('Error :' + response.statusText);
                 }
