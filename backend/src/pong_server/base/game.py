@@ -227,6 +227,9 @@ class Game(ABC):
     def getWinner(self):
         pass
 
+    def unsetForfeit(self):
+        self.forfeit = False
+
     def setForfeit(self):
         self.forfeit = True
 
@@ -235,13 +238,19 @@ class Game(ABC):
 
     def getNotMissingPlayer(self):
         notMissingPlayer = [player for player in self.expectedPlayers if player in self.players]
-        print(notMissingPlayer)
+        if (not len(notMissingPlayer)):
+            return None
         return notMissingPlayer[0]
 
     def getMissingPlayer(self):
         missingPlayer = [player for player in self.expectedPlayers if player not in self.players]
-        print(missingPlayer)
+        if (not len(missingPlayer)):
+            return None
         return missingPlayer[0]
+    
+    def noMissingPlayer(self):
+        missingPlayer = [player for player in self.expectedPlayers if player not in self.players]
+        return len(missingPlayer)
 
     async def loop(self):
         self.initialization()

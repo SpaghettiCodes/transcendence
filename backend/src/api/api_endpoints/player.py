@@ -215,14 +215,21 @@ def selectNRandomPlayers(request: Request):
 
 @api_view(['POST'])
 def logout(request: Request):
-    requester_username = request.user.username
-    
-    player_logging_off = get_object_or_404(Player.objects, username=requester_username)
-    player_logging_off.now_offline()
-    
+    requester = request.user
+    requester.now_offline()
+
     return Response(
         status=status.HTTP_200_OK
     )
+
+@api_view(['POST'])
+def checkIn(request: Request):
+    requester = request.user()
+    requester.now_online()
+    return Response(
+        status=status.HTTP_200_OK
+    )
+
 
 """
 test:

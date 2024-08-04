@@ -1,6 +1,8 @@
 .profile-info {
-	min-width: 450px;
-	width: 450px;
+	display: flex;
+	flex-direction: column;
+	align-items: start;
+	justify-items: start;
 }
 
 .chartArea {
@@ -45,6 +47,8 @@
 .match-history {
     background-color: #343a40; /* Dark background color */
     color: #f8f9fa; /* Light text color */
+	min-width: 450px;
+	width: 450px;
 }
 
 .lowered {

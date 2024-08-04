@@ -67,6 +67,13 @@ class GameFrame:
     def getWinnerLoser(self):
         if self.attackerScore > self.defenderScore:
             return (self.attackerObject, self.defenderObject)
+        elif self.attackerScore == self.defenderScore:
+            # draw
+            # doesnt matter who won or lost, just randomly choose one guy as the winner
+            # this will affect tournament results
+            save = [self.attackerObject, self.defenderObject]
+            random.shuffle(save)
+            return tuple(save)
         return (self.defenderObject, self.attackerObject)
 
     def getMaxScore(self):

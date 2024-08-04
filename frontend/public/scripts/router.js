@@ -19,7 +19,7 @@ import matchmaking from "./pages/matchmaking.js"
 import chat from "./pages/chat/chat.js"
 import friendlist from "./pages/friendList/friendList.js"
 import match from "./pages/match.js"
-import { check_token_exists, getJwtToken } from "./jwt.js"
+import { check_token_exists, fetchMod, getJwtToken, removeJWTPair } from "./jwt.js"
 import auth2fa from "./pages/auth.js"
 import { connectToPlayerNotificationWebsocket, disconnectPlayerNotificationWebsocket, isConnectedToPlayerNoti } from "./pages/playerNoti.js"
 
@@ -221,10 +221,23 @@ document.onclick = (e) => {
 	}
 }
 
+
+const checkIn = () => {
+	fetchMod(`https://localhost:8000/api/`)
+}
+
+checkIn()
+
 // to move the url in history
 // https://gomakethings.com/how-to-update-the-browser-url-without-refreshing-the-page-using-the-vanilla-js-history-api/
 // https://gomakethings.com/how-to-detect-when-the-browser-url-changes-with-vanilla-js/#:~:text=You%20can%20use%20the%20popstate,The%20URL%20changed...%20%7D)%3B
 window.addEventListener("popstate", navigate)
+
+window.addEventListener('beforeunload', (e) => {
+	// removeJWTPair()
+})
+
+
 
 // you could also just call navigate, since i place this script at the bottom
 document.addEventListener("DOMContentLoaded", navigate)

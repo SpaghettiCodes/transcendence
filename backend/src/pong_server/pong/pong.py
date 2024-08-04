@@ -110,8 +110,13 @@ class PongGame(Game):
 
         winner, loser = self.field.getWinnerLoser()
         if self.isForfeit():
-            winner = self.getNotMissingPlayer()
-            loser = self.getMissingPlayer()
+            # for forfeit to happen, there must be exactly one missing player and one existing player
+            if (not self.getNotMissingPlayer()): # there is no player remaining
+                # not a forfeit
+                self.unsetForfeit()
+            else:
+                winner = self.getNotMissingPlayer()
+                loser = self.getMissingPlayer()
 
         newResult = MatchResult(
             attacker=self.attackerObject, 

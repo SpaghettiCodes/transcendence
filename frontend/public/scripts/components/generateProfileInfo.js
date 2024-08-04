@@ -1,16 +1,16 @@
+import { ImageFromBackendUrl } from "../pages/helpers.js";
+
 export function generateProfileInfo(profile) {
 	console.log(profile)
 
-	let winLostRatio = undefined
-	if (profile.matches_played)
-		winLostRatio = profile.matches_won / profile.matches_played
-	else
-		winLostRatio = 'Cant be calculated yet'
-
-	let imageSrc = `https://localhost:8000${profile.profile_pic}`
+	let imageSrc = ImageFromBackendUrl(profile.profile_pic)
+	let onlineStatus = profile.is_active ? 'online' : 'offline'
 
 	return `
 		<h2 class="mt-3">${profile.username}</h2>
-		<img src="${imageSrc}" alt="Profile Picture" class="profile-pic" id="pfp">
+		<div class='d-flex flex-row position-relative'>
+			<img src="${imageSrc}" alt="Profile Picture" class="profile-pic" id="pfp">
+			<div class='online-status ${onlineStatus}'></div>
+		</div>
     `;
 }

@@ -1,0 +1,20 @@
+.online-status {
+	position: absolute;
+
+	bottom: -5%;
+	right: -5%;
+
+	border-radius: 100%;
+	background-color: grey;
+
+	width: 25px;
+	height: 25px;
+}
+
+.online-status.online {
+	background-color: rgb(47, 255, 82);
+}
+
+.online-status.offline {
+	background-color: red;
+}

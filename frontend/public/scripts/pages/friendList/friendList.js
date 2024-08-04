@@ -485,8 +485,8 @@ function generateUserProfile(profile, matches = []) {
 
     return `
     <div class="d-flex justify-content-center flex-grow-1 gap-5 text-white overflow-y-hidden profile p-4">
-        <div class='d-flex flex-column overflow-y-auto gap-1 profile-stuff'>
-            <div class="profile-info p-3">
+        <div class='d-flex flex-column overflow-y-auto gap-3 profile-stuff'>
+            <div class="profile-info">
                 ${generateProfileInfo(profile)}
             </div>
             <div class="d-flex flex-column match-history flex-grow-1 overflow-y-auto p-3 rounded">

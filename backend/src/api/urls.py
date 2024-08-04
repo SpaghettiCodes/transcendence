@@ -9,6 +9,7 @@ urlpatterns = [
 
     ## login, logout n register
     path('login', player.login),
+	path('checkin', player.checkIn),
 	path('logout', player.logout),
     path('register', player.createPlayer),
 	path('2fa/send', tfa.send_tfa_code),
