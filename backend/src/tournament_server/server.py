@@ -260,6 +260,7 @@ class TournamentServer:
         print("yooo starting the match!!1!!11")
         await self.matchUp()
         await self.notify_ToRefresh()
+        await self.notify_OnGoingMatches()
         await self.update_list()
 
     def reset(self):
@@ -449,7 +450,8 @@ class TournamentServer:
         await self.channel_layer.group_send(self.groupName, {
             "type": "message",
             "text": {
-                "matches": self.getMatches()
+                'status': 'matchup',
+                "matchups": [ match.get_data() for match in self.currentlyRunningMatches ]
             }
         })
 

@@ -292,6 +292,15 @@ export default function tournament(prop={}) {
 					case "winner":
 						setStatusMessage(`${data['winner']['username']} wins the tournament`)
 						break
+					case 'matchup':
+						console.log(data['matchups'])
+						// figure out which match is your match
+						let matchData = data['matchups'].find((match) => match.players.includes(yourName))
+						console.log(matchData)
+						if (matchData) {
+							redirect(`/match/${matchData.game_id}`)
+						}
+						break
 				}
 			}
 		}
