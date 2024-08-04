@@ -1,3 +1,5 @@
+import { createButton, createInput } from "../components/elements.js"
+import createInputFields from "../components/inputFields.js"
 import { setJwtToken, setRefreshToken } from "../jwt.js"
 import { redirect, redirect_replace_history } from "../router.js"
 import { connectToPlayerNotificationWebsocket } from "./playerNoti.js"
@@ -24,23 +26,49 @@ export default function ftlogin(prop={}) {
 			</h2>
 
 			<div class='hide' id='registerPlayerTrigger'>
-				<form class='d-flex flex-column gap-2 align-items-stretch' id='registerPlayer'>
+				<form class='d-flex flex-column gap-5 align-items-center' id='registerPlayer'>
 					<h2>
-						Unregistered! Fill in register details below
+						Unregistered! Fill in your profile details below
 					</h2>
-					<div class='inputFields'>
-						<label for='username'>Username</label>
-						<input type='text' name='username' id='username' value=''>
+					<div class='d-flex flex-column landingPageMain gap-3'>
+						${createInputFields(
+							createInput('landing-ui-var input', 'username', 'username', 'username','Crewmate ID'),
+							'ID',
+							'landing-ui-var inputText',
+							'input-fields gap-2',
+							'fw-bold hide landing-ui-var text-danger text-center errorMsg',
+							'usernameError'
+						)}
+						${createInputFields(
+							createInput('landing-ui-var input', 'password', 'password', 'password','Crewmate Password'),
+							'Password',
+							'landing-ui-var inputText',
+							'input-fields gap-2',
+							'fw-bold hide landing-ui-var text-danger text-center errorMsg',
+							'passwordError'
+						)}
+						<h3 class='hide landing-ui-var errorBoard fw-bold text-center text-danger' id='errorMsgBoard'>Test</h3>
+						${createButton('ui-btn btn-outline-light flex-grow-1', 'submit', 'Submit', 'submitData')}
 					</div>
-					<div class='inputFields'>
-						<label for='username'>Password</label>
-						<input type='text' name='password' id='password' value=''>
-					</div>
-					<input type='submit' id='submitData' value='Submit'>
 				</form>
 			</div>
 		</div>
 		`
+	}
+
+	let usernameError = undefined
+	let passwordError = undefined
+	let errorMsgBoard = undefined
+	
+	const clearErrorMsg = () => {
+		errorMsgBoard.innerText = ''
+		usernameError.innerText = ''
+		passwordError.innerText = ''
+	}
+
+	const showErrorMsg = (errorElement, msg) => {
+		errorElement.classList.remove('hide')
+		errorElement.innerText = msg
 	}
 
 	let getFTCode = async (code) => {
@@ -148,9 +176,20 @@ export default function ftlogin(prop={}) {
 
 			await linkWithFTCode(ftCode, access)
 		}
-		catch (err) {
-			if (err.status === 404) {
-				console.log("You have not registered b4")
+		catch (error) {
+			console.log(error)
+			if (error.status === 404) {
+			} else if (error.status === 409) {
+				showErrorMsg(errorMsgBoard, 'Player with that username already exist')
+			} else if (error.status === 400) {
+				let response = await error.json()
+				console.log(response)
+				let reason = response.reason
+				let { password, username } = reason
+				if (username) 
+					showErrorMsg(usernameError, username[0])
+				else if (password)
+					showErrorMsg(passwordError, password[0])
 			}
 		}
 	}
@@ -187,8 +226,13 @@ export default function ftlogin(prop={}) {
 	}
 
 	let postrender = () => {
+		usernameError = document.getElementById('usernameError')
+		passwordError = document.getElementById('passwordError')
+		errorMsgBoard = document.getElementById('errorMsgBoard')
+
 		document.getElementById('registerPlayer').addEventListener('submit', (e) => {
 			e.preventDefault()
+			clearErrorMsg()
 			registerNewPlayer(ftCode)
 		})
 

@@ -12,32 +12,29 @@ export default function template(prop={}) {
 
 	// attach all pre-rendering code here (like idk, fetch request or something)
 	let prerender = async () => {
-		try {
-			// get user data
-			const response = await fetchMod("https://localhost:8000/api/me"); //change to the correct endpoint
-			if (!response.ok)
-				throw new Error('Network response was not ok ' + response.statusText);
-			const data = await response.json();
-			prop.data = data; // Store the fetched data in the prop object
-			yourName = data.username
-
-			// get match history
-			// i may throw this in /players and /me also
-			// see first
-			const matchHistoryResponse = await fetchMod(`https://localhost:8000/api/player/${yourName}/match`)
-			if (!matchHistoryResponse.ok)
-				throw new Error('Server responded with ' + matchHistoryResponse.statusText)
-			const matchData = await matchHistoryResponse.json()
-			prop.match = matchData
-
-			return true; // Return true to continue to render_code
-		} catch (error) {
-			console.error('Fetch error:', error);
-			if (error === 'redirected')
-				return false
+		// get user data
+		const response = await fetchMod("https://localhost:8000/api/me"); //change to the correct endpoint
+		if (!response.ok) {
 			history.back()
-			return false; // Return false to abort rendering
+			return false
 		}
+		const data = await response.json();
+		data.is_online = true // funny hack
+		prop.data = data; // Store the fetched data in the prop object
+		yourName = data.username
+
+		// get match history
+		// i may throw this in /players and /me also
+		// see first
+		const matchHistoryResponse = await fetchMod(`https://localhost:8000/api/player/${yourName}/match`)
+		if (!matchHistoryResponse.ok) {
+			history.back()
+			return false
+		}
+		const matchData = await matchHistoryResponse.json()
+		prop.match = matchData
+
+		return true; // Return true to continue to render_code
 	}
 
 	// return the html code here

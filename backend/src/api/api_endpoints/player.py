@@ -146,6 +146,17 @@ def createPlayer(request):
 
     if 'password' in data.keys():
         raw_password = data.get('password')
+        if len(raw_password) < 3: # TODO: CHANGE TO A BETTER LENGTH
+            return Response(
+                {
+                    'error': 'bad input', 
+                    'reason': {
+                        'password': ['Password is too short!']
+                    }
+                }, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         try:
             data['password'] = Player.encrypt_password(raw_password)
         except PasswordSizeError:
