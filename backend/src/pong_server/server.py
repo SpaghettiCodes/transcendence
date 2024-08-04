@@ -18,10 +18,8 @@ class PongServer:
 
     @classmethod
     def hasExpected(cls, playerObject, type="pong"):
-        print([            server.is_expected(playerObject) and server.getType() == type
-            for server in cls.servers.values()])
         return any(
-            server.is_expected(playerObject) and server.getType() == type
+            server.is_expected(playerObject) and server.getType() == type and not server.is_hidden()
             for server in cls.servers.values()
         )
 
@@ -57,7 +55,8 @@ class PongServer:
                     #     server_to_join = server_id
                     #     break
                     if (server.getType() == type and 
-                        server.is_expected(playerObject)):
+                        server.is_expected(playerObject) and
+                        not server.is_hidden()):
                         server_to_join = server_id
                         break
             except RuntimeError: # fuckin size changing again

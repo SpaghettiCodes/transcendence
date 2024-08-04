@@ -157,21 +157,16 @@ export default function tournament(prop={}) {
 			if (!games.length)
 				return
 
-			const onClickGenerator = (gameID) => () => {
-				if (spectating) {
-					redirect(`/match/${gameID}/spectate`)
+			const onClickGenerator = (gameData) => () => {
+				let { game_id, players } = gameData
+				if (spectating || !players.includes(yourName)) {
+					redirect(`/match/${game_id}/spectate`)
 				} else {
-					redirect(`/match/${gameID}`)
+					redirect(`/match/${game_id}`)
 				}
 			}
 
-			for (let game of games) {
-				if (game.players.includes(yourName) && !game.ended) {
-					redirect(`/match/${game.game_id}`, {}, currentPathName)
-					return
-				}
-			}
-			let newRoundMatches = newRoundPlayers.map(player => games.find(game => everyElementContains(game.players, player)).game_id)
+			let newRoundMatches = newRoundPlayers.map(player => games.find(game => everyElementContains(game.players, player)))
 
 			appendOngoingMatchup(tournamentScreen, newRoundMatches, onClickGenerator)
 		}

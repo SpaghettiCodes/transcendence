@@ -200,6 +200,7 @@ export default function chat(prop={}) {
 			messageList.forEach((pastMessage) => {
 				let type = pastMessage["type"]
 				let messageBlock = new messageDiv(type)
+				console.log(pastMessage)
 				messageBlock.setData(pastMessage)
 				chatContentField.append(messageBlock.mainDiv)
 			})

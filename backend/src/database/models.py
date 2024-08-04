@@ -304,6 +304,12 @@ class ChatRoom(ExportModelOperationsMixin("dataset"), models.Model):
         related_name="member_of",
     )
 
+    def getListOfMembers(self):
+        ret_val = list(self.members.all())
+        if (self.owner and self.owner not in ret_val):
+            ret_val.append(self.owner)
+        return ret_val
+
 class ChatMessage(models.Model):
     chatid = models.BigAutoField(primary_key=True)
     room = models.ForeignKey(

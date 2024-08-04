@@ -55,7 +55,6 @@ export default function match(prop={}) {
 		}
 
 		let data = await value.json()
-		console.log(data)
 		matchStarted = data["started"]
 		if (matchStarted)
 		{
@@ -270,7 +269,6 @@ export default function match(prop={}) {
 			mainField.style.width = `${newWidth}px`
 			mainField.style.height = `${newHeight}px`
 
-			console.log("Hello")
 			let mainFieldBorder = +getComputedStyle(mainField).borderWidth.slice(0, -2)
 
 			fieldWidth = mainField.offsetWidth - 2 * (mainFieldBorder)
@@ -537,9 +535,7 @@ export default function match(prop={}) {
 						break
 					case "score":
 						let whoScored  = data["scorer"]
-						console.log(whoScored)
 						if (data["update"]) {
-							console.log(scores)
 							++scores[whoScored]
 							updateScoreBoard()
 						}

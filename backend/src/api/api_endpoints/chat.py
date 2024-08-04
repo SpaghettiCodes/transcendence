@@ -170,7 +170,7 @@ def chatHistory(request: Request, chat_id):
     )
     return Response(data={"history": serialized.data, 'haveMore': remainder.exists()})
 
-def createInvite(messageObject, match_type, ws_group_name):
+def createInvite(messageObject, match_type, ws_group_name, room: ChatRoom):
     from pong_server.server import PongServer
     from pong_server.pong.pong import PongGame
 
@@ -202,7 +202,11 @@ def createInvite(messageObject, match_type, ws_group_name):
         chatMessage=messageObject
     )
 
-    gameId = PongServer.new_game(type=match_type, hidden=True)
+    gameId = PongServer.new_game(
+                        expectedPlayers=room.getListOfMembers(),
+                        type=match_type, 
+                        hidden=True
+                        )
     if gameId is None:
         # walau dunno how to type properly isit
         raise HttpResponseBadRequest()
@@ -245,7 +249,7 @@ def chatPostingMessages(request: Request, chat_id):
     if data['type'] == 'invite':
         newMessage.type = 2
         newMessage.save()
-        createInvite(newMessage, data["match_type"], group_name)
+        createInvite(newMessage, data["match_type"], group_name, room)
 
     async_to_sync ( channel_layer.group_send ) (group_name, {
         "type": "message",
