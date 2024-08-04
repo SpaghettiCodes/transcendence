@@ -99,7 +99,7 @@ export default function auth2fa(prop={}) {
 				setJwtToken(access)
 				setRefreshToken(refresh)
 
-				connectToPlayerNotificationWebsocket(access)
+				connectToPlayerNotificationWebsocket()
 				redirect('/home')
 			} catch (e) {
 				if (e.status === 410) { // code has expired

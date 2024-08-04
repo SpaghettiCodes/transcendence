@@ -101,7 +101,7 @@ export default function ftlogin(prop={}) {
 
 			setJwtToken(access)
 			setRefreshToken(refresh)
-			connectToPlayerNotificationWebsocket(access)
+			connectToPlayerNotificationWebsocket()
 
 			redirect_replace_history('/home')
 			return
@@ -144,7 +144,7 @@ export default function ftlogin(prop={}) {
 
 			setJwtToken(access)
 			setRefreshToken(refresh)
-			connectToPlayerNotificationWebsocket(access)
+			connectToPlayerNotificationWebsocket()
 
 			await linkWithFTCode(ftCode, access)
 		}

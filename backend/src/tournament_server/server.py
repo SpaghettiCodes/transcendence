@@ -322,7 +322,7 @@ class TournamentServer:
                 print('sending to' + player.username)
                 await PlayerNotification.sendToPlayerNoti(player.username, {
                     'code': f"upcoming_tournament_match",
-                    'message': f"You have an upcoming match in a tournament you participated! Rejoin from the home screen!"
+                    'message': f"You have an upcoming match in 10 seconds in a tournament you participated! Rejoin from the home screen!"
                 })
             asyncio.create_task(self.startMatch())
 

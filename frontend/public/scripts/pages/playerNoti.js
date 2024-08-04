@@ -1,5 +1,5 @@
 import { createAlert } from "../components/alert.js"
-import { fetchMod } from "../jwt.js"
+import { fetchMod, getJwtToken } from "../jwt.js"
 
 async function defaultDataProcessor (data) {
 	let { code, message } = data
@@ -15,11 +15,7 @@ export function isConnectedToPlayerNoti() {
 	return playerNotificationWebsocket !== undefined
 }
 
-export function connectToPlayerNotificationWebsocket(token) {
-	if (!token) {
-		return
-	}
-
+export function connectToPlayerNotificationWebsocket() {
 	// try to get me first
 	async function checkMe() {
 		await fetchMod("https://localhost:8000/api/me");
@@ -34,6 +30,11 @@ export function connectToPlayerNotificationWebsocket(token) {
 		}
 	
 		playerNotificationWebsocket.onerror = (e) => {
+			console.log('error')
+		}
+
+		playerNotificationWebsocket.onclose = (e) => {
+			console.log('closed, why is it closed')
 		}
 
 		playerNotificationWebsocket.onmessage = async (e) => {
@@ -45,7 +46,7 @@ export function connectToPlayerNotificationWebsocket(token) {
 		playerNotificationWebsocket.onopen = (e) => {
 			sendMessage({
 				command: 'join',
-				jwt: token
+				jwt: getJwtToken()
 			})
 		}
 	}

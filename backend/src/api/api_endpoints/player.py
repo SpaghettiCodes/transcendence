@@ -218,14 +218,17 @@ def logout(request: Request):
     requester = request.user
     requester.now_offline()
 
+    print('logout ed')
     return Response(
         status=status.HTTP_200_OK
     )
 
 @api_view(['POST'])
 def checkIn(request: Request):
-    requester = request.user()
+    requester = request.user
     requester.now_online()
+
+    print('checked in')
     return Response(
         status=status.HTTP_200_OK
     )

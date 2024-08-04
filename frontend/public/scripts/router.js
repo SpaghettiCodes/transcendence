@@ -186,7 +186,7 @@ const navigate = (e, prop={}) => {
 	history.replaceState(null, null, uri)
 
 	if (!isConnectedToPlayerNoti())
-		connectToPlayerNotificationWebsocket(getJwtToken())
+		connectToPlayerNotificationWebsocket()
 	render_html(uri, prop)
 }
 
@@ -221,23 +221,28 @@ document.onclick = (e) => {
 	}
 }
 
-
-const checkIn = () => {
-	fetchMod(`https://localhost:8000/api/`)
-}
-
-checkIn()
-
 // to move the url in history
 // https://gomakethings.com/how-to-update-the-browser-url-without-refreshing-the-page-using-the-vanilla-js-history-api/
 // https://gomakethings.com/how-to-detect-when-the-browser-url-changes-with-vanilla-js/#:~:text=You%20can%20use%20the%20popstate,The%20URL%20changed...%20%7D)%3B
 window.addEventListener("popstate", navigate)
 
-window.addEventListener('beforeunload', (e) => {
-	// removeJWTPair()
-})
+const checkin = () => {
+	fetchMod('https://localhost:8000/api/checkin', {
+		method: 'POST',
+	})
+}
 
-
+checkin()
 
 // you could also just call navigate, since i place this script at the bottom
 document.addEventListener("DOMContentLoaded", navigate)
+
+window.addEventListener('beforeunload', (e) => {
+	fetch('https://localhost:8000/api/logout', {
+		method: 'POST',
+		headers: {
+			'Authorization': `Bearer ${getJwtToken()}`
+		},
+		keepalive: true
+	})
+})

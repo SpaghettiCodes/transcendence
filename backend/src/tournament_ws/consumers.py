@@ -45,7 +45,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
                     self.playerObject = await sync_to_async(self.authenticator.get_user)(validated_token)
                 except Exception as e:
                     print(e)
-                    self.send_json({
+                    await self.send_json({
                         'status': 'auth_error'
                     })
                     return self.close()

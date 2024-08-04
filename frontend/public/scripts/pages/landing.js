@@ -107,7 +107,7 @@ export default function landing(prop={}) {
 				(result) => {
 					setJwtToken(result.data.access)
 					setRefreshToken(result.data.refresh)
-					connectToPlayerNotificationWebsocket(getJwtToken())
+					connectToPlayerNotificationWebsocket()
 					redirect('/home')
 				}
 			).catch((error) => {
@@ -149,7 +149,7 @@ export default function landing(prop={}) {
 			}).then((result) => {
 					setJwtToken(result.data.access)
 					setRefreshToken(result.data.refresh)
-					connectToPlayerNotificationWebsocket(getJwtToken())
+					connectToPlayerNotificationWebsocket()
 					redirect('/home')
 				}
 			).catch(async (error) => {

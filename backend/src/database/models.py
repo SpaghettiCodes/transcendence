@@ -18,7 +18,8 @@ class Player(ExportModelOperationsMixin("dataset"), models.Model):
     friends = models.ManyToManyField("Player", blank=True, related_name="friends_with")
     blocked = models.ManyToManyField("Player", blank=True, related_name="blocked_by")
 
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    is_online = models.BooleanField(default=False)
 
     # hmmm
     pong_matches_played = models.PositiveIntegerField(default=0)
@@ -89,11 +90,11 @@ class Player(ExportModelOperationsMixin("dataset"), models.Model):
         self.matches_lost += 1
             
     def now_online(self):
-        self.is_active = True
+        self.is_online = True
         self.save()
         
     def now_offline(self):
-        self.is_active = False
+        self.is_online = False
         self.save()
 
     def has_tfa_activated(self):

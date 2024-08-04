@@ -45,6 +45,9 @@ class Game(ABC):
         return self.type
 
     async def startImmediately(self):
+        # assume both players have joined
+        assert len(self.expectedPlayers), 'can only do this with expected players'
+        self.players = [ player for player in self.expectedPlayers ]
         await self.start()
 
     def setRemovalFunction(self, newRemovalFunction):

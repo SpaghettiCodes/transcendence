@@ -4,7 +4,7 @@ export function generateProfileInfo(profile) {
 	console.log(profile)
 
 	let imageSrc = ImageFromBackendUrl(profile.profile_pic)
-	let onlineStatus = profile.is_active ? 'online' : 'offline'
+	let onlineStatus = profile.is_online ? 'online' : 'offline'
 
 	return `
 		<h2 class="mt-3">${profile.username}</h2>

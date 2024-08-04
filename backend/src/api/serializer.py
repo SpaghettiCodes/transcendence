@@ -6,7 +6,7 @@ from util.base_converter import from_base52, to_base52
 class PublicPlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = ('username', 'profile_pic', 'is_active')
+        fields = ('username', 'profile_pic', 'is_online')
 
 class PublicPlayerDetailsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,7 +14,7 @@ class PublicPlayerDetailsSerializer(serializers.ModelSerializer):
         fields = (
                     'username', 
                     'profile_pic', 
-                    'is_active', 
+                    'is_online', 
                     'pong_matches_played',
                     'pong_matches_won',
                     'pong_matches_lost',
@@ -59,7 +59,7 @@ class PlayerSerializer(serializers.ModelSerializer):
                     'username', 
                     'email',
                     'profile_pic', 
-                    'is_active', 
+                    'is_online', 
                     'pong_matches_played',
                     'pong_matches_won',
                     'pong_matches_lost',
