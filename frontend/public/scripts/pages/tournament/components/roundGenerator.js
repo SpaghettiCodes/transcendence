@@ -51,6 +51,17 @@ function playerMatchupDiv(matchCount, players){
 	return ulElement
 }
 
+function determineInnerText(matchData) {
+	let { ended, players } = matchData
+
+	if (!ended)
+		return `${players[0]} vs ${players[1]}`
+	else {
+		let { result } = matchData
+		return result.winner
+	}
+}
+
 function matchDetailsDiv(matchCount, matches, onClickGenerator) {
 	let ulElement = document.createElement('ul')
 	ulElement.setAttribute('class', 'round round-1')
@@ -65,7 +76,7 @@ function matchDetailsDiv(matchCount, matches, onClickGenerator) {
 
 		let topRedirector = document.createElement('div')
 		topRedirector.setAttribute('class', '')
-		topRedirector.innerText = `${matches[i]}`
+		topRedirector.innerText = determineInnerText(matches[i])
 		topRedirector.onclick = onClickGenerator(matches[i])
 		topPlayer.appendChild(topRedirector)
 
@@ -81,7 +92,7 @@ function matchDetailsDiv(matchCount, matches, onClickGenerator) {
 
 			let bottomRedirector = document.createElement('div')
 			bottomRedirector.setAttribute('class', '')
-			bottomRedirector.innerText = `${matches[i + 1]}`
+			bottomRedirector.innerText = determineInnerText(matches[i + 1])
 			bottomRedirector.onclick = onClickGenerator(matches[i + 1])
 			bottomPlayer.appendChild(bottomRedirector)
 

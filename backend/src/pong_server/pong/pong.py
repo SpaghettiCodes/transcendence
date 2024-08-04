@@ -30,6 +30,8 @@ class PongGame(Game):
         self.attackerObject = None
         self.defenderObject = None
 
+        self.winnerObject = None
+
     def getWinner(self):
         winner, loser = self.field.getWinnerLoser()
         if (self.forfeit):
@@ -46,10 +48,8 @@ class PongGame(Game):
     def initialization(self):
         # allow reconnection
         # deep copy
-        if len(self.expectedPlayers) < 2:
-            # only do this if expected players is less than 2 (i.e. 0)
+        if (len(self.expectedPlayers )!= 2):
             self.expectedPlayers = [x for x in self.players]
-            # if we already have expected players, we know who is joining the server already
 
         # determine who left and who right
         random.shuffle(self.expectedPlayers)
@@ -118,6 +118,7 @@ class PongGame(Game):
                 winner = self.getNotMissingPlayer()
                 loser = self.getMissingPlayer()
 
+        self.winnerObject = winner
         newResult = MatchResult(
             attacker=self.attackerObject, 
             defender=self.defenderObject,
@@ -164,3 +165,11 @@ class PongGame(Game):
 
     def incrementLostCount(self, playerObject):
         playerObject.pong_matches_lost += 1
+
+    def get_data(self):
+        return {
+            **super().get_data(),
+            'result': {
+                'winner': self.winnerObject.username if self.winnerObject is not None else None
+            }
+        }

@@ -157,6 +157,8 @@ export default function tournament(prop={}) {
 			if (!games.length)
 				return
 
+			console.log(games)
+
 			const onClickGenerator = (gameData) => () => {
 				let { game_id, players } = gameData
 				if (spectating || !players.includes(yourName)) {

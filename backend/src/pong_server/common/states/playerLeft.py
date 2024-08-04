@@ -22,7 +22,10 @@ class PlayerLeft(State):
         difference = (currentTime - self.startTime).total_seconds()
         self.durationLeft = max(0, self.duration - difference)
 
-        if (self.durationLeft < 0.25):
+        if self.gameInstance.emptyLobby():
+            from .noPlayersLeft import noPlayersLeft
+            self.setforcedTransition(noPlayersLeft(self.gameInstance, self))
+        elif (self.durationLeft < 0.25):
             self.killTheGame = True
 
     def stateEnded(self):

@@ -47,7 +47,7 @@ class Game(ABC):
     async def startImmediately(self):
         # assume both players have joined
         assert len(self.expectedPlayers), 'can only do this with expected players'
-        self.players = [ player for player in self.expectedPlayers ]
+        # self.players = [ player for player in self.expectedPlayers ]
         await self.start()
 
     def setRemovalFunction(self, newRemovalFunction):
@@ -127,7 +127,8 @@ class Game(ABC):
             })
         })
 
-        if self.emptyLobby():
+        # after begin, empty lobby is handled by states
+        if self.emptyLobby() and not self.has_begin():
             await self.delayAndRemove()
 
     async def playerJoin(self, playerObject):
