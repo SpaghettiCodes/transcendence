@@ -239,12 +239,13 @@ checkin()
 // you could also just call navigate, since i place this script at the bottom
 document.addEventListener("DOMContentLoaded", navigate)
 
-window.addEventListener('beforeunload', (e) => {
-	fetch('https://localhost:8000/api/logout', {
-		method: 'POST',
-		headers: {
-			'Authorization': `Bearer ${getJwtToken()}`
-		},
-		keepalive: true
-	})
-})
+// sometimes will decide to not run instead
+// window.addEventListener('beforeunload', (e) => {
+// 	fetch('https://localhost:8000/api/logout', {
+// 		method: 'POST',
+// 		headers: {
+// 			'Authorization': `Bearer ${getJwtToken()}`
+// 		},
+// 		keepalive: true
+// 	})
+// })

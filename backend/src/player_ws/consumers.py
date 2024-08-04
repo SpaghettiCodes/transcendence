@@ -32,6 +32,9 @@ class PlayerNotification(AsyncJsonWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, code):
+        if (self.playerObject is not None):
+            await sync_to_async(self.playerObject.now_offline)()
+
         if (self.groupName is not None):
             await self.channel_layer.group_discard(
                 self.groupName, self.channel_name
@@ -47,6 +50,7 @@ class PlayerNotification(AsyncJsonWebsocketConsumer):
                 try:
                     validated_token = self.authenticator.get_validated_token(playerJWT)
                     self.playerObject = await sync_to_async(self.authenticator.get_user)(validated_token)
+                    await sync_to_async(self.playerObject.now_online)()
                 except Exception as e:
                     print(e)
                     await self.send_json({
