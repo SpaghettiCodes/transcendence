@@ -146,11 +146,6 @@ export default function template(prop = {}) {
 				const search = inputBox.value;
 				console.log('Search:', search);
 
-				if (search === friend) {
-					// no need to rerender everything
-					return
-				}
-
 				const response = await fetchMod(`https://localhost:8000/api/player/${search}`);
 				if (!response.ok) return createAlert('error', 'The user \'' + search + '\' does not exist');
 				const user = await response.json();
@@ -171,10 +166,6 @@ export default function template(prop = {}) {
 				if (e.target.classList.contains('friend-list-item')) {
 					const friendName = e.target.innerText;
 					console.log('Friend:', friendName);
-		
-					if (friendName === friend) {
-						return
-					}
 
 					// Show loading indicator
 					const profileDetails = document.querySelector('.profile-details');

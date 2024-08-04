@@ -185,8 +185,6 @@ const navigate = (e, prop={}) => {
 	uri = '/' + uri.split("/").filter(Boolean).join('/') + searchParam
 	history.replaceState(null, null, uri)
 
-	if (!isConnectedToPlayerNoti())
-		connectToPlayerNotificationWebsocket()
 	render_html(uri, prop)
 }
 
@@ -227,9 +225,13 @@ document.onclick = (e) => {
 window.addEventListener("popstate", navigate)
 
 const checkin = () => {
-	fetchMod('https://localhost:8000/api/checkin', {
-		method: 'POST',
-	})
+	if (getJwtToken()) {
+		fetchMod('https://localhost:8000/api/checkin', {
+			method: 'POST',
+		}).then(
+			() => connectToPlayerNotificationWebsocket()
+		)
+	}
 }
 
 checkin()

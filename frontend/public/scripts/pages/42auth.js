@@ -8,11 +8,11 @@ export default function ftlogin(prop={}) {
 	let ftCode = undefined
 
 	let prerender = async () => {
-		// if (!code) {
-		// 	console.log("Go get your 42 auth code!")
-		// 	redirect('/')
-		// 	return false
-		// }
+		if (!code) {
+			console.log("Go get your 42 auth code!")
+			redirect('/')
+			return false
+		}
 		return true
 	}
 

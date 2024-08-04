@@ -66,6 +66,7 @@ export function playerNotiRemoveProcessor(func) {
 }
 
 export function disconnectPlayerNotificationWebsocket() {
+	console.log("Disconnecting from notification websocket...")
 	if (playerNotificationWebsocket !== undefined)
 		playerNotificationWebsocket.close()
 	playerNotificationWebsocket = undefined
