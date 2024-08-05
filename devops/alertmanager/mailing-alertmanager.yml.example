@@ -1,0 +1,27 @@
+# yml doesnt have variable subtitution so heres an examplefile
+
+global:
+  http_config:
+    tls_config:
+      cert_file: /cert/ssl.crt
+      key_file: /cert/ssl.key
+      insecure_skip_verify: true
+
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: "gmail to send to"
+  smtp_auth_username: "gmail to send to"
+  smtp_auth_password: "gmail's password"
+
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 0s
+  group_interval: 5s
+  repeat_interval: 1m
+  receiver: 'mail-alert'
+
+receivers:
+- name: 'mail-alert'
+  email_configs:
+  - to: 'list, of, emails'
+    headers:
+      subject: 'Bing Bong your Pong Server is Gone'
