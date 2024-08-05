@@ -1,5 +1,6 @@
-data
-data/*
+data/database
+data/static/
+data/media/player-pfp
 node_modules/
 __pycache__/
 backend/src/database/migrations/*
@@ -10,6 +11,4 @@ backend/src/database/migrations/*
 requirements.in
 .vscode/
 sslcert/
-static/
-media/
 mailing-alertmanager.yml

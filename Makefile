@@ -2,6 +2,8 @@ all: build up
 
 build:
 	mkdir -p ./data/database
+	mkdir -p ./data/media/player-pfp
+	mkdir -p ./data/static
 	mkdir -p ./sslcert
 	./genssl_cert.bash
 	docker compose -f docker_compose.yml build
@@ -20,5 +22,7 @@ clean: down
 fclean: clean
 	sudo rm -rf ./data/database
 	rm -rf ./sslcert
+	sudo rm -rf ./data/media/player-pfp
+	sudo rm -rf ./data/static
 
 re: down all

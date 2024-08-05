@@ -5,6 +5,7 @@ from backend.authentication import AuthenticateJWT
 from asgiref.sync import sync_to_async
 
 from channels.layers import get_channel_layer
+from database.models import Player
 
 class PlayerNotification(AsyncJsonWebsocketConsumer):
     authenticator = AuthenticateJWT()
@@ -33,7 +34,9 @@ class PlayerNotification(AsyncJsonWebsocketConsumer):
 
     async def disconnect(self, code):
         if (self.playerObject is not None):
-            await sync_to_async(self.playerObject.now_offline)()
+            # get the updated version of the player object
+            playerObj = await Player.objects.aget(username=self.playerObject.username)
+            await sync_to_async(playerObj.now_offline)()
 
         if (self.groupName is not None):
             await self.channel_layer.group_discard(

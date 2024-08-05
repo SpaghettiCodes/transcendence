@@ -77,7 +77,10 @@ def editSpecificPlayer(request, player_username):
     serializer = ModifiableFieldsPlayer(player, data=data, partial=True)
 
     if serializer.is_valid():
+        print(request.user.profile_pic)
         serializer.save()
+        print(player.profile_pic)
+        print(request.user.profile_pic)
     else:
         print(serializer.errors)
         errors = {}

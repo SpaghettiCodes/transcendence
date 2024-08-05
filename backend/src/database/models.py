@@ -12,7 +12,7 @@ class Player(ExportModelOperationsMixin("dataset"), models.Model):
     username = models.CharField(max_length=35, unique=True, blank=False, null=False)
     password = models.CharField(max_length=256, blank=False, null=False)
     email = models.EmailField(max_length=100, unique=True, blank=True, null=True, default=None)
-    profile_pic = models.ImageField(default="./firefly.png")
+    profile_pic = models.ImageField(default="./default.png")
     date_joined = models.DateTimeField(auto_now_add=True)
 
     friends = models.ManyToManyField("Player", blank=True, related_name="friends_with")

@@ -20,6 +20,8 @@ services:
     volumes:
       - ./backend/src:/app
       - ./sslcert:/sslcert
+      - ./data/media:/app/media
+      - ./data/static:/app/static
     ports:
       - "8000:443"
     env_file:
