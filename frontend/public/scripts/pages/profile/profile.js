@@ -170,6 +170,13 @@ export default function template(prop={}) {
 				body: formData,
 			});
 			if (!response.ok) {
+				if (response.status === 400) {
+					let errorList = await response.json()
+					let picErrorList = errorList['profile_pic']
+					if (!picErrorList)
+						return
+					return createAlert('error', picErrorList[0])
+				}
 				return createAlert('error', 'Invalid Image!')
 			}
 			const json = await response.json();
@@ -196,7 +203,7 @@ export default function template(prop={}) {
 						let emailErrorList = errorList['email']
 						if (!emailErrorList)
 							return
-						createAlert('error', emailErrorList.join('and '))
+						return createAlert('error', emailErrorList[0])
 					}
 				}
 

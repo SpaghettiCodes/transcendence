@@ -7,12 +7,22 @@ from random import randint
 from django_prometheus.models import ExportModelOperationsMixin
 import os
 
+from django.core.exceptions import ValidationError
+
+def file_size(value):
+    max_limit = 6
+    limit = max_limit * 1024 * 1024
+    print(value.size)
+    if value.size > limit:
+        print("file too big!")
+        raise ValidationError(f'File too large. Size should not exceed {max_limit}MB')
+
 # Create your models here.
 class Player(ExportModelOperationsMixin("dataset"), models.Model):
     username = models.CharField(max_length=35, unique=True, blank=False, null=False)
     password = models.CharField(max_length=256, blank=False, null=False)
     email = models.EmailField(max_length=100, unique=True, blank=True, null=True, default=None)
-    profile_pic = models.ImageField(default="./default.png")
+    profile_pic = models.ImageField(default="./default.png", validators=[file_size])
     date_joined = models.DateTimeField(auto_now_add=True)
 
     friends = models.ManyToManyField("Player", blank=True, related_name="friends_with")
