@@ -56,6 +56,8 @@ export default function template(prop={}) {
 						${createButton('btn btn-secondary', 'button', 'Change Profile Pic', 'pfp_button')}
 						${createButton('btn btn-secondary', 'button', 'Change Email', 'email_button')}
 					</div>
+					<div class="emailNoti" id='emailNoti'>
+					</div>
 					<div class="d-flex flex-column match-history flex-grow-1 overflow-y-auto p-3 rounded">
 						<h3>Match History</h3>
 						<div class="d-flex overflow-y-auto tab-content mt-3 tab-pane fade show active" id="recent" role="tabpanel" aria-labelledby="recent-tab" id="matchHistoryTabContent">
@@ -83,6 +85,7 @@ export default function template(prop={}) {
 
 	// attach all event listeners here (or do anything that needs to be done AFTER attaching the html code)
 	let postrender = () => {
+		const emailNoti = document.getElementById('emailNoti')
 		const profile = prop.data
 		const { 
 			pong_matches_won,
@@ -148,8 +151,14 @@ export default function template(prop={}) {
 		// Add change event listener to the file input
 		fileInput.addEventListener('change', async (event) => {
 			const file = event.target.files[0];
+			const fileSize = file.size / 1024 / 1024 // in mb
+			console.log(fileSize)
 			if (!file) return;
-		
+
+			if (fileSize > 6) {
+				return createAlert('error', 'File size is too big!')
+			}
+	
 			const formData = new FormData();
 			formData.append("profile_pic", file);
 		
@@ -188,6 +197,8 @@ export default function template(prop={}) {
 						createAlert('error', emailErrorList.join('and '))
 					}
 				}
+
+				emailNoti.innerText = `Success, email is now ${newEmail}`
 			}
 		});
 	}

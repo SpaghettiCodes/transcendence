@@ -179,9 +179,6 @@ class TournamentServer:
         else:
             return False
 
-        print(self.readiedPlayers)
-        print(threshold)
-
         return (
             len(self.readiedPlayers) == threshold and
             not self.onGoingMatch
@@ -292,11 +289,9 @@ class TournamentServer:
         print("Tournament has ended")
         self.winner = self.currentPlayers[0]
 
-        print("test")
         # delay 10 secs, then only remove
         await self.notify_ToRefresh()
         await self.delaySeconds(10, functionToRun=self.notify_End)
-        print('test2')
 
         await self.removalFunction()
 
@@ -320,7 +315,7 @@ class TournamentServer:
             asyncio.create_task(self.endTournament())
         else:
             for player in self.expectedPlayers:
-                print('sending to' + player.username)
+                print('sending to ' + player.username)
                 await PlayerNotification.sendToPlayerNoti(player.username, {
                     'code': f"upcoming_tournament_match",
                     'message': f"You have an upcoming match in 10 seconds in a tournament you participated! Rejoin from the home screen!"
