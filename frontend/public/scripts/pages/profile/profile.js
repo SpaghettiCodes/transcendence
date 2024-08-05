@@ -51,6 +51,9 @@ export default function template(prop={}) {
 				<div class='d-flex flex-column overflow-y-auto gap-3 profile-stuff'>
 					<div class="profile-info">
 						${generateProfileInfo(profile)}
+						${profile.email ? `<div>Email: ${profile.email}</div>` : ""}
+					</div>
+					<div class="emailNoti" id='emailNoti'>
 					</div>
 					<div>
 						${createButton('btn btn-secondary', 'button', 'Change Profile Pic', 'pfp_button')}
@@ -152,7 +155,6 @@ export default function template(prop={}) {
 		fileInput.addEventListener('change', async (event) => {
 			const file = event.target.files[0];
 			const fileSize = file.size / 1024 / 1024 // in mb
-			console.log(fileSize)
 			if (!file) return;
 
 			if (fileSize > 6) {
