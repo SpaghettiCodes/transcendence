@@ -9,6 +9,7 @@ import { fetchMod } from "../../jwt.js"
 import generateUserTabs from "../../components/userTab.js"
 import { generateBlockedTab } from "../../components/userTab.js"
 import { replaceURL } from "../helpers.js"
+import { createAlert } from "../../components/alert.js"
 
 export default function chat(prop={}) {
 	let		websocket = undefined
@@ -341,7 +342,7 @@ export default function chat(prop={}) {
 			}
 
 			try {
-				await fetchMod(
+				let response = await fetchMod(
 					`https://localhost:8000/api/chat/${currentlyViewingChatID}`,
 					{
 						method: "POST",
@@ -351,6 +352,10 @@ export default function chat(prop={}) {
 						body: JSON.stringify(payload)
 					}
 				)
+				if (!response.ok) {
+					let { error } = await response.json()
+					createAlert('error', error)
+				}
 			}
 			catch (e) {
 				console.log(e)

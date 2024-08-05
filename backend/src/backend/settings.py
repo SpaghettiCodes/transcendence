@@ -22,13 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-gja7fv3%d_zppz*cr6t!@(_3r55^xxhv9fr74aqckx45lhq92k'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -95,6 +91,9 @@ SIMPLE_JWT = {
     'AUTH_COOKIE_PATH': '/',        # The path of the auth cookie.
     'AUTH_COOKIE_SAMESITE': 'Lax',  # Whether to set the flag restricting cookie leaks on cross-site requests.
 }
+
+# needed to serve profile pic
+DEBUG = True
 
 TEMPLATES = [
     {

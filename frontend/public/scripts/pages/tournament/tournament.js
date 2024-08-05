@@ -64,25 +64,21 @@ export default function tournament(prop={}) {
 	}
 
 	const getTournamentData = async() => {
-		try {
-			const response = await fetchMod(
-				`https://localhost:8000/api/tournament/${tournamentID}`
-			)
+		const response = await fetchMod(
+			`https://localhost:8000/api/tournament/${tournamentID}`
+		)
 
-			if (!response.ok) {
-				throw response
-			}
-
-			const data = await response.json()
-			return data
-		} catch (response) {
-			console.log(response)
+		if (!response.ok) {
 			if (response.status === 404) {
 				redirect_replace_history(`/tournament/${tournamentID}/results`)
 				throw 'redirected'
+			} else {
+				console.log(response)
 			}
-			throw response
 		}
+
+		const data = await response.json()
+		return data
 	}
 
 	// attach all event listeners here (or do anything that needs to be done AFTER attaching the html code)

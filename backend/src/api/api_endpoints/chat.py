@@ -244,7 +244,16 @@ def chatPostingMessages(request: Request, chat_id):
     content = data["message"]
 
     newMessage = ChatMessage(room=room, sender=sender, content=content)
-    newMessage.save()
+    try:
+        newMessage.save()
+    except:
+        if len(content) > 200: # one must imagine not hardcoding
+            return Response({
+                'error': "Message too long",
+            }, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            'error': "Error sending message",
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     if data['type'] == 'invite':
         newMessage.type = 2
